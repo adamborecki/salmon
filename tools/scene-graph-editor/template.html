@@ -526,9 +526,19 @@ function renderWalk(){
   $('#pStart').onclick=()=>{hist=[];cur='outside-entry';show(cur)}; $('#pMap').onclick=()=>{sel={type:'node',id:cur};setMode('map')};
 }
 function clampLabels(){
+  const sr=stage.getBoundingClientRect(); if(!sr.width)return;
+  // an icon dragged right up to the frame edge on a big screen can poke out of a phone-sized frame:
+  // nudge that arrow back inside (display only; the saved position is unchanged)
+  $('#arrows').querySelectorAll('.arrow').forEach(b=>{
+    const L=b.dataset.l||(b.dataset.l=b.style.left), T=b.dataset.t||(b.dataset.t=b.style.top);
+    b.style.left=L; b.style.top=T;
+    const r=b.querySelector('svg').getBoundingClientRect();
+    const dx=r.left<sr.left+2?sr.left+2-r.left:r.right>sr.right-2?sr.right-2-r.right:0;
+    const dy=r.top<sr.top+2?sr.top+2-r.top:r.bottom>sr.bottom-2?sr.bottom-2-r.bottom:0;
+    if(dx)b.style.left=`calc(${L} + ${Math.round(dx)}px)`; if(dy)b.style.top=`calc(${T} + ${Math.round(dy)}px)`;
+  });
   // a label is centred under its icon, so near the frame edge it runs out of view (clipped by the
   // stage). Slide just the label back inside; the icon itself stays where it points.
-  const sr=stage.getBoundingClientRect(); if(!sr.width)return;
   $('#arrows').querySelectorAll('.lb').forEach(lb=>{
     lb.style.transform=''; const r=lb.getBoundingClientRect();
     const dx=r.left<sr.left+4?sr.left+4-r.left:r.right>sr.right-4?sr.right-4-r.right:0;
