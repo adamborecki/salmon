@@ -108,6 +108,10 @@ textarea{min-height:56px;resize:vertical}
 .arrow.control svg polygon{fill:#ffb648;stroke:#0b0f13;stroke-width:2.2;stroke-linejoin:round}
 .arrow:focus-visible svg{transform:scale(1.18)}
 .arrow{outline:none;touch-action:manipulation}
+/* only the icon itself takes taps: on a phone-sized photo an arrow's text label easily lies across a
+   hotspot (e.g. half of the X32 on foh-wide), and a tap there should inspect the device, not walk away */
+.arrow{pointer-events:none} .arrow svg{pointer-events:auto}
+.hud{pointer-events:none}
 .arrow:focus-visible{outline:2px solid #fff;border-radius:6px}
 .arrow .pv{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:190px;aspect-ratio:4/3;object-fit:cover;border:2px solid #fff;border-radius:5px;display:none;margin-bottom:4px;box-shadow:0 4px 14px rgba(0,0,0,.6);pointer-events:none}
 .arrow.low .pv{bottom:auto;top:100%;margin:4px 0 0}
@@ -482,7 +486,7 @@ function renderWalk(){
   const placed=editMode?list.map(e=>({e,a:e.__a})):[...layoutArrows(list.filter(e=>!isFixed(e)),sw,sh),...list.filter(isFixed).map(e=>({e,a:e.__a}))];
   placed.forEach(({e,a})=>{
     const m=motionOf(e), isTurn=m.none;
-    let p=pos(a); if(isTurn&&e.icon_x!=null&&e.icon_y!=null)p={l:e.icon_x,t:e.icon_y};
+    let p=pos(a); if(e.icon_x!=null&&e.icon_y!=null)p={l:e.icon_x,t:e.icon_y};  // a dragged position wins for every arrow, not just turn icons
     const b=document.createElement('button');
     b.className='arrow '+e.kind+(isTurn?' control turnicon':'')+(p.t>55?' low':'')+(p.l<25?' edgeL':p.l>75?' edgeR':'');
     b.style.left=p.l+'%'; b.style.top=p.t+'%';
@@ -628,7 +632,7 @@ function drawGuide(){
 }
 function editPanel(){
   const ls=outsOf(cur);
-  return `<h2>Angles</h2><div class="hint">Drag an arrow around the ring. Up is forward (0&deg;), right is 90&deg;, down is behind (180&deg;). Hold Shift for free angles. <b>dir</b> is where the arrow sits; <b>turn</b> is how far the camera rotates on arrival (blank = same as dir).</div>`+
+  return `<h2>Angles</h2><div class="hint">Drag an arrow to where the path actually is in the photo; <b>Reset position</b> puts it back on the ring. On the ring, up is forward (0&deg;), right is 90&deg;, down is behind (180&deg;). <b>dir</b> is which way the arrow points (and where it sits on the ring when not dragged); <b>turn</b> is how far the camera rotates on arrival (blank = same as dir).</div>`+
   (ls.length?ls.map((e,i)=>`<div class="lrow"><div class="hint">&rarr; ${esc(e.to)}${e.kind==='control'?' (button)':''}</div>
     <div class="row"><label>motion<select data-i="${i}" data-f="motion">${MOTIONS.map(([v,l])=>`<option value="${v}" ${(e.motion||'auto')===v?'selected':''}>${l}</option>`).join('')}</select></label></div>
     <label>distance <output id="o${i}">${(e.distance_m!=null?e.distance_m:motionOf(e).dist)} m</output><input data-i="${i}" data-f="distance_m" type="range" min="0" max="20" step="0.5" value="${e.distance_m!=null?e.distance_m:motionOf(e).dist}"></label>
