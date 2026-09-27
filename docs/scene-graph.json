@@ -209,7 +209,10 @@
    "src": "IMG_4262",
    "people": true,
    "x": 680,
-   "y": -70
+   "y": -70,
+   "plan_x": 0.9,
+   "plan_y": 8.8,
+   "heading_deg": 0
   },
   "foh-wide": {
    "file": "foh/foh-wide.jpg",
@@ -219,7 +222,10 @@
    "src": "IMG_4231",
    "people": true,
    "x": 680,
-   "y": 90
+   "y": 90,
+   "plan_x": 2.0,
+   "plan_y": 8.5,
+   "heading_deg": 20
   },
   "dante-controller-screen": {
    "file": "foh/screens/dante-controller-screen.jpg",
@@ -309,7 +315,10 @@
    "src": "IMG_4254",
    "people": true,
    "x": 900,
-   "y": 330
+   "y": 330,
+   "plan_x": 8.5,
+   "plan_y": 8.2,
+   "heading_deg": 0
   },
   "center-to-stage-omitted": {
    "file": "house/_alts/center-to-stage-omitted.jpg",
@@ -330,7 +339,9 @@
    "people": true,
    "x": 680,
    "y": 260,
-   "heading_deg": 0
+   "heading_deg": 0,
+   "plan_x": 2.4,
+   "plan_y": 7.3
   },
   "crossroads-left": {
    "file": "house/crossroads-left.jpg",
@@ -340,7 +351,10 @@
    "src": "IMG_4252",
    "people": true,
    "x": 900,
-   "y": 500
+   "y": 500,
+   "plan_x": 8.5,
+   "plan_y": 6.4,
+   "heading_deg": -30
   },
   "crossroads-right": {
    "file": "house/crossroads-right.jpg",
@@ -350,7 +364,10 @@
    "src": "IMG_4253",
    "people": true,
    "x": 1120,
-   "y": 330
+   "y": 330,
+   "plan_x": 8.5,
+   "plan_y": 10.1,
+   "heading_deg": 60
   },
   "first-entry": {
    "file": "intro/first-entry.jpg",
@@ -361,7 +378,9 @@
    "people": true,
    "x": 80,
    "y": 260,
-   "heading_deg": 91
+   "heading_deg": 91,
+   "plan_x": 12.8,
+   "plan_y": 1.1
   },
   "outside-entry": {
    "file": "intro/outside-entry.jpg",
@@ -371,7 +390,10 @@
    "src": "IMG_4217",
    "people": false,
    "x": 80,
-   "y": 80
+   "y": 80,
+   "plan_x": 12.8,
+   "plan_y": -1.8,
+   "heading_deg": 90
   },
   "path-center-to-entry-step1": {
    "file": "path/path-center-to-entry-step1.jpg",
@@ -382,7 +404,9 @@
    "people": true,
    "x": 380,
    "y": 120,
-   "heading_deg": -33
+   "heading_deg": -33,
+   "plan_x": 6.0,
+   "plan_y": 5.4
   },
   "path-to-storage": {
    "file": "path/path-to-storage.jpg",
@@ -392,7 +416,10 @@
    "src": "IMG_4255",
    "people": false,
    "x": 1300,
-   "y": 330
+   "y": 330,
+   "plan_x": 11.0,
+   "plan_y": 12.8,
+   "heading_deg": 90
   },
   "mains-rack-front-alt1": {
    "file": "stage-side/_alts/mains-rack-front-alt1.jpg",
@@ -502,7 +529,10 @@
    "src": "IMG_4224",
    "people": false,
    "x": 300,
-   "y": 720
+   "y": 720,
+   "plan_x": 15.8,
+   "plan_y": 1.2,
+   "heading_deg": -150
   },
   "racks-front-wide": {
    "file": "stage-side/racks-front-wide.jpg",
@@ -512,7 +542,10 @@
    "src": "IMG_4218",
    "people": false,
    "x": 300,
-   "y": 520
+   "y": 520,
+   "plan_x": 14.0,
+   "plan_y": 2.7,
+   "heading_deg": -75
   },
   "musician-pov": {
    "file": "stage/musician-pov.jpg",
@@ -522,7 +555,10 @@
    "src": "IMG_4249",
    "people": true,
    "x": 620,
-   "y": 620
+   "y": 620,
+   "plan_x": 15.2,
+   "plan_y": 8.2,
+   "heading_deg": 180
   },
   "upstage-back-wide": {
    "file": "stage/upstage-back-wide.jpg",
@@ -532,7 +568,10 @@
    "src": "IMG_4248",
    "people": true,
    "x": 620,
-   "y": 820
+   "y": 820,
+   "plan_x": 17.7,
+   "plan_y": 8.2,
+   "heading_deg": 180
   },
   "storage-door-latch": {
    "file": "storage/closeups/storage-door-latch.jpg",
@@ -592,7 +631,10 @@
    "src": "IMG_4138",
    "people": false,
    "x": 1480,
-   "y": 500
+   "y": 500,
+   "plan_x": 12.2,
+   "plan_y": 17.7,
+   "heading_deg": 90
   },
   "storage-entry": {
    "file": "storage/storage-entry.jpg",
@@ -602,7 +644,10 @@
    "src": "IMG_4256",
    "people": false,
    "x": 1480,
-   "y": 330
+   "y": 330,
+   "plan_x": 12.2,
+   "plan_y": 16.2,
+   "heading_deg": 90
   },
   "first-entry-look-right": {
    "file": "intro/first-entry-look-right.jpg",
@@ -613,7 +658,9 @@
    "people": false,
    "x": 280,
    "y": 260,
-   "heading_deg": 144
+   "heading_deg": 144,
+   "plan_x": 12.8,
+   "plan_y": 1.1
   },
   "path-entry-to-center": {
    "file": "path/path-entry-to-center.jpg",
@@ -624,7 +671,9 @@
    "people": true,
    "x": 480,
    "y": 260,
-   "heading_deg": 88
+   "heading_deg": 88,
+   "plan_x": 9.6,
+   "plan_y": 3.4
   }
  },
  "edges": [
@@ -634,7 +683,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "only exit",
-   "dir_degrees": 10
+   "dir_degrees": 10,
+   "distance_m": 2.9
   },
   {
    "from": "first-entry",
@@ -642,7 +692,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -125
+   "dir_degrees": -125,
+   "distance_m": 2.0
   },
   {
    "from": "center-wide",
@@ -650,7 +701,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -75
+   "dir_degrees": -75,
+   "distance_m": 4.1
   },
   {
    "from": "path-center-to-entry-step1",
@@ -658,7 +710,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 10
+   "dir_degrees": 10,
+   "distance_m": 8.0
   },
   {
    "from": "center-wide",
@@ -666,7 +719,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 110
+   "dir_degrees": 110,
+   "distance_m": 1.3
   },
   {
    "from": "foh-wide",
@@ -674,7 +728,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -90
+   "dir_degrees": -90,
+   "distance_m": 1.3
   },
   {
    "from": "center-wide",
@@ -682,7 +737,8 @@
    "kind": "walk",
    "turn_degrees": 0,
    "note": "direct, no stop between",
-   "dir_degrees": 0
+   "dir_degrees": 0,
+   "distance_m": 6.2
   },
   {
    "from": "crossroads",
@@ -690,7 +746,8 @@
    "kind": "walk",
    "turn_degrees": 0,
    "note": "walk backward toward the house; both photos face the stage",
-   "dir_degrees": -175
+   "dir_degrees": -175,
+   "distance_m": 6.2
   },
   {
    "from": "crossroads",
@@ -698,7 +755,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "sideways step; strafes (turn unset)",
-   "dir_degrees": -75
+   "dir_degrees": -75,
+   "distance_m": 1.8
   },
   {
    "from": "crossroads-left",
@@ -706,7 +764,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -110
+   "dir_degrees": -110,
+   "distance_m": 6.8
   },
   {
    "from": "first-entry",
@@ -714,7 +773,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 0
+   "dir_degrees": 0,
+   "distance_m": 6.8
   },
   {
    "from": "crossroads-left",
@@ -722,7 +782,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 90
+   "dir_degrees": 90,
+   "distance_m": 1.8
   },
   {
    "from": "crossroads-left",
@@ -730,7 +791,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "racks visible from here",
-   "dir_degrees": -55
+   "dir_degrees": -55,
+   "distance_m": 6.6
   },
   {
    "from": "crossroads",
@@ -738,7 +800,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 90
+   "dir_degrees": 90,
+   "distance_m": 1.9
   },
   {
    "from": "crossroads-right",
@@ -746,21 +809,24 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 10
+   "dir_degrees": 10,
+   "distance_m": 3.7
   },
   {
    "from": "path-to-storage",
    "to": "storage-entry",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "distance_m": 3.6
   },
   {
    "from": "storage-entry",
    "to": "storage-closet",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "distance_m": 1.5
   },
   {
    "from": "crossroads",
@@ -768,7 +834,8 @@
    "kind": "walk",
    "turn_degrees": 180,
    "note": "walk forward toward the stage; camera ends up facing the house (180 spin)",
-   "dir_degrees": 0
+   "dir_degrees": 0,
+   "distance_m": 6.7
   },
   {
    "from": "musician-pov",
@@ -776,7 +843,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 90
+   "dir_degrees": 90,
+   "distance_m": 5.6
   },
   {
    "from": "musician-pov",
@@ -784,7 +852,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 160
+   "dir_degrees": 160,
+   "distance_m": 2.5
   },
   {
    "from": "upstage-back-wide",
@@ -792,7 +861,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 0
+   "dir_degrees": 0,
+   "distance_m": 2.5
   },
   {
    "from": "upstage-back-wide",
@@ -800,7 +870,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 90
+   "dir_degrees": 90,
+   "distance_m": 7.3
   },
   {
    "from": "racks-rear-wide",
@@ -808,7 +879,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -165
+   "dir_degrees": -165,
+   "distance_m": 7.3
   },
   {
    "from": "musician-pov",
@@ -816,7 +888,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": 120
+   "dir_degrees": 120,
+   "distance_m": 7.0
   },
   {
    "from": "racks-rear-wide",
@@ -824,7 +897,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "note": "",
-   "dir_degrees": -130
+   "dir_degrees": -130,
+   "distance_m": 7.0
   },
   {
    "from": "racks-front-wide",
@@ -1057,7 +1131,8 @@
    "kind": "walk",
    "turn_degrees": -10,
    "dir_degrees": 180,
-   "note": "auto reverse of outside-entry -> first-entry"
+   "note": "auto reverse of outside-entry -> first-entry",
+   "distance_m": 2.9
   },
   {
    "from": "racks-front-wide",
@@ -1065,7 +1140,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "dir_degrees": -120,
-   "note": "auto reverse of first-entry -> racks-front-wide"
+   "note": "auto reverse of first-entry -> racks-front-wide",
+   "distance_m": 2.0
   },
   {
    "from": "racks-front-wide",
@@ -1073,7 +1149,8 @@
    "kind": "walk",
    "turn_degrees": 55,
    "dir_degrees": 150,
-   "note": "auto reverse of crossroads-left -> racks-front-wide"
+   "note": "auto reverse of crossroads-left -> racks-front-wide",
+   "distance_m": 6.6
   },
   {
    "from": "crossroads-right",
@@ -1081,7 +1158,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "dir_degrees": -135,
-   "note": "auto reverse of crossroads -> crossroads-right"
+   "note": "auto reverse of crossroads -> crossroads-right",
+   "distance_m": 1.9
   },
   {
    "from": "path-to-storage",
@@ -1089,7 +1167,8 @@
    "kind": "walk",
    "turn_degrees": 0,
    "dir_degrees": 180,
-   "note": "auto reverse of crossroads-right -> path-to-storage"
+   "note": "auto reverse of crossroads-right -> path-to-storage",
+   "distance_m": 3.7
   },
   {
    "from": "storage-entry",
@@ -1097,7 +1176,8 @@
    "kind": "walk",
    "turn_degrees": 0,
    "dir_degrees": 180,
-   "note": "auto reverse of path-to-storage -> storage-entry"
+   "note": "auto reverse of path-to-storage -> storage-entry",
+   "distance_m": 3.6
   },
   {
    "from": "storage-closet",
@@ -1105,7 +1185,8 @@
    "kind": "walk",
    "turn_degrees": 0,
    "dir_degrees": 180,
-   "note": "auto reverse of storage-entry -> storage-closet"
+   "note": "auto reverse of storage-entry -> storage-closet",
+   "distance_m": 1.5
   },
   {
    "from": "musician-pov",
@@ -1113,7 +1194,8 @@
    "kind": "walk",
    "turn_degrees": 180,
    "dir_degrees": -10,
-   "note": "walk toward the house; view flips 180 on arrival"
+   "note": "walk toward the house; view flips 180 on arrival",
+   "distance_m": 6.7
   },
   {
    "from": "racks-front-wide",
@@ -1121,7 +1203,8 @@
    "kind": "walk",
    "turn_degrees": null,
    "dir_degrees": 115,
-   "note": "auto reverse of musician-pov -> racks-front-wide"
+   "note": "auto reverse of musician-pov -> racks-front-wide",
+   "distance_m": 5.6
   },
   {
    "from": "racks-rear-wide",
@@ -1153,7 +1236,7 @@
    "turn_degrees": -88,
    "note": "long walk forward, ending with a left turn of about 88 degrees to face the stage (room axes); distance is an estimate",
    "dir_degrees": 20,
-   "distance_m": 9
+   "distance_m": 8.2
   },
   {
    "from": "first-entry",
@@ -1181,7 +1264,7 @@
    "kind": "walk",
    "turn_degrees": -3,
    "dir_degrees": 53,
-   "distance_m": 4,
+   "distance_m": 3.9,
    "note": "walk forward-right along the aisle; camera ends up almost where it started (3 deg left). Distance is an estimate."
   },
   {
@@ -1190,7 +1273,7 @@
    "kind": "walk",
    "turn_degrees": 3,
    "dir_degrees": -124,
-   "distance_m": 4,
+   "distance_m": 3.9,
    "note": "auto reverse: walk back and to the left"
   }
  ]
