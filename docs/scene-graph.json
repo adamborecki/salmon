@@ -938,7 +938,7 @@
    "icon_y": 38.3,
    "icon_flip": true,
    "icon_rot": 60,
-   "distance_m": 2.0
+   "distance_m": 2
   },
   {
    "from": "foh-wide",
@@ -1170,7 +1170,9 @@
    "turn_degrees": 141,
    "dir_degrees": -120,
    "note": "auto reverse of first-entry -> racks-front-wide",
-   "distance_m": 1.6
+   "distance_m": 1.6,
+   "icon_x": 18.6,
+   "icon_y": 80.3
   },
   {
    "from": "racks-front-wide",
@@ -1179,7 +1181,9 @@
    "turn_degrees": 55,
    "dir_degrees": 150,
    "note": "auto reverse of crossroads-left -> racks-front-wide",
-   "distance_m": 4.9
+   "distance_m": 4.9,
+   "icon_x": 57.4,
+   "icon_y": 80.2
   },
   {
    "from": "crossroads-right",
@@ -1249,7 +1253,7 @@
    "icon_x": 6.3,
    "icon_y": 43.1,
    "icon_rot": -30,
-   "distance_m": 2.0
+   "distance_m": 2
   },
   {
    "from": "foh-rear-wide",
