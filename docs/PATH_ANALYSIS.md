@@ -37,3 +37,6 @@ IMG_4131 faces 33 degrees left of center-wide, so it is not on the straight line
 - `first-entry-rj45-ports` (`intro/first-entry-rj45-ports.jpg`) is a crop of IMG_4131 showing the wall network panel beside the three doors. It is a stand-in until a proper photo is taken from the first-entry spot.
 - Choosing the turn icon at first-entry now plays one continuous right turn: first-entry, through `first-entry-look-right` (now a waypoint), to the RJ45 view. Turning back from the RJ45 view unwinds the same way to first-entry.
 - Chaining now also continues through turn-in-place links, not just walk links.
+
+## Plan-informed pass over Walk arrows (applied)
+Once every scene had a floor-plan position and facing, distances and unset camera turns for 25 links each were recalculated from those positions rather than left as guesses or defaults. Hand-set values (arrow position, and turns that were deliberately measured or chosen, such as first-entry to first-entry-look-right at 53 degrees, or the crossroads/musician-pov 180 degree turns) were left alone. If a distance now looks wrong, the fix is to move that camera's dot in the Plan tab rather than edit the link directly, since the link is derived from it.
