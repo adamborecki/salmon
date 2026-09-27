@@ -263,6 +263,17 @@ Use terms such as:
 
 Beginner mode may explain these terms; it should not replace them with vague game-only language.
 
+## 4.10 Realism without monotony
+
+**[LOCKED, owner 2026-09-27]**
+
+Balance realism with playability. When a real procedure is routine and repetitive (checking mic
+after mic the same way), let the player do it for real a few times, then offer a smart way to skip
+the rest, such as "check the rest". The skip must still surface anything abnormal (it stops at the
+first mic that fails) so it never skips the reasoning, only the repetition. Before offering it, the
+game should make sure the player has met the kinds of problems it could hide (for example battery
+problems), or the skip must still stop on them.
+
 ---
 
 # 5. What Success Looks Like
@@ -1520,6 +1531,10 @@ Suggested order:
 
 This reduces the number of unknowns during troubleshooting.
 
+**Owner note (2026-09-27):** keep this full order. For a rehearsal, the monitors are what the
+musicians actually need, but knowing mains vs monitors is part of the education, so the scenario
+still tests both.
+
 Listen/check for:
 
 - missing channel
@@ -1563,6 +1578,16 @@ Player/A2 should:
 Line check is essential because the transmitter can be powered but muted.
 
 Frequency scanning/pairing can come later.
+
+**Two different mic checks (owner, 2026-09-27):**
+
+- **Battery-in check at FOH:** as soon as batteries go into each mic, and before the mics go to the
+  stage, check that each one produces signal. This catches battery and mute problems early, while
+  the A2 is still next to the receivers and the console.
+- **Line check (the official one):** later, with the mics in the musicians' hands on stage; each
+  musician makes sound and the A1 confirms each channel at the X32.
+
+The first gameplay slice's "line-check" is really the battery-in check and should be named that way.
 
 ---
 

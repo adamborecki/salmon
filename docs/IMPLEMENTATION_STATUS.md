@@ -148,11 +148,28 @@ itself (the artifact viewer needs your login; the identical local build passes t
   **inferred** from the rainbow order; 17-24 windscreen colour unknown.
 - Line check: A2 talks, A1 watches the X32 ("I guess": kept tentative).
 
-### Still open for the slice
-- Confirm rings 3-6 and the mute glyph (a photo of a muted handheld's display would settle it).
-- Owner feedback on the harness: works as a proof of concept; 4 identical mics is monotonous. Wanted:
-  real mic graphics, 3 mics for the demo, a "repeat for remaining mics" shortcut, and explicit
-  procedure steps (check mics, hand them out, listen to monitors). Open: how to show hands/inventory.
+### Owner answers, round 2 (2026-09-27)
+- **Test order:** keep PRODUCT_DESIGN section 43 (playback -> mains -> Monitor 1 -> wireless). Note added there.
+- **Two different mic checks** (added to PRODUCT_DESIGN section 45): the *battery-in check* at FOH as
+  batteries go in, before the mics go to the stage; and the official *line check* on stage with the
+  musicians making sound and the A1 confirming at the X32. The current slice is the battery-in check
+  and should be renamed that way.
+- **New principle, PRODUCT_DESIGN 4.10 "Realism without monotony":** do the routine for real a few
+  times, then offer "check the rest", which stops at the first abnormal mic and must not hide problem
+  types the player hasn't met (for example batteries).
+- Rings 3-6 confirmed (yellow, green, blue, purple); mics 17-24 have no windscreen for now.
+- Inventory: carrying several mics in one hand is possible but awkward; the hands model is undecided.
+
+### Next build session: harness v2 (brief)
+1. Rename the scenario and objective to the battery-in check; keep the test-order note for later scenarios.
+2. SVG mic graphics drawn from data: body, windscreen colour, ring colour, LCD with channel number and
+   a mute state (placeholder glyph until the owner sends a photo of a muted display).
+3. 3 mics done by hand, then "check the rest", which stops at the first abnormal mic (principle 4.10).
+4. Leave room for battery faults (wrong way round, dead cells) as future faults the skip must still
+   catch, without building them yet.
+5. A visible step list for the procedure.
+6. Hands: two simple "in hand" slots, no hand art; keep one mic at a time unless the owner decides otherwise.
+7. Keep engine tests, the e2e playthrough and the published harness in step; update this file.
 
 ### Decisions for you
 - **Architecture (section 84), my recommendation:** keep `template.html` as the authoring/editor tool

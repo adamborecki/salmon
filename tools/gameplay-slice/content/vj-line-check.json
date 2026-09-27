@@ -19,8 +19,8 @@
   "status": "scenario sizing chosen for a short slice, not a claim about how many mics Vocal Jazz uses",
   "note": "X32 and receivers start powered on so that the transmitter mute is the only fault (one fault per section 94).",
   "roles": {
-   "value": "A2 talks into each mic; A1 watches the X32",
-   "status": "owner, 2026-09-27 ('I guess'): tentative. The slice still has one player doing both at FOH."
+   "value": "This slice is the battery-in check at FOH (A2 alone, next to receivers and X32). The official line check is later, on stage: musicians make sound, the A1 confirms each channel at the X32.",
+   "status": "current practice (owner, 2026-09-27); see PRODUCT_DESIGN section 45"
   }
  },
  "devices": {
@@ -164,7 +164,7 @@
    "ring": "grey"
   }
  },
- "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Rings 1, 2, 7, 8 are owner-stated; 3-6 = yellow, green, blue, purple is inferred from the rainbow order and the 8-colour ring set, confirm. Windscreen colour for 17-24 is unknown (maybe none). Handhelds live in the FOH mic drawer (manifest row IMG_4127).",
+ "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127).",
  "behaviour": {
   "handheld_button": {
    "value": {
