@@ -998,28 +998,100 @@
    "to": "x32-top",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 19.5,
+     "y": 39.5
+    },
+    {
+     "x": 13,
+     "y": 60.3
+    },
+    {
+     "x": 48.7,
+     "y": 57.7
+    },
+    {
+     "x": 47.4,
+     "y": 40.5
+    }
+   ]
   },
   {
    "from": "foh-wide",
    "to": "foh-rack",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 51.8,
+     "y": 48.8
+    },
+    {
+     "x": 48.5,
+     "y": 72.1
+    },
+    {
+     "x": 61.2,
+     "y": 72.1
+    },
+    {
+     "x": 69.7,
+     "y": 48.9
+    }
+   ]
   },
   {
    "from": "foh-wide",
    "to": "foh-computer",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 46.7,
+     "y": 16.2
+    },
+    {
+     "x": 45.5,
+     "y": 38.9
+    },
+    {
+     "x": 65.2,
+     "y": 40.4
+    },
+    {
+     "x": 69.1,
+     "y": 18.7
+    }
+   ]
   },
   {
    "from": "foh-wide",
    "to": "foh-right-side",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 71.7,
+     "y": 51.1
+    },
+    {
+     "x": 63.8,
+     "y": 76.5
+    },
+    {
+     "x": 78.2,
+     "y": 74.4
+    },
+    {
+     "x": 86.4,
+     "y": 51.5
+    }
+   ]
   },
   {
    "from": "foh-rack",
