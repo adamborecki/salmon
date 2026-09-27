@@ -106,12 +106,16 @@ textarea{min-height:56px;resize:vertical}
 .arrow.control svg path.to{fill:none;stroke:#ffb648;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}
 .arrow.turnicon svg{width:66px;height:66px}
 .arrow.control svg polygon{fill:#ffb648;stroke:#0b0f13;stroke-width:2.2;stroke-linejoin:round}
-.arrow:hover svg,.arrow:focus-visible svg{transform:scale(1.18)}
-.arrow{outline:none}
+.arrow:focus-visible svg{transform:scale(1.18)}
+.arrow{outline:none;touch-action:manipulation}
 .arrow:focus-visible{outline:2px solid #fff;border-radius:6px}
 .arrow .pv{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:190px;aspect-ratio:4/3;object-fit:cover;border:2px solid #fff;border-radius:5px;display:none;margin-bottom:4px;box-shadow:0 4px 14px rgba(0,0,0,.6);pointer-events:none}
 .arrow.low .pv{bottom:auto;top:100%;margin:4px 0 0}
-.arrow:hover .pv,.arrow:focus-visible .pv{display:block}
+.arrow:focus-visible .pv{display:block}
+/* hover previews only where hover is real: on touch screens :hover sticks to whatever is under the
+   finger after a tap (so the next scene's arrow would show a stray preview), and iOS Safari can
+   swallow the first tap on an element whose :hover reveals content, making arrows need two taps */
+@media (hover:hover){.arrow:hover svg{transform:scale(1.18)} .arrow:hover .pv{display:block}}
 .arrow.edgeL .pv{left:0;transform:none} .arrow.edgeR .pv{left:auto;right:0;transform:none}
 .arrow.editing{cursor:grab;touch-action:none}.arrow.editing:active{cursor:grabbing}.arrow.editing svg{outline:2px dashed #fff;outline-offset:2px;border-radius:50%}.arrow.editing .pv{display:none!important}
 #guide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
@@ -131,7 +135,7 @@ textarea{min-height:56px;resize:vertical}
 .look2 span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .look2:hover{border-color:var(--ink)}
 .looks{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:8px 10px;background:linear-gradient(transparent,rgba(0,0,0,.75));overflow-x:auto;z-index:4}
-#hotspots{position:absolute;inset:0;width:100%;height:100%;z-index:3}
+#hotspots{position:absolute;inset:0;width:100%;height:100%;z-index:3;touch-action:manipulation}
 .hot{fill:#fff;fill-opacity:.06;stroke:#fff;stroke-opacity:.75;stroke-width:1.6;cursor:pointer;vector-effect:non-scaling-stroke;transition:fill-opacity .15s}
 .hot{outline:none}
 .hot:hover,.hot:focus-visible{fill-opacity:.22;stroke-opacity:1}
@@ -491,6 +495,7 @@ function renderWalk(){
     if(editMode){b.classList.add('editing');b.onpointerdown=ev=>iconDrag(ev,e,b)}else b.onclick=()=>step(e);
     arrows.appendChild(b);
   });
+  clampLabels();
   $('#looks').style.display='none';
   const lks=looksOf(cur);
   if(!lks.some((e,i)=>i===hotEditIdx))hotEditIdx=null;
@@ -498,7 +503,7 @@ function renderWalk(){
   drawGuide();
   renderHotspots(lks);
   const bb=$('#backBtn');
-  bb.hidden=!hist.length||editMode||n.kind!=='closeup';
+  bb.hidden=!hist.length||editMode||!['closeup','screen'].includes(n.kind);
   const side=$('#povside');
   side.innerHTML=`<h2>Walk</h2><div><b style="font-family:var(--mono)">${esc(cur)}</b><div class="hint">${esc(n.file)}${n.people?' &middot; people in frame':''}</div></div>
     <div class="row"><button class="b" id="pBack" ${hist.length?'':'disabled'}>Back</button><button class="b" id="pStart">Restart</button><button class="b" id="pMap">Show on map</button></div>
@@ -515,6 +520,16 @@ function renderWalk(){
   side.querySelectorAll('.look2').forEach(bt=>bt.onclick=()=>{if(editMode)return;const e=lks[+bt.dataset.i];if(e.hotspot&&e.hotspot.length>=3)stepHotspot(e);else step(e)});
   $('#pBack').onclick=back; bb.onclick=back;
   $('#pStart').onclick=()=>{hist=[];cur='outside-entry';show(cur)}; $('#pMap').onclick=()=>{sel={type:'node',id:cur};setMode('map')};
+}
+function clampLabels(){
+  // a label is centred under its icon, so near the frame edge it runs out of view (clipped by the
+  // stage). Slide just the label back inside; the icon itself stays where it points.
+  const sr=stage.getBoundingClientRect(); if(!sr.width)return;
+  $('#arrows').querySelectorAll('.lb').forEach(lb=>{
+    lb.style.transform=''; const r=lb.getBoundingClientRect();
+    const dx=r.left<sr.left+4?sr.left+4-r.left:r.right>sr.right-4?sr.right-4-r.right:0;
+    if(dx)lb.style.transform=`translateX(${Math.round(dx)}px)`;
+  });
 }
 function renderHotspots(lks){
   const svg=$('#hotspots'); let h='';
@@ -875,7 +890,7 @@ addEventListener('keydown',ev=>{
   else if(k==='ArrowDown'){e=pick(180); if(!e){back();ev.preventDefault();return}}
   else if(k==='Backspace'||k==='Escape'){back();ev.preventDefault();return}
   else if(k==='m'||k==='M'){sel={type:'node',id:cur};setMode('map');return}
-  else if(/^[1-9]$/.test(k)){const l=looksOf(cur)[+k-1];if(l)step(l);return}
+  else if(/^[1-9]$/.test(k)){const l=looksOf(cur)[+k-1];if(l){if(l.hotspot&&l.hotspot.length>=3)stepHotspot(l);else step(l)}return}
   else return;
   ev.preventDefault(); if(e)step(e);
 });
@@ -1025,6 +1040,6 @@ async function boot(){
     });
   }catch(e){setStatus('local only')}
 }
-addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if(mode==='map'&&!userMoved)fit();if(mode==='plan')renderPlan(true)},150)});
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{if(mode==='map'&&!userMoved)fit();if(mode==='plan')renderPlan(true);if(mode==='walk'&&!moving)clampLabels()},150)});
 boot();
 </script>
