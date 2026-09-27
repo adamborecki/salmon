@@ -706,16 +706,17 @@
    "from": "crossroads",
    "to": "center-wide",
    "kind": "walk",
-   "turn_degrees": 180,
-   "note": "walk back toward the house",
-   "dir_degrees": 180
+   "turn_degrees": 0,
+   "note": "walk backward toward the house; both photos face the stage",
+   "dir_degrees": -175
   },
   {
    "from": "crossroads",
    "to": "crossroads-left",
    "kind": "walk",
    "turn_degrees": -90,
-   "note": "crossroads-left is also the middle step toward first entry"
+   "note": "crossroads-left is also the middle step toward first entry",
+   "dir_degrees": -70
   },
   {
    "from": "crossroads-left",
@@ -790,56 +791,64 @@
    "to": "racks-front-wide",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 50
   },
   {
    "from": "musician-pov",
    "to": "upstage-back-wide",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 155
   },
   {
    "from": "upstage-back-wide",
    "to": "musician-pov",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 0
   },
   {
    "from": "upstage-back-wide",
    "to": "racks-rear-wide",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 90
   },
   {
    "from": "racks-rear-wide",
    "to": "upstage-back-wide",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": -165
   },
   {
    "from": "musician-pov",
    "to": "racks-rear-wide",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 105
   },
   {
    "from": "racks-rear-wide",
    "to": "musician-pov",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": -130
   },
   {
    "from": "racks-front-wide",
    "to": "racks-rear-wide",
    "kind": "control",
    "turn_degrees": 180,
-   "note": "go around back"
+   "note": "go around back",
+   "dir_degrees": 0
   },
   {
    "from": "foh-wide",
@@ -1055,7 +1064,7 @@
    "from": "first-entry",
    "to": "outside-entry",
    "kind": "walk",
-   "turn_degrees": 170,
+   "turn_degrees": -10,
    "dir_degrees": 180,
    "note": "auto reverse of outside-entry -> first-entry"
   },
@@ -1063,15 +1072,15 @@
    "from": "racks-front-wide",
    "to": "first-entry",
    "kind": "walk",
-   "turn_degrees": -55,
-   "dir_degrees": 180,
+   "turn_degrees": null,
+   "dir_degrees": -120,
    "note": "auto reverse of first-entry -> racks-front-wide"
   },
   {
    "from": "path-entry-to-center-step1",
    "to": "first-entry",
    "kind": "walk",
-   "turn_degrees": 115,
+   "turn_degrees": -65,
    "dir_degrees": 180,
    "note": "auto reverse of first-entry -> path-entry-to-center-step1"
   },
@@ -1079,7 +1088,7 @@
    "from": "path-entry-to-center-step2",
    "to": "path-entry-to-center-step1",
    "kind": "walk",
-   "turn_degrees": 170,
+   "turn_degrees": -10,
    "dir_degrees": 180,
    "note": "auto reverse of path-entry-to-center-step1 -> path-entry-to-center-step2"
   },
@@ -1087,15 +1096,15 @@
    "from": "racks-front-wide",
    "to": "crossroads-left",
    "kind": "walk",
-   "turn_degrees": -125,
-   "dir_degrees": 180,
+   "turn_degrees": 55,
+   "dir_degrees": 160,
    "note": "auto reverse of crossroads-left -> racks-front-wide"
   },
   {
    "from": "crossroads-right",
    "to": "crossroads",
    "kind": "walk",
-   "turn_degrees": 90,
+   "turn_degrees": -90,
    "dir_degrees": 180,
    "note": "auto reverse of crossroads -> crossroads-right"
   },
@@ -1103,7 +1112,7 @@
    "from": "path-to-storage",
    "to": "crossroads-right",
    "kind": "walk",
-   "turn_degrees": 180,
+   "turn_degrees": 0,
    "dir_degrees": 180,
    "note": "auto reverse of crossroads-right -> path-to-storage"
   },
@@ -1111,7 +1120,7 @@
    "from": "storage-entry",
    "to": "path-to-storage",
    "kind": "walk",
-   "turn_degrees": 180,
+   "turn_degrees": 0,
    "dir_degrees": 180,
    "note": "auto reverse of path-to-storage -> storage-entry"
   },
@@ -1119,7 +1128,7 @@
    "from": "storage-closet",
    "to": "storage-entry",
    "kind": "walk",
-   "turn_degrees": 180,
+   "turn_degrees": 0,
    "dir_degrees": 180,
    "note": "auto reverse of storage-entry -> storage-closet"
   },
@@ -1128,15 +1137,15 @@
    "to": "crossroads",
    "kind": "walk",
    "turn_degrees": 180,
-   "dir_degrees": 0,
-   "note": "auto reverse of crossroads -> musician-pov"
+   "dir_degrees": -10,
+   "note": "walk toward the house; view flips 180 on arrival"
   },
   {
    "from": "racks-front-wide",
    "to": "musician-pov",
    "kind": "walk",
-   "turn_degrees": 180,
-   "dir_degrees": 180,
+   "turn_degrees": null,
+   "dir_degrees": 110,
    "note": "auto reverse of musician-pov -> racks-front-wide"
   },
   {
@@ -1144,7 +1153,7 @@
    "to": "racks-front-wide",
    "kind": "control",
    "turn_degrees": 180,
-   "dir_degrees": 180,
+   "dir_degrees": -65,
    "note": "auto reverse of racks-front-wide -> racks-rear-wide"
   },
   {
