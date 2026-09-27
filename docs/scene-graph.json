@@ -697,8 +697,9 @@
    "from": "crossroads",
    "to": "center-wide",
    "kind": "walk",
-   "turn_degrees": null,
-   "note": ""
+   "turn_degrees": 180,
+   "note": "walk back toward the house",
+   "dir_degrees": 180
   },
   {
    "from": "crossroads",
@@ -768,7 +769,8 @@
    "to": "musician-pov",
    "kind": "walk",
    "turn_degrees": 180,
-   "note": "spin around then forward"
+   "note": "walk forward toward the stage; camera ends up facing the house (180 spin)",
+   "dir_degrees": 0
   },
   {
    "from": "musician-pov",
