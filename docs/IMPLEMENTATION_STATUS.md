@@ -18,6 +18,20 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 
 ## Session 2: harness v2 (the brief below, now done)
 
+### Follow-up in session 2 (owner answers, 2026-09-27; harness artifact version 3)
+- **Faster checks:** per-action 5 s -> 2 s, per-move 4 s -> 2 s (content `clock`, still tentative;
+  timing gets adjusted later). A by-hand check is now about 20 game seconds.
+- **Channels:** 1-13 are the musicians' mics; 14, 15, 16 stay at FOH (the A1's talkback mic and two
+  spares; which one is the A1's is unknown). Stored as `setup.mic_roles` and a `role` per mic; the
+  harness tags each mic "for a musician" / "stays at FOH". Roles don't change the check yet.
+- **Two mics in hand** (`behaviour.hands.max_mics` = 2). With two held, an action must name its mic
+  (`device`), or it is refused with `which-mic`; the harness gives each hand slot its own buttons and
+  the meters a talk button per held mic. "Check the rest" now carries two per trip (same game time as
+  doing that by hand). If it stops, the unchecked trip partner stays in hand too, and the message says so.
+- Tests: engine 21/21 (the hands, skip-time and battery-stop tests updated); three new mutations
+  caught (skip carrying one, no need to name the mic, one-mic limit); e2e adds two-in-hand, a refused
+  third mic, and the skip waiting while hands are full.
+
 ### What changed
 - **Renamed to the battery-in check:** scenario, objective and file
   (`tools/gameplay-slice/content/vj-battery-in-check.json`; the old `vj-line-check.json` is gone).
@@ -60,12 +74,11 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 
 ### Needs the owner
 - **Step list wording** (above), and whether the checked mic really goes on the chair.
-- **Which channels are the 2 spares and the FOH talkback mic**, and whether 16 = channels 1-16.
+- ~~Which channels are the spares and the talkback~~ answered: 14-16 stay at FOH. Still open: which of 14-16 is the A1's.
 - **Muted display photo** (glyph and layout; also what the "group" number looks like).
-- **Hands:** keep one mic at a time, or allow carrying two?
-- **Clock:** section 40 puts battery preparation before 4:50, but the harness still starts the check at
-  4:50 with 10 minutes for everything. 16 mics by hand take about 10 game minutes, so the clock
-  goes red. Should the battery-in check start before 4:50?
+- ~~Hands~~ answered: allow two.
+- ~~Clock~~ answered: checks made faster for now; real timing later (section 40 still puts battery
+  preparation before 4:50, which a later scenario pass should reconcile).
 
 ### Next build session (suggested; ask the owner before starting)
 1. Fold in the answers above (content values only).
@@ -78,7 +91,7 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 - Live editor and live DB: **not touched** this session (no graph changes); still Artifact version 27
   and DB v270 as recorded below.
 - Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
-  **version 2**.
+  **version 2**, then version 3 after the owner follow-up.
 
 ## Artifact synchronization
 
@@ -282,7 +295,7 @@ node tools/gameplay-slice/test/harness.e2e.mjs
   `docs/scene-graph.json` (diffed). Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R, version 1.
 
 ## Final state of session 2
-- Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`; the commits are the engine/content, then the
-  harness, then this docs commit. Working tree clean after the docs commit.
-- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 2 (label "Harness v2: battery-in check").
+- Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`: engine/content, harness, docs, then the
+  owner follow-up (faster, roles, two hands) and its docs. Working tree clean after the docs commit.
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 3 (label "Harness v2.1: two hands, faster").
 - Live editor / DB unchanged (version 27 / v270).

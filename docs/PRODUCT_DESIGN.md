@@ -1600,6 +1600,9 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
   powered mic starts unmuted, since a power cycle clears the mute). The battery-in slice keeps it for
   now; it moves when the line check is built. In the slice, the muted mic is the 2nd or 3rd of the
   first three checked by hand.
+- **Channels:** 1-13 are the musicians' mics; 14, 15 and 16 stay at FOH (one for the A1's talkback,
+  two spares). **Carrying:** two mics in hand is fine. **Timing:** make each check faster for now;
+  real timing gets adjusted later.
 
 ---
 
