@@ -1,21 +1,84 @@
 # Implementation status
 
-Written by the Claude session of 2026-09-27 (overnight, owner asleep), starting from `8865fd6`.
-Pair with `docs/PRODUCT_DESIGN.md` (what and why; highest authority) and `docs/SESSION_HANDOFF.md`
-(how the prototype works). This file is the current state: what changed tonight, what was
-verified and how, what needs the owner, and what to do next.
+Newest truth first. **Session 2** (2026-09-27, harness v2, owner reachable) is summarised just below;
+everything from "Artifact synchronization" on is **session 1** (the overnight session of 2026-09-27,
+starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair with
+`docs/PRODUCT_DESIGN.md` (what and why; highest authority) and `docs/SESSION_HANDOFF.md`
+(how the prototype works).
 
 ## For the owner, in two minutes
 
-1. **Try the first gameplay loop on your phone:** https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R
-   Find the muted handheld among mics 1-4 at FOH, fix it, verify it, read the debrief. This is a
-   throwaway harness on the real photos, not a UI proposal. "Instructor view" at the bottom shows the
-   seed and the muted mic.
-2. **Open the live editor on a real phone** (https://claude.ai/artifact/YL4fwPRru76zLs75Vppadr) and
-   check the things only a real phone can show (list under "Needs your judgment").
-3. **Answer the short list of room questions** below, so the slice's placeholders become facts.
-4. **The architecture fork (section 84) is still open.** Nothing tonight picks a side; my
-   recommendation is under "Decisions for you".
+1. **Play harness v2 on your phone:** https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R (version 2).
+   It is now the battery-in check: 16 mics drawn in the drawer, read each display, talk at the X32,
+   put it on the chair; after 3 by hand, "Check the rest". "Instructor view" shows the seed and the
+   muted mic. Still a throwaway harness, not a UI proposal.
+2. **Correct the step list wording** (it's my draft, in `content/vj-battery-in-check.json`, `procedure`).
+3. **Send a photo of a muted handheld display** when convenient; the mute glyph is a placeholder.
+4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
+
+## Session 2: harness v2 (the brief below, now done)
+
+### What changed
+- **Renamed to the battery-in check:** scenario, objective and file
+  (`tools/gameplay-slice/content/vj-battery-in-check.json`; the old `vj-line-check.json` is gone).
+  Section 43's test order is untouched for later scenarios.
+- **16 mics** (owner: 13 musicians + 2 spares + 1 FOH talkback), channels 1-16, black and grey
+  windscreens with the confirmed ring order. The channels are an assumption (tentative in content);
+  which channels are the spares and the talkback is `unknown`.
+- **Fault:** still on-but-muted (owner: really an on-stage line-check fault, kept here until the line
+  check exists), always on ch 2 or 3 per the owner, by seed. `start(seed, { faultChannel })` lets tests
+  (and a future instructor control) put it elsewhere.
+- **SVG mic graphics from data:** windscreen colour (grey metal grille when there is none), ring colour,
+  body, display window and button. Reading the display is an action and needs the mic in hand; the
+  close-up shows CH + number, a 3-bar battery gauge and a placeholder speaker-with-slash when muted
+  (`"MUTE"` is also drawable: content `behaviour.muted_indication.glyph`).
+- **Hands:** two slots, one mic at a time (content `behaviour.hands`, owner undecided).
+- **The chair left of FOH** (owner, tentative) is where checked mics go; the harness shows it as a
+  text box, since it isn't in any photo. Mics on it can be picked up again.
+- **Visible step list** (content `procedure`, wording tentative): take the next mic in colour order;
+  put its batteries in (*not simulated yet*); read its display; talk at the X32; put it on the chair.
+  It ticks for the mic in hand, then moves to the next.
+- **"Check the rest"** (principle 4.10): offered after 3 mics verified by hand, with empty hands. It
+  is a macro of the same basic actions, so it produces the same evidence and costs the same game time.
+  It stops at the first mic whose display is blank or muted or whose X32 input is silent, leaving
+  that mic in hand at the X32. The debrief reports by-hand vs skip counts and any stop.
+- **Room for battery faults, not built:** `state.battery` (`"ok"`) gates power-on; content
+  `future_faults` lists `battery-reversed` / `battery-dead` as data; a test proves the skip stops on one.
+- Harness fix: toasts no longer swallow taps on the hotspots under them.
+- `PRODUCT_DESIGN.md` section 45: round-3 owner answers recorded (16 mics, chair, mute is a stage fault).
+
+### What was tested
+| Check | Result |
+|---|---|
+| `node --test tools/gameplay-slice/test/engine.test.mjs` | 21/21 (was 14): adds hands, chair, display, step list, skip gating, skip completion, skip stop at ch 9, battery-fault stop, 16-mic content |
+| Mutation check | breaking each of these fails a test: skip never stops, skip offered at once, reversed battery powers on, two mics in hand, skip evidence counted as by-hand, stale evidence counted. (A redundant battery check in `passes()` survived, so it was removed.) |
+| `node tools/gameplay-slice/test/harness.e2e.mjs` (iPhone 13) | all pass: 3 mics by hand incl. the muted one (notice, trace at receivers, fix, verify), then Check the rest -> 16/16, debrief, no sideways scroll, no page errors |
+| Scene-graph checks (`validate.py`, `walk-touch.mjs`, `hotspots.mjs`) | all pass; nothing in the editor or graph changed |
+| Published harness | version 2 = byte-identical to a fresh build of the harness commit |
+
+**Not tested:** a real phone; the published page itself in the artifact viewer (the local build passes).
+
+### Needs the owner
+- **Step list wording** (above), and whether the checked mic really goes on the chair.
+- **Which channels are the 2 spares and the FOH talkback mic**, and whether 16 = channels 1-16.
+- **Muted display photo** (glyph and layout; also what the "group" number looks like).
+- **Hands:** keep one mic at a time, or allow carrying two?
+- **Clock:** section 40 puts battery preparation before 4:50, but the harness still starts the check at
+  4:50 with 10 minutes for everything. 16 mics by hand take about 10 game minutes, so the clock
+  goes red. Should the battery-in check start before 4:50?
+
+### Next build session (suggested; ask the owner before starting)
+1. Fold in the answers above (content values only).
+2. Battery faults for real: put batteries in as a step, `battery-reversed` / `battery-dead`, and the
+   4.10 rule that the skip is offered only after the player has met them (or keeps stopping on them).
+3. The on-stage line check as its own scenario, where the mute fault moves to; then Monitor 1 /
+   FOH talkback once the transport facts are confirmed (session 1's step 3).
+
+## Session 2 sync status
+- Live editor and live DB: **not touched** this session (no graph changes); still Artifact version 27
+  and DB v270 as recorded below.
+- Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
+  **version 2**.
 
 ## Artifact synchronization
 
@@ -93,7 +156,7 @@ one objective, the section 46 hint ladder verbatim, and a debrief.
   enforced by data:** a mic counts only by evidence seen at its X32 input while talking into it, and
   that evidence must be newer than the last change to anything on its path. Unmuting alone never
   completes anything; a verified mic drops back to "re-check" if something on its path changes.
-- `content/vj-line-check.json`: devices, connections, what each scene's meters show, fault, objective,
+- `content/vj-line-check.json` (renamed `vj-battery-in-check.json` in session 2): devices, connections, what each scene's meters show, fault, objective,
   hints. **Every value that isn't current room fact is labelled `tentative` or `unknown` beside it.**
 - Tests: 14 engine tests (including a no-soft-lock property test: 150 random 60-action runs always
   recover to READY), mutation-checked; a full touch playthrough of the harness at iPhone size.
@@ -135,7 +198,7 @@ itself (the artifact viewer needs your login; the identical local build passes t
 - Reverse links whose turns don't mirror (maybe intentional): `racks-front-wide -> racks-rear-wide`
   -180 but back +140; `crossroads-right -> path-to-storage` +30 but back 0.
 
-### Room facts: owner answers (2026-09-27, now in `content/vj-line-check.json`)
+### Room facts: owner answers (2026-09-27, now in `content/vj-battery-in-check.json`)
 - Switching a muted mic off and on **clears** the mute (engine and debrief updated; a power cycle is
   now a real, if indirect, fix and the debrief says so).
 - Power is a **press-and-hold**; a tap mutes/unmutes.
@@ -160,7 +223,7 @@ itself (the artifact viewer needs your login; the identical local build passes t
 - Rings 3-6 confirmed (yellow, green, blue, purple); mics 17-24 have no windscreen for now.
 - Inventory: carrying several mics in one hand is possible but awkward; the hands model is undecided.
 
-### Next build session: harness v2 (brief)
+### Next build session: harness v2 (brief) — done in session 2, see the top of this file
 1. Rename the scenario and objective to the battery-in check; keep the test-order note for later scenarios.
 2. SVG mic graphics drawn from data: body, windscreen colour, ring colour, LCD with channel number and
    a mute state (placeholder glyph until the owner sends a photo of a muted display).
@@ -191,7 +254,7 @@ itself (the artifact viewer needs your login; the identical local build passes t
 1. **Owner:** phone pass on the live editor; move the `crossroads-left` arrow; decide the five
    list-only insets; answer the five room questions; play the harness and say whether the loop teaches
    the right habit.
-2. **Agent, safe now:** fold the answers into `content/vj-line-check.json` (values, not code); run
+2. **Agent, safe now:** fold the answers into `content/vj-battery-in-check.json` (values, not code); run
    `validate.py`, both Playwright suites and the engine tests after any change.
 3. **After the architecture decision:** extend the slice downstream (X32 Bus 1 -> current transport ->
    NX3000 -> wedges, i.e. "verify Monitor 1") once the transport facts are confirmed; add X32 channel
@@ -211,9 +274,15 @@ node --test tools/gameplay-slice/test/engine.test.mjs
 node tools/gameplay-slice/test/harness.e2e.mjs
 ```
 
-## Final state of this session
+## Final state of session 1
 - Last code/data commit: `7f63631`. The commit that adds this final version of this file comes right
   after it (`git log -1 -- docs/IMPLEMENTATION_STATUS.md`); nothing else changed after that.
 - `main` and `claude/compassionate-volta-5zruvy` point at the same commit; working tree clean.
 - Live editor: Artifact version 27 = a fresh build of that commit (diffed); live DB v270 =
   `docs/scene-graph.json` (diffed). Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R, version 1.
+
+## Final state of session 2
+- Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`; the commits are the engine/content, then the
+  harness, then this docs commit. Working tree clean after the docs commit.
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 2 (label "Harness v2: battery-in check").
+- Live editor / DB unchanged (version 27 / v270).

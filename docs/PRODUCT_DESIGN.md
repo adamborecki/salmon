@@ -1589,6 +1589,18 @@ Frequency scanning/pairing can come later.
 
 The first gameplay slice's "line-check" is really the battery-in check and should be named that way.
 
+**Owner answers, round 3 (2026-09-27):**
+
+- **Mic count:** about 13 musicians, so 13 mics + 2 spares (in case one dies from bad batteries or
+  frequencies) + 1 at FOH for the A1 to talk to the stage through the monitors = 16 mics to check.
+  Which channels are the spares and the talkback mic is not yet recorded.
+- **Where checked mics go:** "honestly probably a spare chair just next to FOH, off to the left"
+  (tentative). The game may show it as a text box rather than a place on the map.
+- **The on-but-muted fault belongs to the on-stage line check**, not the battery-in check (a freshly
+  powered mic starts unmuted, since a power cycle clears the mute). The battery-in slice keeps it for
+  now; it moves when the line check is built. In the slice, the muted mic is the 2nd or 3rd of the
+  first three checked by hand.
+
 ---
 
 # 46. First Troubleshooting Fault
