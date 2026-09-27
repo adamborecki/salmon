@@ -12,8 +12,9 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    It is now the battery-in check: 16 mics drawn in the drawer, read each display, talk at the X32,
    put it on the chair; after 3 by hand, "Check the rest". "Instructor view" shows the seed and the
    muted mic. Still a throwaway harness, not a UI proposal.
-2. **Correct the step list wording** (it's my draft, in `content/vj-battery-in-check.json`, `procedure`).
-3. **Send a photo of a muted handheld display** when convenient; the mute glyph is a placeholder.
+2. ~~Step list wording~~ approved (2026-09-27). ~~Mute glyph~~ the placeholder is fine for now; a
+   photo of a muted display is welcome but not needed.
+3. Everything from this session is merged to `main`.
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
 ## Session 2: harness v2 (the brief below, now done)
@@ -21,9 +22,10 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 ### Follow-up in session 2 (owner answers, 2026-09-27; harness artifact version 3)
 - **Faster checks:** per-action 5 s -> 2 s, per-move 4 s -> 2 s (content `clock`, still tentative;
   timing gets adjusted later). A by-hand check is now about 20 game seconds.
-- **Channels:** 1-13 are the musicians' mics; 14, 15, 16 stay at FOH (the A1's talkback mic and two
-  spares; which one is the A1's is unknown). Stored as `setup.mic_roles` and a `role` per mic; the
-  harness tags each mic "for a musician" / "stays at FOH". Roles don't change the check yet.
+- **Channels:** 1-13 are the musicians' mics; 14, 15, 16 are three interchangeable spares kept at FOH:
+  any of them can be the A1's talkback mic, or the emergency mic the A2 runs to the stage to replace a
+  dead one. Stored as `setup.mic_roles` and a `role` per mic (`musician` / `spare`); the harness tags
+  each mic. Roles don't change the check yet.
 - **Two mics in hand** (`behaviour.hands.max_mics` = 2). With two held, an action must name its mic
   (`device`), or it is refused with `which-mic`; the harness gives each hand slot its own buttons and
   the meters a talk button per held mic. "Check the rest" now carries two per trip (same game time as
@@ -73,15 +75,16 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 **Not tested:** a real phone; the published page itself in the artifact viewer (the local build passes).
 
 ### Needs the owner
-- **Step list wording** (above), and whether the checked mic really goes on the chair.
-- ~~Which channels are the spares and the talkback~~ answered: 14-16 stay at FOH. Still open: which of 14-16 is the A1's.
-- **Muted display photo** (glyph and layout; also what the "group" number looks like).
+- ~~Step list wording~~ approved. Whether the checked mic really goes on the chair ("probably": kept tentative).
+- ~~Which channels are the spares and the talkback~~ answered: 14-16 are interchangeable spares (any can be talkback or a replacement).
+- ~~Muted display photo~~ optional; the placeholder is fine with the owner.
 - ~~Hands~~ answered: allow two.
 - ~~Clock~~ answered: checks made faster for now; real timing later (section 40 still puts battery
   preparation before 4:50, which a later scenario pass should reconcile).
 
 ### Next build session (suggested; ask the owner before starting)
-1. Fold in the answers above (content values only).
+1. Nothing is waiting on the owner for this slice. A spare could later become the "emergency
+   replacement" mechanic (the A2 runs a spare to the stage when a mic dies), which fits the battery faults.
 2. Battery faults for real: put batteries in as a step, `battery-reversed` / `battery-dead`, and the
    4.10 rule that the skip is offered only after the player has met them (or keeps stopping on them).
 3. The on-stage line check as its own scenario, where the mute fault moves to; then Monitor 1 /
@@ -91,7 +94,7 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 - Live editor and live DB: **not touched** this session (no graph changes); still Artifact version 27
   and DB v270 as recorded below.
 - Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
-  **version 2**, then version 3 after the owner follow-up.
+  **version 2**, then versions 3 and 4 after the owner follow-ups.
 
 ## Artifact synchronization
 
@@ -297,5 +300,6 @@ node tools/gameplay-slice/test/harness.e2e.mjs
 ## Final state of session 2
 - Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`: engine/content, harness, docs, then the
   owner follow-up (faster, roles, two hands) and its docs. Working tree clean after the docs commit.
-- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 3 (label "Harness v2.1: two hands, faster").
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 4 (label "Harness v2.2: spares, approved steps").
+- **Merged to `main`** (fast-forward, owner-approved 2026-09-27); `main` = the session branch.
 - Live editor / DB unchanged (version 27 / v270).

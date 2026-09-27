@@ -181,7 +181,7 @@ const G = JSON.parse(document.getElementById('graphData').textContent);
 const eng = engine(content);
 const $ = s => document.querySelector(s);
 const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.chair.label;
-const ROLE = { musician: 'for a musician', 'stays-at-foh': 'stays at FOH' };
+const ROLE = { musician: 'for a musician', spare: 'spare, kept at FOH' };
 // player-facing names for the places the slice uses (UI copy, not room data)
 const PLACE = { 'foh-wide': 'FOH', 'x32-top': 'X32', 'foh-rack': 'Wireless rack', 'foh-rack-closeup': 'Receivers', 'foh-right-side': 'Mic cabinet', 'foh-mic-drawer': 'Mic drawer' };
 const STATUS = { 'not-checked': ['–', 'not checked'], 'no-signal-seen': ['✕', 'no signal'], 'recheck': ['↻', 're-check'], 'receiver-only': ['◐', 'check X32'], 'verified': ['✓', 'verified'] };
@@ -310,7 +310,7 @@ function renderPanel(v) {
     p.innerHTML = `<h3>Mic drawer</h3><div class="drawer">${mics.map(m => { const dv = D[m.id];
       return m.where === 'drawer' ? `<button class="slot" data-id="${m.id}" aria-label="Pick up ${esc(dv.label)}">${micSVG(dv)}<b>${two(dv.channel)}</b></button>`
         : `<div class="slot gone"><small>${m.where === 'hand' ? 'in hand' : 'on chair'}</small><b>${two(dv.channel)}</b></div>`; }).join('')}</div>
-      <p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. 1-13 go to the musicians; 14-16 stay at FOH (the A1's talkback mic and two spares). Tap one to pick it up; you can carry two.</p>`;
+      <p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. 1-13 go to the musicians; 14-16 are spares kept at FOH (any can be the A1's talkback or a replacement run to the stage). Tap one to pick it up; you can carry two.</p>`;
     p.querySelectorAll('.slot[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
   } else {
     const where = { 'foh-wide': 'Front of house. The X32, the wireless rack and the mic cabinet are all within reach: tap one on the photo.',

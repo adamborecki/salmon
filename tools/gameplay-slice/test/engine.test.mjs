@@ -23,12 +23,12 @@ const healthy = g => g.inPlay.filter(m => m !== g.fault.device);
 const status = (g, mic) => eng.view(g).objective.mics.find(m => m.id === mic).status;
 const mic = ch => 'handheld-' + String(ch).padStart(2, '0');
 
-test('16 mics in play, in channel order: 1-13 for musicians, 14-16 stay at FOH (A1 talkback + 2 spares)', () => {
+test('16 mics in play, in channel order: 1-13 for musicians, 14-16 interchangeable spares at FOH', () => {
   const g = eng.start('x');
   assert.deepEqual(g.inPlay, Array.from({ length: 16 }, (_, i) => mic(i + 1)));
   const r = content.setup.mic_roles.value;
   assert.deepEqual([...r.musicians, ...r.stay_at_foh], Array.from({ length: 16 }, (_, i) => i + 1));
-  for (const m of g.inPlay) assert.equal(content.devices[m].role, content.devices[m].channel <= 13 ? 'musician' : 'stays-at-foh');
+  for (const m of g.inPlay) assert.equal(content.devices[m].role, content.devices[m].channel <= 13 ? 'musician' : 'spare');
 });
 
 test('the seed decides which mic is muted, reproducibly, and it is always channel 2 or 3 (owner)', () => {

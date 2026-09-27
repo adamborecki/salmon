@@ -7,13 +7,13 @@ and principle 4.10), as small as it can be while still being real:
   before the mics go to the stage, check that each one produces signal. The official on-stage line
   check is a later, separate scenario.
 - **one signal chain:** handheld -> PTU-6000 receiver -> XLR -> X32 input (section 37)
-- **16 mics:** channels 1-13 for the musicians; 14-16 stay at FOH, the A1's talkback mic and two
-  spares (owner, 2026-09-27; which of 14-16 is the A1's is unknown)
+- **16 mics:** channels 1-13 for the musicians; 14-16 are interchangeable spares kept at FOH, any of
+  which can be the A1's talkback mic or a replacement run to the stage (owner, 2026-09-27)
 - **one fault:** a handheld powered on but muted (section 46), always channel 2 or 3 (owner: "2nd or
   3rd of the first 3"), picked by a reproducible seed. The owner notes this is really an on-stage
   fault (a freshly powered mic starts unmuted); it stays here until the line check is built.
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
-- **a visible step list** for the per-mic routine (wording tentative, for the owner to correct)
+- **a visible step list** for the per-mic routine (wording approved by the owner)
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
   and stops at the first mic whose display is blank or muted or whose X32 input is silent
 - **one hint ladder:** the three hints from section 46, verbatim
@@ -89,6 +89,7 @@ them yet. Putting batteries in is step 2 of the step list and marked "not simula
 - **Hands:** two slots, up to two mics (owner). With two held, an action must name its mic (`device`).
 - **The chair** left of FOH is not in any photo, so the harness shows it as a text box (tentative).
 - **Not modelled:** battery insertion, X32 controls (gain, mute, buses), Monitor 1 / mains output, RF,
-  frequencies, the FOH talkback routing, anything role-specific about mics 14-16.
+  frequencies, the FOH talkback routing, running a spare to the stage.
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
-  slash; `"MUTE"` is also drawable), per-action game seconds, the step list wording.
+  slash, fine with the owner for now; `"MUTE"` is also drawable) and per-action game seconds. The
+  step list wording is owner-approved.

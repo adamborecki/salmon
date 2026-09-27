@@ -57,7 +57,7 @@
      16
     ]
    },
-   "status": "owner, 2026-09-27 ('I suppose'): channels 1-13 are the musicians' mics; 14, 15 and 16 stay at FOH, one for the A1 to talk to the stage and two spares. Which of 14-16 is the A1's: unknown. Roles don't change the check yet."
+   "status": "owner, 2026-09-27: channels 1-13 are the musicians' mics. 14, 15 and 16 are three interchangeable spares kept at FOH: any of them can be the A1's talkback mic, or the emergency mic the A2 runs down to the stage to replace a dead one. Roles don't change the check yet."
   },
   "start_state": {
    "value": "every handheld is already on, with batteries in; putting the batteries in is not simulated yet",
@@ -296,7 +296,7 @@
    "channel": 14,
    "windscreen": "grey",
    "ring": "purple",
-   "role": "stays-at-foh",
+   "role": "spare",
    "home": "drawer",
    "state": {
     "power": "on",
@@ -310,7 +310,7 @@
    "channel": 15,
    "windscreen": "grey",
    "ring": "black",
-   "role": "stays-at-foh",
+   "role": "spare",
    "home": "drawer",
    "state": {
     "power": "on",
@@ -324,7 +324,7 @@
    "channel": 16,
    "windscreen": "grey",
    "ring": "grey",
-   "role": "stays-at-foh",
+   "role": "spare",
    "home": "drawer",
    "state": {
     "power": "on",
@@ -355,7 +355,7 @@
      "speaker-slash",
      "MUTE"
     ],
-    "status": "placeholder until the owner sends a photo of a muted display; the harness can draw either"
+    "status": "placeholder the owner is happy with for now (2026-09-27); swap if a photo of a muted display turns up"
    }
   },
   "lcd": {
@@ -629,7 +629,7 @@
     "text": "Put it on the chair left of FOH."
    }
   ],
-  "status": "tentative: wording drafted by the agent from the owner answers of 2026-09-27 and PRODUCT_DESIGN section 45; for the owner to correct"
+  "status": "owner-approved wording (2026-09-27); drafted by the agent from PRODUCT_DESIGN section 45"
  },
  "skip": {
   "label": "Check the rest",
