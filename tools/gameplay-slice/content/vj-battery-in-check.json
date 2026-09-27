@@ -1,0 +1,630 @@
+{
+ "id": "vj-battery-in-check",
+ "title": "Vocal Jazz: battery-in check of the wireless mics at FOH",
+ "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), one fault (a handheld powered on but muted), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
+ "clock": {
+  "start": "16:50:00",
+  "ready_by": "17:00:00",
+  "action_s": 5,
+  "move_s": 4,
+  "status": "tentative: 4:50 doors / 5:00 rehearsal come from PRODUCT_DESIGN section 40; the per-action and per-move seconds are placeholders (section 89 says movement-time scaling is field-calibrate)"
+ },
+ "setup": {
+  "mics_in_play": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16
+  ],
+  "status": "owner, 2026-09-27: about 13 musicians, so 13 mics + 2 spares (in case one dies from bad batteries or frequencies) + 1 at FOH for the A1 to talk to the stage through the monitors = 16. Channels 1-16 is an assumption (tentative): the owner gave the count, not the channels.",
+  "note": "X32 and receivers start powered on, and every handheld starts on with good batteries, so the transmitter mute is the only fault (one fault per section 94).",
+  "roles": {
+   "value": "This slice is the battery-in check at FOH (A2 alone, next to the receivers and the X32), as soon as batteries go into each mic and before the mics go to the stage. The official line check is later, on stage: musicians make sound, the A1 confirms each channel at the X32.",
+   "status": "current practice (owner, 2026-09-27); see PRODUCT_DESIGN section 45"
+  },
+  "mic_roles": {
+   "value": {
+    "musicians": 13,
+    "spares": 2,
+    "foh_talkback": 1
+   },
+   "status": "counts: owner, 2026-09-27. Which channels are the spares and the FOH talkback mic: unknown. Not modelled yet."
+  },
+  "start_state": {
+   "value": "every handheld is already on, with batteries in; putting the batteries in is not simulated yet",
+   "status": "simplification for v2 (owner, 2026-09-27): battery insertion arrives with the battery faults"
+  }
+ },
+ "devices": {
+  "foh-x32": {
+   "type": "console",
+   "label": "Behringer X32 (full size)",
+   "scene": "x32-top",
+   "state": {
+    "power": "on"
+   },
+   "source": "PRODUCT_DESIGN section 24"
+  },
+  "ptu6000-rx": {
+   "type": "wireless-receiver",
+   "label": "Phenyx Pro PTU-6000 receivers",
+   "scene": "foh-rack-closeup",
+   "state": {
+    "power": "on"
+   },
+   "source": "PRODUCT_DESIGN section 26; manifest row IMG_4238",
+   "unknown": "whether a muted transmitter still shows RF on the receiver. Only audio present / absent is modelled.",
+   "units": [
+    {
+     "position": "top",
+     "channels": [
+      1,
+      8
+     ]
+    },
+    {
+     "position": "second from top",
+     "channels": [
+      9,
+      16
+     ]
+    },
+    {
+     "position": "third from top",
+     "channels": [
+      17,
+      24
+     ]
+    }
+   ],
+   "units_status": "current fact (owner, 2026-09-27): each receiver unit is 8 channels, top unit = 1-8, next = 9-16, and so on"
+  },
+  "handheld-01": {
+   "type": "wireless-handheld",
+   "label": "Mic 1 (black / red)",
+   "channel": 1,
+   "windscreen": "black",
+   "ring": "red",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-02": {
+   "type": "wireless-handheld",
+   "label": "Mic 2 (black / orange)",
+   "channel": 2,
+   "windscreen": "black",
+   "ring": "orange",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-03": {
+   "type": "wireless-handheld",
+   "label": "Mic 3 (black / yellow)",
+   "channel": 3,
+   "windscreen": "black",
+   "ring": "yellow",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-04": {
+   "type": "wireless-handheld",
+   "label": "Mic 4 (black / green)",
+   "channel": 4,
+   "windscreen": "black",
+   "ring": "green",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-05": {
+   "type": "wireless-handheld",
+   "label": "Mic 5 (black / blue)",
+   "channel": 5,
+   "windscreen": "black",
+   "ring": "blue",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-06": {
+   "type": "wireless-handheld",
+   "label": "Mic 6 (black / purple)",
+   "channel": 6,
+   "windscreen": "black",
+   "ring": "purple",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-07": {
+   "type": "wireless-handheld",
+   "label": "Mic 7 (black / black)",
+   "channel": 7,
+   "windscreen": "black",
+   "ring": "black",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-08": {
+   "type": "wireless-handheld",
+   "label": "Mic 8 (black / grey)",
+   "channel": 8,
+   "windscreen": "black",
+   "ring": "grey",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-09": {
+   "type": "wireless-handheld",
+   "label": "Mic 9 (grey / red)",
+   "channel": 9,
+   "windscreen": "grey",
+   "ring": "red",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-10": {
+   "type": "wireless-handheld",
+   "label": "Mic 10 (grey / orange)",
+   "channel": 10,
+   "windscreen": "grey",
+   "ring": "orange",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-11": {
+   "type": "wireless-handheld",
+   "label": "Mic 11 (grey / yellow)",
+   "channel": 11,
+   "windscreen": "grey",
+   "ring": "yellow",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-12": {
+   "type": "wireless-handheld",
+   "label": "Mic 12 (grey / green)",
+   "channel": 12,
+   "windscreen": "grey",
+   "ring": "green",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-13": {
+   "type": "wireless-handheld",
+   "label": "Mic 13 (grey / blue)",
+   "channel": 13,
+   "windscreen": "grey",
+   "ring": "blue",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-14": {
+   "type": "wireless-handheld",
+   "label": "Mic 14 (grey / purple)",
+   "channel": 14,
+   "windscreen": "grey",
+   "ring": "purple",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-15": {
+   "type": "wireless-handheld",
+   "label": "Mic 15 (grey / black)",
+   "channel": 15,
+   "windscreen": "grey",
+   "ring": "black",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  },
+  "handheld-16": {
+   "type": "wireless-handheld",
+   "label": "Mic 16 (grey / grey)",
+   "channel": 16,
+   "windscreen": "grey",
+   "ring": "grey",
+   "home": "drawer",
+   "state": {
+    "power": "on",
+    "muted": false,
+    "battery": "ok"
+   }
+  }
+ },
+ "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127). State `battery`: \"ok\" is the only value used in v2; see future_faults.",
+ "behaviour": {
+  "handheld_button": {
+   "value": {
+    "tap": "toggle mute (while powered)",
+    "hold": "toggle power"
+   },
+   "status": "current fact (owner, 2026-09-27)"
+  },
+  "mute_survives_power_cycle": {
+   "value": false,
+   "status": "current fact (owner, 2026-09-27): switching a muted mic off and on clears the mute"
+  },
+  "muted_indication": {
+   "value": "the handheld's display shows that it is muted",
+   "status": "fact that it shows (owner, 2026-09-27); the exact glyph (speaker-with-slash icon, or the word MUTE) is unconfirmed. Needs a real mic graphic.",
+   "glyph": {
+    "value": "speaker-slash",
+    "alternatives": [
+     "speaker-slash",
+     "MUTE"
+    ],
+    "status": "placeholder until the owner sends a photo of a muted display; the harness can draw either"
+   }
+  },
+  "lcd": {
+   "value": "channel number and a battery gauge; blank when the mic is off",
+   "status": "owner, 2026-09-27: small LCD above the button with group/channel number + battery. Exact layout and the group number: unknown; the harness draws a placeholder (CH + number, 3-bar battery)."
+  },
+  "hands": {
+   "value": {
+    "slots": 2,
+    "max_mics": 1
+   },
+   "status": "owner, 2026-09-27: carrying several mics in one hand is possible but awkward; the hands model is undecided. Two slots, one mic at a time until the owner decides."
+  }
+ },
+ "places": {
+  "drawer": {
+   "label": "Mic drawer",
+   "scene": "foh-mic-drawer",
+   "source": "manifest row IMG_4127"
+  },
+  "chair": {
+   "label": "Chair left of FOH",
+   "reachable_from": [
+    "foh-wide",
+    "x32-top",
+    "foh-rack",
+    "foh-rack-closeup",
+    "foh-right-side",
+    "foh-mic-drawer"
+   ],
+   "status": "tentative (owner, 2026-09-27: 'honestly probably a spare chair just next to FOH, off to the left'); not in any photo, so the harness shows it as a text box, not a place on the map"
+  }
+ },
+ "connections": [
+  {
+   "from": "handheld-01",
+   "to": "ptu6000-rx:1",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-02",
+   "to": "ptu6000-rx:2",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-03",
+   "to": "ptu6000-rx:3",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-04",
+   "to": "ptu6000-rx:4",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-05",
+   "to": "ptu6000-rx:5",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-06",
+   "to": "ptu6000-rx:6",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-07",
+   "to": "ptu6000-rx:7",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-08",
+   "to": "ptu6000-rx:8",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-09",
+   "to": "ptu6000-rx:9",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-10",
+   "to": "ptu6000-rx:10",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-11",
+   "to": "ptu6000-rx:11",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-12",
+   "to": "ptu6000-rx:12",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-13",
+   "to": "ptu6000-rx:13",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-14",
+   "to": "ptu6000-rx:14",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-15",
+   "to": "ptu6000-rx:15",
+   "medium": "rf"
+  },
+  {
+   "from": "handheld-16",
+   "to": "ptu6000-rx:16",
+   "medium": "rf"
+  },
+  {
+   "from": "ptu6000-rx:1",
+   "to": "foh-x32:in:1",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:2",
+   "to": "foh-x32:in:2",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:3",
+   "to": "foh-x32:in:3",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:4",
+   "to": "foh-x32:in:4",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:5",
+   "to": "foh-x32:in:5",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:6",
+   "to": "foh-x32:in:6",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:7",
+   "to": "foh-x32:in:7",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:8",
+   "to": "foh-x32:in:8",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:9",
+   "to": "foh-x32:in:9",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:10",
+   "to": "foh-x32:in:10",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:11",
+   "to": "foh-x32:in:11",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:12",
+   "to": "foh-x32:in:12",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:13",
+   "to": "foh-x32:in:13",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:14",
+   "to": "foh-x32:in:14",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:15",
+   "to": "foh-x32:in:15",
+   "medium": "xlr"
+  },
+  {
+   "from": "ptu6000-rx:16",
+   "to": "foh-x32:in:16",
+   "medium": "xlr"
+  }
+ ],
+ "connections_status": "Current fact (owner, 2026-09-27): handheld N -> receiver channel N -> X32 input N, over handheld -> PTU-6000 -> XLR -> X32 local analog input (PRODUCT_DESIGN section 37).",
+ "displays": {
+  "x32-top": {
+   "device": "foh-x32",
+   "shows": "input meters",
+   "points": "foh-x32:in:{ch}"
+  },
+  "foh-rack-closeup": {
+   "device": "ptu6000-rx",
+   "shows": "per-channel audio activity",
+   "points": "ptu6000-rx:{ch}"
+  }
+ },
+ "fault": {
+  "id": "tx-muted",
+  "label": "A wireless handheld is powered on but muted",
+  "target": "one handheld, chosen by the seed from placement.channels",
+  "set": {
+   "muted": true
+  },
+  "source": "PRODUCT_DESIGN section 46 (locked first fault)",
+  "placement": {
+   "channels": [
+    2,
+    3
+   ],
+   "status": "owner, 2026-09-27: the muted mic should be the 2nd or 3rd of the first 3 checked by hand (the drawer and the step list go in colour order, i.e. channel order)"
+  },
+  "note": "owner, 2026-09-27: on-but-muted is really an on-stage line-check fault (a freshly powered mic starts unmuted, since a power cycle clears the mute). It stays here for v2 and moves when the line check is built."
+ },
+ "future_faults": {
+  "status": "not built yet (brief, 2026-09-27). Listed so the step list and \"Check the rest\" already cope: a mic that will not switch on shows a blank display and no signal, and the skip stops on both.",
+  "battery-reversed": {
+   "label": "Batteries in the wrong way round",
+   "set": {
+    "battery": "reversed",
+    "power": "off"
+   }
+  },
+  "battery-dead": {
+   "label": "Dead cells",
+   "set": {
+    "battery": "dead",
+    "power": "off"
+   },
+   "unknown": "whether a nearly flat cell powers on and dies later, and what the battery gauge shows first"
+  }
+ },
+ "objective": {
+  "id": "battery-in-check",
+  "label": "Battery-in check: the wireless mics",
+  "goal": "Before the mics go to the stage, verify every one: talking into it shows signal at its X32 input.",
+  "source": "PRODUCT_DESIGN sections 45 (battery-in check; speak into each mic), 55 (goals, not recipes; complete only after verification)"
+ },
+ "procedure": {
+  "steps": [
+   {
+    "id": "take",
+    "text": "Take the next mic from the drawer, in colour order."
+   },
+   {
+    "id": "batteries",
+    "text": "Put its batteries in.",
+    "simulated": false
+   },
+   {
+    "id": "display",
+    "text": "Read its display: the right channel, not muted."
+   },
+   {
+    "id": "talk",
+    "text": "At the X32, talk into it: its channel's meter must move."
+   },
+   {
+    "id": "chair",
+    "text": "Put it on the chair left of FOH."
+   }
+  ],
+  "status": "tentative: wording drafted by the agent from the owner answers of 2026-09-27 and PRODUCT_DESIGN section 45; for the owner to correct"
+ },
+ "skip": {
+  "label": "Check the rest",
+  "after_by_hand": 3,
+  "order": "channel",
+  "stop_if": [
+   "display-warning",
+   "no-signal-at-x32"
+  ],
+  "does": "for each remaining mic in channel order, the same routine as by hand (take it, read the display, talk into it at the X32, put it on the chair), costing the same game time; it stops at the first mic whose display is blank or muted or whose X32 input shows no signal, and leaves that mic in your hand at the X32",
+  "status": "PRODUCT_DESIGN 4.10 (owner, 2026-09-27); 3 by hand is from the brief"
+ },
+ "hints": [
+  {
+   "level": 1,
+   "kind": "concept",
+   "text": "No signal is reaching the receiver. Where could the problem be upstream?"
+  },
+  {
+   "level": 2,
+   "kind": "location",
+   "text": "Inspect the handheld transmitter."
+  },
+  {
+   "level": 3,
+   "kind": "direct",
+   "text": "The transmitter is muted. Unmute it and verify signal."
+  }
+ ],
+ "hints_source": "PRODUCT_DESIGN section 46, verbatim"
+}
