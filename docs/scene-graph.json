@@ -1033,7 +1033,25 @@
    "to": "mains-rack-mix5-closeup",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 11.6,
+     "y": 32.9
+    },
+    {
+     "x": 28.8,
+     "y": 5
+    },
+    {
+     "x": 70.1,
+     "y": 5.4
+    },
+    {
+     "x": 87.2,
+     "y": 32.4
+    }
+   ]
   },
   {
    "from": "racks-rear-wide",

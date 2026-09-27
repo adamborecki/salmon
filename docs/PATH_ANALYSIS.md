@@ -58,3 +58,6 @@ CSS `clip-path: polygon()` animations interpolate vertex-by-vertex by index. The
 
 ## Overlays now clear immediately on any transition
 Turn icons, walk arrows, and inset hotspot polygons stayed visible throughout the animation and only refreshed at the very end. Now every kind of move (walk, turn in place, zoom into an inset, and going back from any of those) clears all on-photo overlays and hides the fixed Back button the instant the move starts, before any animation plays, so nothing stale sits on top of a photo that's already changing.
+
+## Fixed: mismatched tap-highlight box on rotated/skewed overlays
+Mobile browsers draw a translucent default highlight (and a default focus ring) on any tappable element, and that highlight is always an axis-aligned rectangle around the element's own box - never the element's actual visual shape. On a rotated arrow icon or a skewed hotspot quad, that rectangle doesn't line up with what's drawn, which read as the overlay being "off" or wrongly transformed. Since our own fill/stroke already gives correctly-shaped feedback, the native tap highlight and default outline are now suppressed (`-webkit-tap-highlight-color: transparent`, `outline: none` as the resting state) on the arrow buttons and hotspot polygons.
