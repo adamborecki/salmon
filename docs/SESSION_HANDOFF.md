@@ -6,10 +6,26 @@ touching anything — the git repo alone is misleading about how far the build h
 gotten, because most of the interactive work lives in a live claude.ai Artifact, not in
 committed app code. See "The single biggest thing to understand" below first.
 
+**Read `docs/PRODUCT_DESIGN.md` too, and read it as the higher-authority document.** It's the
+canonical product/pedagogy/design source of truth, distilled by the project owner from a long
+prior design process, added after this file was first written. The division of labor between
+the two:
+- `PRODUCT_DESIGN.md` = **what** is being built and **why** (product vision, pedagogy, design
+  intent) — authoritative on anything it covers. This handoff file does not attempt to
+  summarize or restate it; go read it directly.
+- `SESSION_HANDOFF.md` (this file) = what **currently exists** in the repo/Artifact and **how**
+  this prototype works, mechanically — a snapshot of implementation state, not of intent.
+
+If anything below (in the "decisions made" or "next tasks" sections especially) reads as
+disagreeing with `PRODUCT_DESIGN.md`, treat that as this prototype having been built before the
+canonical design doc existed, and `PRODUCT_DESIGN.md` as the tie-breaker — flag the conflict to
+the project owner rather than silently picking one.
+
 Game concept (from the project owner, for orientation — not something this session designed):
 a mobile-first, Myst/Riven-style point-and-click educational simulator of live sound,
 signal flow, troubleshooting, and concert recording workflows in Chapman's Salmon Recital
-Hall, built from real photos of the venue and its gear.
+Hall, built from real photos of the venue and its gear. `PRODUCT_DESIGN.md` supersedes this
+paragraph as the real statement of intent.
 
 ## The single biggest thing to understand
 
@@ -59,6 +75,8 @@ salmon/
   manifest.csv             one row per working photo: batch, old IMG_ number, path, scene info,
                             role/usefulness, has_people, notes — the human-curation record
   docs/
+    PRODUCT_DESIGN.md        canonical product/pedagogy/design doc — read this first, it is
+                             higher authority than everything else in docs/
     scene-graph.json        THE navigation graph — nodes (scenes/photos) + edges (moves between
                              them). Source of truth for the prototype. See schema below.
     DEVICE_REFERENCE.md     equipment reference (X32, wireless, racks, signal flow) from the
@@ -241,23 +259,25 @@ widths, never a real phone).
 ## 4. Files Opus should read first
 
 1. **This file**, all of it.
-2. `tools/scene-graph-editor/README.md` — how to build/publish/sync the prototype; do this
+2. **`docs/PRODUCT_DESIGN.md`**, all of it — the canonical product/pedagogy/design doc, higher
+   authority than anything below. Read it before forming opinions about what to build next.
+3. `tools/scene-graph-editor/README.md` — how to build/publish/sync the prototype; do this
    before touching the live Artifact or trusting `docs/scene-graph.json`.
-3. `docs/scene-graph.json` — skim the shape; full schema is:
+4. `docs/scene-graph.json` — skim the shape; full schema is:
    - Node: `{file, region, kind, label, src, people, x, y, plan_x?, plan_y?, heading_deg?}`.
      `kind` ∈ hub/waypoint/closeup/screen/character/alt/omitted. `x`/`y` are Map-tab canvas
      coordinates (unrelated to `plan_x`/`plan_y`, which are real-world-ish floor-plan metres).
    - Edge: `{from, to, kind, motion?, turn_degrees?, dir_degrees?, distance_m?, icon_x?, icon_y?,
      icon_rot?, icon_flip?, hotspot?, note?}`. `kind` ∈ walk/control/closeup. `hotspot` is an
      array of `{x,y}` percent points when present.
-4. `docs/PATH_ANALYSIS.md` — the decision log; skim for anything touching an area you're about
+5. `docs/PATH_ANALYSIS.md` — the decision log; skim for anything touching an area you're about
    to change, it usually explains a specific number's origin.
-5. `tools/scene-graph-editor/template.html` — the actual prototype source. It's long
+6. `tools/scene-graph-editor/template.html` — the actual prototype source. It's long
    (~1000 lines) but not architecturally deep: read `motionOf`/`slide`/`slideHotspot`/
    `renderWalk` first (the Walk-view engine), then `renderPlan` (Plan tab) if you're touching
    floor-plan logic.
-6. `manifest.csv` and `docs/ASSET_STATUS.md` only if you're adding/reorganizing photos.
-7. `docs/DEVICE_REFERENCE.md` if you're starting to build actual gameplay/device logic.
+7. `manifest.csv` and `docs/ASSET_STATUS.md` only if you're adding/reorganizing photos.
+8. `docs/DEVICE_REFERENCE.md` if you're starting to build actual gameplay/device logic.
 
 ## 5. Next tasks, priority order
 
