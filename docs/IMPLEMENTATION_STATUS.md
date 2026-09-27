@@ -135,13 +135,24 @@ itself (the artifact viewer needs your login; the identical local build passes t
 - Reverse links whose turns don't mirror (maybe intentional): `racks-front-wide -> racks-rear-wide`
   -180 but back +140; `crossroads-right -> path-to-storage` +30 but back 0.
 
-### Room facts the gameplay slice needs (all currently placeholders in `content/vj-line-check.json`)
-1. Does a muted Phenyx handheld stay muted after being switched off and on? (slice assumes yes)
-2. Is power a press-and-hold on the single button? (slice assumes yes)
-3. What does a muted transmitter show (LED, display)? And does its receiver still show RF?
-4. Is it handheld N -> receiver channel N -> X32 input N? (slice assumes one-to-one for 1-8)
-5. Line-check choreography: in real life who talks and who watches the X32 (A2 on stage, A1 at FOH)?
-   The slice has one person doing both at FOH, which may be the wrong habit to teach.
+### Room facts: owner answers (2026-09-27, now in `content/vj-line-check.json`)
+- Switching a muted mic off and on **clears** the mute (engine and debrief updated; a power cycle is
+  now a real, if indirect, fix and the debrief says so).
+- Power is a **press-and-hold**; a tap mutes/unmutes.
+- A muted transmitter **shows it on its display**; the exact glyph (speaker-with-slash, or the word
+  MUTE) is unconfirmed. The handheld has a small LCD (group/channel number + battery) above the button.
+- Handheld N -> receiver channel N -> X32 input N. Each receiver unit is 8 channels: top = 1-8,
+  second = 9-16, third = 17-24.
+- Mics are named by windscreen colour then ring colour: black red = 1, black orange = 2 ... black
+  black = 7, black grey = 8; grey red = 9 ... grey grey = 16. Rings 3-6 = yellow, green, blue, purple is
+  **inferred** from the rainbow order; 17-24 windscreen colour unknown.
+- Line check: A2 talks, A1 watches the X32 ("I guess": kept tentative).
+
+### Still open for the slice
+- Confirm rings 3-6 and the mute glyph (a photo of a muted handheld's display would settle it).
+- Owner feedback on the harness: works as a proof of concept; 4 identical mics is monotonous. Wanted:
+  real mic graphics, 3 mics for the demo, a "repeat for remaining mics" shortcut, and explicit
+  procedure steps (check mics, hand them out, listen to monitors). Open: how to show hands/inventory.
 
 ### Decisions for you
 - **Architecture (section 84), my recommendation:** keep `template.html` as the authoring/editor tool

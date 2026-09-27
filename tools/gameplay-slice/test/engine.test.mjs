@@ -77,11 +77,14 @@ test('evidence from before a change does not count (regression needs re-verifyin
   assert.equal(eng.view(g).objective.mics.find(m => m.id === mic).status, 'verified');
 });
 
-test('power-cycling a muted mic does not clear the mute (content says so; flagged unknown)', () => {
-  assert.equal(content.behaviour.mute_survives_power_cycle.value, true);
+test('power-cycling a muted mic clears the mute (owner-confirmed), and the debrief says that is how it was fixed', () => {
+  assert.equal(content.behaviour.mute_survives_power_cycle.value, false);
   const g0 = eng.start('VJ-7'), f = g0.fault.device;
   const { g } = run(g0, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: f }, { type: 'press', how: 'hold' }, { type: 'press', how: 'hold' });
-  assert.deepEqual(g.devices[f].state, { power: 'on', muted: true });
+  assert.deepEqual(g.devices[f].state, { power: 'on', muted: false });
+  const d = eng.debrief(g);
+  assert.equal(d.loop.act, true);
+  assert.match(d.lines.join('\n'), /off and on, which cleared the mute/);
 });
 
 test('tapping a switched-off mic does nothing, and says so', () => {

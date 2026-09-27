@@ -200,7 +200,7 @@ export function engine(content) {
       : `  NOTICE ✗ the silence was never observed before the fix${fixE ? ' (the fix came first)' : ''}.`);
     lines.push(traceE ? `  TRACE ✓ ${at(traceE)}: ${traceE.type === 'inspect' ? `you inspected ${D[f].label} itself` : 'you checked the receiver, which put the problem upstream of it'}.`
       : '  TRACE ✗ you did not check a point upstream of the X32 (receiver or transmitter) before changing anything.');
-    lines.push(fixE ? `  ACT ✓ ${at(fixE)}: you unmuted ${D[f].label}.` : `  ACT ✗ ${D[f].label} is still ${g.devices[f].state.power === 'on' ? 'muted' : 'off'}.`);
+    lines.push(fixE ? (fixE.how === 'hold' ? `  ACT ✓ ${at(fixE)}: you switched ${D[f].label} off and on, which cleared the mute. It works, though a tap would have unmuted it directly.` : `  ACT ✓ ${at(fixE)}: you unmuted ${D[f].label}.`) : `  ACT ✗ ${D[f].label} is still ${g.devices[f].state.power === 'on' ? 'muted' : 'off'}.`);
     lines.push(verifyE ? `  VERIFY ✓ ${at(verifyE)}: you talked into it and saw signal at X32 ch ${ch}.`
       : fixE ? `  VERIFY ✗ fixed but not verified: talk into it while watching X32 ch ${ch}.` : '  VERIFY ✗ not yet.');
     lines.push(`⏱️ ${L.length} actions, ${Math.round(g.t / 60 * 10) / 10} game minutes.` + (extra.length ? ` ${extra.length} change${extra.length > 1 ? 's' : ''} other than the fix: ${extra.map(e => `${e.how} on ${D[e.device].label}`).join(', ')}.` : ' No changes other than the fix.'));
