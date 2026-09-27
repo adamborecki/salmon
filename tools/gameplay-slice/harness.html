@@ -1,0 +1,270 @@
+<title>Salmon Line Check</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#eef0f2; --panel:#ffffff; --ink:#1b2530; --muted:#5b6977; --line:#d3d9df;
+  --stage:#0b0f13; --tape:#efe3b0; --tape-ink:#2b2615;
+  --sig:#1f9d57; --sig-hi:#34d27b; --warn:#b77900; --warn-hi:#f2b233; --bad:#c9353b; --bad-hi:#e5484d;
+  --accent:#0f7f78;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#12181e; --panel:#1b232b; --ink:#e6ebf0; --muted:#93a1ae; --line:#2f3a45;
+  --tape:#d9cb8f; --sig:#34d27b; --warn:#f2b233; --bad:#ff7a7f; --accent:#3cc4ba; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#12181e; --panel:#1b232b; --ink:#e6ebf0; --muted:#93a1ae; --line:#2f3a45;
+  --tape:#d9cb8f; --sig:#34d27b; --warn:#f2b233; --bad:#ff7a7f; --accent:#3cc4ba; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans)}
+button{font:inherit;color:inherit;touch-action:manipulation}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:12px 28px;display:grid;gap:12px}
+.col{display:grid;gap:12px;min-width:0}
+@media (min-width:900px){.wrap{grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);align-items:start}}
+
+/* status bar: the game clock against the 5:00 rehearsal */
+.top{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:10px}
+.status{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+.clock{font:600 22px/1 var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.clock.late{color:var(--warn)} .clock.over{color:var(--bad)}
+.due{font:500 12px var(--mono);color:var(--muted)}
+.sp{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:7px 12px;font-weight:500;cursor:pointer;min-height:36px}
+.btn:hover:not(:disabled){border-color:var(--ink)} .btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.btn.talk{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+
+/* objective with scribble-strip chips, one per mic */
+.obj{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
+.obj h2{margin:0;font:600 15px var(--sans);text-wrap:balance}
+.obj p{margin:0;color:var(--muted);font-size:12.5px}
+.chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.chip{display:grid;gap:2px;justify-items:center;padding:6px 4px 5px;border-radius:4px;border:1px solid var(--line);background:var(--paper)}
+.chip b{font:600 13px var(--cond);letter-spacing:.06em;background:var(--tape);color:var(--tape-ink);padding:0 6px;border-radius:2px}
+.chip span{font:500 11px var(--mono);color:var(--muted);white-space:nowrap}
+.chip[data-s="verified"]{border-color:var(--sig)} .chip[data-s="verified"] span{color:var(--sig)}
+.chip[data-s="no-signal-seen"]{border-color:var(--bad)} .chip[data-s="no-signal-seen"] span{color:var(--bad)}
+.chip[data-s="recheck"],.chip[data-s="receiver-only"]{border-color:var(--warn)} .chip[data-s="recheck"] span,.chip[data-s="receiver-only"] span{color:var(--warn)}
+
+/* stage: the real photo, 4:3 like the Walk view, so hotspot percentages mean the same thing */
+.stage{position:relative;width:100%;max-width:100%;aspect-ratio:4/3;background:var(--stage);border-radius:8px;overflow:hidden;color:#fff}
+.stagebg{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(24px) brightness(.45);transform:scale(1.15)}
+#photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .16s}
+#photo.contain{object-fit:contain}
+#photo.fading{opacity:0}
+#hot{position:absolute;inset:0;width:100%;height:100%}
+.hot{fill:#fff;fill-opacity:.07;stroke:#fff;stroke-opacity:.85;stroke-width:1.6;vector-effect:non-scaling-stroke;cursor:pointer;outline:none;transition:fill-opacity .15s}
+.hot:hover,.hot:focus-visible{fill-opacity:.24}
+.hlabel{position:absolute;transform:translate(-50%,-50%);font:600 11px/1.2 var(--mono);background:rgba(0,0,0,.62);padding:2px 7px;border-radius:8px;pointer-events:none;max-width:78px;text-align:center;text-wrap:balance}
+.where{position:absolute;left:8px;top:8px;font:500 11px var(--mono);background:rgba(0,0,0,.6);padding:3px 8px;border-radius:4px}
+#back{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(0,0,0,.66);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:18px;padding:7px 18px;font-weight:600;cursor:pointer}
+.toast{position:absolute;left:8px;right:8px;top:36px;background:rgba(11,15,19,.86);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:7px 10px;font-size:13px;text-align:center}
+.toast.good{border-color:var(--sig-hi)} .toast.bad{border-color:var(--bad-hi)} .toast.hint{border-color:var(--warn-hi)}
+
+/* context panel under the stage */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:10px}
+.card h3{margin:0;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.card p{margin:0}
+.fine{font-size:12px;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+/* meters: simplified channel strips, not a copy of the device's own screen */
+.meters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--stage);border-radius:6px;padding:10px 10px 8px}
+.strip{display:grid;justify-items:center;gap:5px}
+.meter{position:relative;width:18px;height:96px;border-radius:3px;background:repeating-linear-gradient(to top,#1a232c 0 6px,#0b0f13 6px 8px);overflow:hidden}
+.meter i{position:absolute;left:0;right:0;bottom:0;height:0;background:repeating-linear-gradient(to top,var(--sig-hi) 0 6px,transparent 6px 8px);
+}
+.meter i::after{content:"";position:absolute;left:0;right:0;top:0;height:24px;background:repeating-linear-gradient(to top,var(--warn-hi) 0 6px,transparent 6px 8px)}
+.strip.dead .meter{box-shadow:0 0 0 2px var(--bad-hi)}
+.strip b{font:600 12px var(--cond);letter-spacing:.06em;background:var(--tape);color:var(--tape-ink);padding:0 5px;border-radius:2px}
+.strip span{font:500 10px var(--mono);color:#aeb9c4}
+.mics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mic{display:grid;gap:4px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer}
+.mic small{font:500 11px var(--mono);color:var(--muted)}
+.mic[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.hand{display:grid;gap:8px}
+.hand .state{font:500 12px var(--mono);color:var(--muted)}
+.log{max-height:180px;overflow:auto;font:12px/1.5 var(--mono);color:var(--muted);margin:0;padding-left:18px}
+details summary{cursor:pointer;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);margin:8px 0 0;color:var(--muted)}
+
+/* debrief sheet */
+.sheet{position:fixed;inset:0;background:rgba(8,12,16,.55);display:grid;place-items:end center;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:20}
+.sheet .card{width:min(640px,100%);max-height:85vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.sheet h2{margin:0;font:600 18px var(--sans)}
+.dl{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
+.dl li.sub{padding-left:14px;font:13px/1.5 var(--mono)}
+@media (prefers-reduced-motion:reduce){#photo{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="col">
+    <div class="top">
+      <div class="status">
+        <div><div class="clock" id="clock">4:50:00 PM</div><div class="due" id="due">Rehearsal 5:00:00 PM</div></div>
+        <span class="sp"></span>
+        <button class="btn" id="hintBtn">Hint</button>
+        <button class="btn" id="debriefBtn">Debrief</button>
+      </div>
+      <div class="obj" id="obj"></div>
+    </div>
+    <div class="stage" id="stage">
+      <div class="stagebg" id="stagebg"></div>
+      <img id="photo" alt="">
+      <svg id="hot" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+      <div id="labels"></div>
+      <div class="where" id="where"></div>
+      <div class="toast" id="toast" hidden></div>
+      <button id="back" hidden>Back</button>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card" id="panel"></div>
+    <div class="card hand" id="hand"></div>
+    <div class="card">
+      <details id="logBox"><summary>Activity</summary><ol class="log" id="log"></ol></details>
+      <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button></div></details>
+    </div>
+  </div>
+</div>
+<div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, channel numbering, what the transmitter shows) are placeholders, not room facts.</p></div></div>
+
+<script type="application/json" id="contentData">__CONTENT__</script>
+<script type="application/json" id="graphData">__GRAPH__</script>
+<script type="module">
+import { engine } from './engine.js';
+const content = JSON.parse(document.getElementById('contentData').textContent);
+const G = JSON.parse(document.getElementById('graphData').textContent);
+const eng = engine(content);
+const $ = s => document.querySelector(s);
+// player-facing names for the places the slice uses (UI copy, not room data)
+const PLACE = { 'foh-wide': 'FOH', 'x32-top': 'X32', 'foh-rack': 'Wireless rack', 'foh-rack-closeup': 'Receivers', 'foh-right-side': 'Mic cabinet', 'foh-mic-drawer': 'Mic drawer' };
+const STATUS = { 'not-checked': 'not checked', 'no-signal-seen': 'no signal', 'recheck': 're-check', 'receiver-only': 'check X32', 'verified': 'verified' };
+
+let game, trail = [], lastEvents = [], toastT = null;
+const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
+function boot(seed) {
+  game = eng.start(seed); trail = []; lastEvents = [];
+  $('#log').innerHTML = ''; $('#sheet').hidden = true;
+  say('4:50 PM, doors are open. Vocal Jazz rehearses at 5:00. Line-check the wireless mics before then.', 'hint', 6000);
+  render(true);
+}
+function act(a) {
+  const r = eng.act(game, a);
+  if (r.error) { say(r.error.message, 'bad'); return r; }
+  game = r.game; lastEvents = r.events;
+  const e = game.log[game.log.length - 1]; logLine(e);
+  render(a.type === 'go');   // render first: the meters below animate the freshly drawn strips
+  for (const ev of r.events) {
+    if (ev.type === 'meter') pulse(ev.point, ev.signal);
+    if (ev.text) say(ev.text, ev.type === 'verified' || ev.type === 'objective-complete' ? 'good' : ev.type === 'hint' ? 'hint' : ev.type === 'nothing' || ev.type === 'no-display' ? 'bad' : '');
+    if (ev.type === 'inspect') { const s = ev.state; say(`${content.devices[ev.device].label}: power ${s.power}${s.power === 'on' ? (s.muted ? ', muted' : ', not muted') : ''}.`, s.muted ? 'bad' : ''); }
+  }
+  if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
+  return r;
+}
+function goTo(scene, back) { if (!back) trail.push(game.scene); act({ type: 'go', scene }); }
+
+function say(text, kind = '', ms = 3200) {
+  const t = $('#toast'); t.textContent = text; t.className = 'toast ' + kind; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms);
+}
+function logLine(e) {
+  const n = content.devices[e.device || e.mic]; const li = document.createElement('li');
+  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${n && n.label}`, put_back: `put back ${n && n.label}`,
+    press: `${e.how === 'tap' ? 'tapped' : 'held'} the button on ${n && n.label}`, inspect: `inspected ${n && n.label}`,
+    talk: `talked into ${n && n.label}${e.observed && e.observed.length ? e.observed.map(o => o.signal ? ' - signal' : ' - no signal').join('') : ' (no meter in view)'}`, hint: `took hint ${e.level}` }[e.type];
+  li.textContent = what; $('#log').prepend(li);
+}
+
+function render(sceneChanged) {
+  const v = eng.view(game);
+  const clk = $('#clock'); clk.textContent = v.clock; $('#due').textContent = 'Rehearsal ' + v.readyBy;
+  const mins = (game.t + 0) / 60; clk.className = 'clock' + (mins >= 10 ? ' over' : mins >= 7 ? ' late' : '');
+  $('#hintBtn').textContent = v.hintsLeft ? `Hint (${v.hintsLeft})` : 'No hints left'; $('#hintBtn').disabled = !v.hintsLeft;
+  $('#obj').innerHTML = `<h2>${v.objective.label}</h2><p>${v.objective.goal}</p><div class="chips">${v.objective.mics.map(m =>
+    `<div class="chip" data-s="${m.status}"><b>CH ${String(m.channel).padStart(2, '0')}</b><span>${STATUS[m.status]}</span></div>`).join('')}</div>`;
+  if (sceneChanged) renderStage();
+  renderPanel(v); renderHand(v);
+  $('#dbg').textContent = `seed ${v.debug.seed}\nfault: ${v.debug.fault.device} (${content.fault.label.toLowerCase()})\n` +
+    Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
+  try { window.claude?.hot?.snapshot?.(() => ({ game, trail })); } catch (e) {}
+}
+function renderStage() {
+  const id = game.scene, img = $('#photo');
+  $('#where').textContent = PLACE[id] || id;
+  img.classList.add('fading');
+  const next = new Image(); next.src = `p/${id}.jpg`;
+  const done = () => {
+    img.src = next.src; const portrait = next.naturalWidth && next.naturalWidth < next.naturalHeight;
+    img.classList.toggle('contain', portrait); $('#stagebg').style.backgroundImage = portrait ? `url(${next.src})` : 'none';
+    img.classList.remove('fading');
+  };
+  if (next.complete) done(); else { next.onload = done; next.onerror = done; }
+  const kids = G.edges.filter(e => e.from === id && e.hotspot && PLACE[e.to]);
+  $('#hot').innerHTML = kids.map((e, i) => `<polygon class="hot" tabindex="0" role="button" aria-label="${PLACE[e.to]}" data-i="${i}" points="${e.hotspot.map(p => p.x + ',' + p.y).join(' ')}"/>`).join('');
+  $('#labels').innerHTML = kids.map(e => { const cx = e.hotspot.reduce((s, p) => s + p.x, 0) / e.hotspot.length, cy = e.hotspot.reduce((s, p) => s + p.y, 0) / e.hotspot.length;
+    return `<div class="hlabel" style="left:${cx}%;top:${cy}%">${PLACE[e.to]}</div>`; }).join('');
+  $('#hot').querySelectorAll('.hot').forEach(p => { const go = () => goTo(kids[+p.dataset.i].to); p.onclick = go; p.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } }; });
+  $('#back').hidden = !trail.length;
+}
+function renderPanel(v) {
+  const p = $('#panel'), d = v.display, micsInPlay = v.objective.mics;
+  if (d) {
+    const rx = d.device === 'ptu6000-rx';
+    p.innerHTML = `<h3>${rx ? 'PTU-6000 receivers: audio' : 'X32 input meters'}</h3>
+      <div class="meters">${micsInPlay.map(m => `<div class="strip" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${String(m.channel).padStart(2, '0')}</b><span>${rx ? 'RX' : 'IN'} ${m.channel}</span></div>`).join('')}</div>
+      ${game.holding ? `<div class="row"><button class="btn talk" id="talkHere">Talk into ${content.devices[game.holding].label}</button></div>` : ''}
+      <p class="fine">${game.holding ? 'Watch its channel while you talk.' : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
+    const th = $('#talkHere'); if (th) th.onclick = () => act({ type: 'talk' });
+  } else if (game.scene === 'foh-mic-drawer') {
+    p.innerHTML = `<h3>Mic drawer</h3><div class="mics">${micsInPlay.map(m => { const dv = content.devices[m.id];
+      return `<button class="mic" data-id="${m.id}" aria-pressed="${game.holding === m.id}"><span>${dv.label}</span><small>${dv.windscreen} windscreen · CH ${String(dv.channel).padStart(2, '0')}</small></button>`; }).join('')}</div>
+      <p class="fine">${game.holding ? 'Put the one in your hand back before taking another.' : 'Pick a mic up to test it.'}</p>`;
+    p.querySelectorAll('.mic').forEach(b => b.onclick = () => { if (game.holding === b.dataset.id) act({ type: 'put_back' }); else act({ type: 'pick_up', device: b.dataset.id }); });
+  } else {
+    const where = { 'foh-wide': 'Front of house. The X32, the wireless rack and the mic cabinet are all within reach: tap one on the photo.',
+      'foh-rack': 'The wireless rack under the desk. Tap the receivers to see their audio indicators.',
+      'foh-right-side': 'The cabinet to the right of the desk. The handhelds are in its drawer.' }[game.scene] || '';
+    p.innerHTML = `<h3>${PLACE[game.scene] || game.scene}</h3><p>${where}</p>`;
+  }
+}
+function renderHand(v) {
+  const h = $('#hand');
+  if (!game.holding) { h.innerHTML = `<h3>In your hand</h3><p class="fine">Nothing. The handhelds are in the mic drawer (Mic cabinet).</p>`; return; }
+  const dv = content.devices[game.holding];
+  h.innerHTML = `<h3>In your hand</h3><div><b>${dv.label}</b> <span class="state">· CH ${String(dv.channel).padStart(2, '0')} · ${dv.windscreen} windscreen</span></div>
+    <div class="row"><button class="btn talk" id="talkBtn">Talk into it</button><button class="btn" id="inspectBtn">Inspect</button></div>
+    <div class="row"><button class="btn" id="tapBtn">Tap the button</button><button class="btn" id="holdBtn">Hold the button</button>${game.scene === 'foh-mic-drawer' ? '<button class="btn" id="putBtn">Put it back</button>' : ''}</div>
+    <p class="fine">One button: a tap mutes or unmutes, a hold switches it on or off (the hold is an assumption to confirm).</p>`;
+  $('#talkBtn').onclick = () => act({ type: 'talk' }); $('#inspectBtn').onclick = () => act({ type: 'inspect' });
+  $('#tapBtn').onclick = () => act({ type: 'press', how: 'tap' }); $('#holdBtn').onclick = () => act({ type: 'press', how: 'hold' });
+  const pb = $('#putBtn'); if (pb) pb.onclick = () => act({ type: 'put_back' });
+}
+function pulse(point, signal) {
+  const s = document.querySelector(`.strip[data-point="${point}"]`); if (!s) return;
+  const bar = s.querySelector('i'); s.classList.toggle('dead', !signal);
+  if (!signal) { setTimeout(() => s.classList.remove('dead'), 1400); return; }
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { bar.style.height = '70%'; setTimeout(() => { bar.style.height = '0'; }, 1200); return; }
+  bar.animate([{ height: '0%' }, { height: '72%', offset: .12 }, { height: '58%', offset: .3 }, { height: '80%', offset: .45 }, { height: '62%', offset: .62 }, { height: '75%', offset: .75 }, { height: '0%' }], { duration: 1500, easing: 'ease-out' });
+}
+function showDebrief() {
+  const d = eng.debrief(game);
+  $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${l.trim().replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))}</li>`).join('');
+  $('#sheet').hidden = false; $('#againBtn').focus();
+}
+$('#hintBtn').onclick = () => act({ type: 'hint' });
+$('#debriefBtn').onclick = showDebrief;
+$('#closeBtn').onclick = () => { $('#sheet').hidden = true; };
+$('#againBtn').onclick = () => boot(newSeed());
+$('#newBtn').onclick = () => boot(newSeed());
+$('#back').onclick = () => { if (trail.length) goTo(trail.pop(), true); };
+addEventListener('keydown', ev => { if (ev.key === 'Escape' && !$('#sheet').hidden) $('#sheet').hidden = true; });
+
+const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
+const start = data => { if (data && data.game && data.game.content === content.id) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed()); };
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>

@@ -17,6 +17,28 @@ as small as it can be while still being real:
 | `engine.js` | Pure functions over plain JSON state. No DOM, no dependencies, no framework. |
 | `content/vj-line-check.json` | Devices, connections, displays, fault, objective, hints. Every value that isn't current room fact is labelled `tentative` or `unknown` next to it. |
 | `test/engine.test.mjs` | `node --test tools/gameplay-slice/test/engine.test.mjs` (Node 18+). |
+| `harness.html`, `build.py` | The throwaway playable page (below). `dist/` is gitignored. |
+| `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size. |
+
+## Try it (throwaway harness)
+
+`harness.html` is a deliberately small, throwaway page for *feeling* the loop on the real photos
+(FOH, X32, wireless rack, mic cabinet): tap into scenes, pick up a handheld, talk into it while
+watching simplified X32 / receiver meters, tap its button, and get the debrief when every mic is
+verified. It reuses the engine unchanged and the hotspots from `docs/scene-graph.json`; it is not
+a proposal for the real app's UI.
+
+```bash
+python3 tools/gameplay-slice/build.py
+node --test tools/gameplay-slice/test/engine.test.mjs     # engine rules
+node tools/gameplay-slice/test/harness.e2e.mjs            # full playthrough on a touch phone (Playwright)
+```
+
+Published as its own private Artifact (so the live scene-graph editor is untouched):
+https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R . A link ending in `#VJ-48217` replays that seed;
+the "Instructor view" at the bottom shows the seed and which mic is muted. To republish after a
+change: build, then publish `dist/index.html` to that URL with `engine.js` as a supporting file
+(the six `p/*.jpg` photos are already there and are kept).
 
 ## The rule that matters
 
