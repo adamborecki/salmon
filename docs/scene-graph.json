@@ -1,0 +1,1040 @@
+{
+ "photos_root": "photos-working",
+ "nodes": {
+  "cary": {
+   "file": "characters/cary.jpg",
+   "region": "characters",
+   "kind": "character",
+   "label": "cary",
+   "src": "IMG_4240",
+   "people": true,
+   "x": 100,
+   "y": 1000
+  },
+  "magnolia": {
+   "file": "characters/magnolia.jpg",
+   "region": "characters",
+   "kind": "character",
+   "label": "magnolia",
+   "src": "IMG_4260",
+   "people": true,
+   "x": 280,
+   "y": 1000
+  },
+  "morgan": {
+   "file": "characters/morgan.jpg",
+   "region": "characters",
+   "kind": "character",
+   "label": "morgan",
+   "src": "IMG_4259",
+   "people": true,
+   "x": 460,
+   "y": 1000
+  },
+  "foh-computer-alt1": {
+   "file": "foh/_alts/foh-computer-alt1.jpg",
+   "region": "foh",
+   "kind": "alt",
+   "label": "foh-computer-alt1",
+   "src": "IMG_4132",
+   "people": true,
+   "x": 1800,
+   "y": 440
+  },
+  "foh-rack-closeup-alt1": {
+   "file": "foh/_alts/foh-rack-closeup-alt1.jpg",
+   "region": "foh",
+   "kind": "alt",
+   "label": "foh-rack-closeup-alt1",
+   "src": "IMG_4126",
+   "people": false,
+   "x": 1980,
+   "y": 440
+  },
+  "foh-rack-rear-alt1": {
+   "file": "foh/_alts/foh-rack-rear-alt1.jpg",
+   "region": "foh",
+   "kind": "alt",
+   "label": "foh-rack-rear-alt1",
+   "src": "IMG_4145",
+   "people": false,
+   "x": 2160,
+   "y": 440
+  },
+  "foh-rear-wide-alt1": {
+   "file": "foh/_alts/foh-rear-wide-alt1.jpg",
+   "region": "foh",
+   "kind": "alt",
+   "label": "foh-rear-wide-alt1",
+   "src": "IMG_4144",
+   "people": false,
+   "x": 2340,
+   "y": 440
+  },
+  "x32-rear-alt1": {
+   "file": "foh/_alts/x32-rear-alt1.jpg",
+   "region": "foh",
+   "kind": "alt",
+   "label": "x32-rear-alt1",
+   "src": "IMG_4146",
+   "people": false,
+   "x": 2520,
+   "y": 440
+  },
+  "foh-computer": {
+   "file": "foh/closeups/foh-computer.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-computer",
+   "src": "IMG_4241",
+   "people": false,
+   "x": 100,
+   "y": -500
+  },
+  "foh-computer-rear": {
+   "file": "foh/closeups/foh-computer-rear.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-computer-rear",
+   "src": "IMG_4265",
+   "people": true,
+   "x": 280,
+   "y": -500
+  },
+  "foh-iem-rack-rear": {
+   "file": "foh/closeups/foh-iem-rack-rear.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-iem-rack-rear",
+   "src": "IMG_4266",
+   "people": true,
+   "x": 460,
+   "y": -500
+  },
+  "foh-mic-drawer": {
+   "file": "foh/closeups/foh-mic-drawer.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-mic-drawer",
+   "src": "IMG_4127",
+   "people": false,
+   "x": 640,
+   "y": -500
+  },
+  "foh-rack-drawer": {
+   "file": "foh/closeups/foh-rack-drawer.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-rack-drawer",
+   "src": "IMG_4239",
+   "people": false,
+   "x": 100,
+   "y": -360
+  },
+  "foh-rack-closeup": {
+   "file": "foh/closeups/foh-rack-closeup.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-rack-closeup",
+   "src": "IMG_4238",
+   "people": false,
+   "x": 1000,
+   "y": -500
+  },
+  "foh-rack": {
+   "file": "foh/closeups/foh-rack.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-rack",
+   "src": "IMG_4237",
+   "people": false,
+   "x": 820,
+   "y": -500
+  },
+  "foh-rack-rear": {
+   "file": "foh/closeups/foh-rack-rear.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-rack-rear",
+   "src": "IMG_4264",
+   "people": false,
+   "x": 280,
+   "y": -360
+  },
+  "foh-right-side": {
+   "file": "foh/closeups/foh-right-side.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "foh-right-side",
+   "src": "IMG_4244",
+   "people": false,
+   "x": 460,
+   "y": -360
+  },
+  "ssl2plus": {
+   "file": "foh/closeups/ssl2plus.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "ssl2plus",
+   "src": "IMG_4242",
+   "people": false,
+   "x": 640,
+   "y": -360
+  },
+  "x32-rear": {
+   "file": "foh/closeups/x32-rear.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "x32-rear",
+   "src": "IMG_4263",
+   "people": false,
+   "x": 820,
+   "y": -360
+  },
+  "x32-top": {
+   "file": "foh/closeups/x32-top.jpg",
+   "region": "foh",
+   "kind": "closeup",
+   "label": "x32-top",
+   "src": "IMG_4232",
+   "people": false,
+   "x": 1000,
+   "y": -360
+  },
+  "foh-rear-wide": {
+   "file": "foh/foh-rear-wide.jpg",
+   "region": "foh",
+   "kind": "hub",
+   "label": "foh-rear-wide",
+   "src": "IMG_4262",
+   "people": true,
+   "x": 680,
+   "y": -70
+  },
+  "foh-wide": {
+   "file": "foh/foh-wide.jpg",
+   "region": "foh",
+   "kind": "hub",
+   "label": "foh-wide",
+   "src": "IMG_4231",
+   "people": true,
+   "x": 680,
+   "y": 90
+  },
+  "dante-controller-screen": {
+   "file": "foh/screens/dante-controller-screen.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "dante-controller-screen",
+   "src": "IMG_4257",
+   "people": false,
+   "x": 100,
+   "y": -800
+  },
+  "logic-settings-screen": {
+   "file": "foh/screens/logic-settings-screen.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "logic-settings-screen",
+   "src": "IMG_4243",
+   "people": false,
+   "x": 280,
+   "y": -800
+  },
+  "x32-screen-1": {
+   "file": "foh/screens/x32-screen-1.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "x32-screen-1",
+   "src": "IMG_4233",
+   "people": false,
+   "x": 460,
+   "y": -800
+  },
+  "x32-screen-2": {
+   "file": "foh/screens/x32-screen-2.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "x32-screen-2",
+   "src": "IMG_4234",
+   "people": false,
+   "x": 640,
+   "y": -800
+  },
+  "x32-screen-3": {
+   "file": "foh/screens/x32-screen-3.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "x32-screen-3",
+   "src": "IMG_4235",
+   "people": false,
+   "x": 820,
+   "y": -800
+  },
+  "x32-screen-4": {
+   "file": "foh/screens/x32-screen-4.jpg",
+   "region": "foh",
+   "kind": "screen",
+   "label": "x32-screen-4",
+   "src": "IMG_4236",
+   "people": false,
+   "x": 1000,
+   "y": -800
+  },
+  "center-wide-alt1": {
+   "file": "house/_alts/center-wide-alt1.jpg",
+   "region": "house",
+   "kind": "alt",
+   "label": "center-wide-alt1",
+   "src": "IMG_4246",
+   "people": true,
+   "x": 1800,
+   "y": 440
+  },
+  "center-wide-alt2": {
+   "file": "house/_alts/center-wide-alt2.jpg",
+   "region": "house",
+   "kind": "alt",
+   "label": "center-wide-alt2",
+   "src": "IMG_4130",
+   "people": true,
+   "x": 1980,
+   "y": 440
+  },
+  "crossroads": {
+   "file": "house/crossroads.jpg",
+   "region": "house",
+   "kind": "hub",
+   "label": "crossroads",
+   "src": "IMG_4254",
+   "people": true,
+   "x": 900,
+   "y": 330
+  },
+  "center-to-stage-omitted": {
+   "file": "house/_alts/center-to-stage-omitted.jpg",
+   "region": "house",
+   "kind": "omitted",
+   "label": "center-to-stage-omitted",
+   "src": "IMG_4247",
+   "people": true,
+   "x": 1800,
+   "y": -40
+  },
+  "center-wide": {
+   "file": "house/center-wide.jpg",
+   "region": "house",
+   "kind": "hub",
+   "label": "center-wide",
+   "src": "IMG_4230",
+   "people": true,
+   "x": 680,
+   "y": 260
+  },
+  "crossroads-left": {
+   "file": "house/crossroads-left.jpg",
+   "region": "house",
+   "kind": "waypoint",
+   "label": "crossroads-left",
+   "src": "IMG_4252",
+   "people": true,
+   "x": 900,
+   "y": 500
+  },
+  "crossroads-right": {
+   "file": "house/crossroads-right.jpg",
+   "region": "house",
+   "kind": "waypoint",
+   "label": "crossroads-right",
+   "src": "IMG_4253",
+   "people": true,
+   "x": 1120,
+   "y": 330
+  },
+  "first-entry": {
+   "file": "intro/first-entry.jpg",
+   "region": "intro",
+   "kind": "hub",
+   "label": "first-entry",
+   "src": "IMG_4251",
+   "people": true,
+   "x": 80,
+   "y": 260
+  },
+  "outside-entry": {
+   "file": "intro/outside-entry.jpg",
+   "region": "intro",
+   "kind": "hub",
+   "label": "outside-entry",
+   "src": "IMG_4217",
+   "people": false,
+   "x": 80,
+   "y": 80
+  },
+  "path-center-to-entry-step1": {
+   "file": "path/path-center-to-entry-step1.jpg",
+   "region": "path",
+   "kind": "waypoint",
+   "label": "path-center-to-entry-step1",
+   "src": "IMG_4131",
+   "people": true,
+   "x": 380,
+   "y": 120
+  },
+  "path-entry-to-center-step1": {
+   "file": "path/path-entry-to-center-step1.jpg",
+   "region": "path",
+   "kind": "waypoint",
+   "label": "path-entry-to-center-step1",
+   "src": "IMG_4228",
+   "people": false,
+   "x": 280,
+   "y": 260
+  },
+  "path-entry-to-center-step2": {
+   "file": "path/path-entry-to-center-step2.jpg",
+   "region": "path",
+   "kind": "waypoint",
+   "label": "path-entry-to-center-step2",
+   "src": "IMG_4229",
+   "people": true,
+   "x": 480,
+   "y": 260
+  },
+  "path-to-storage": {
+   "file": "path/path-to-storage.jpg",
+   "region": "path",
+   "kind": "waypoint",
+   "label": "path-to-storage",
+   "src": "IMG_4255",
+   "people": false,
+   "x": 1300,
+   "y": 330
+  },
+  "mains-rack-front-alt1": {
+   "file": "stage-side/_alts/mains-rack-front-alt1.jpg",
+   "region": "stage-side",
+   "kind": "alt",
+   "label": "mains-rack-front-alt1",
+   "src": "IMG_4133",
+   "people": false,
+   "x": 1800,
+   "y": 440
+  },
+  "mains-rack-rear-alt1": {
+   "file": "stage-side/_alts/mains-rack-rear-alt1.jpg",
+   "region": "stage-side",
+   "kind": "alt",
+   "label": "mains-rack-rear-alt1",
+   "src": "IMG_4134",
+   "people": false,
+   "x": 1980,
+   "y": 440
+  },
+  "monitor-amp-rack-front-alt1": {
+   "file": "stage-side/_alts/monitor-amp-rack-front-alt1.jpg",
+   "region": "stage-side",
+   "kind": "alt",
+   "label": "monitor-amp-rack-front-alt1",
+   "src": "IMG_4135",
+   "people": false,
+   "x": 2160,
+   "y": 440
+  },
+  "monitor-amp-rack-rear-alt1": {
+   "file": "stage-side/_alts/monitor-amp-rack-rear-alt1.jpg",
+   "region": "stage-side",
+   "kind": "alt",
+   "label": "monitor-amp-rack-rear-alt1",
+   "src": "IMG_4136",
+   "people": false,
+   "x": 2340,
+   "y": 440
+  },
+  "mains-rack-front-closeup": {
+   "file": "stage-side/closeups/mains-rack-front-closeup.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "mains-rack-front-closeup",
+   "src": "IMG_4222",
+   "people": false,
+   "x": 1780,
+   "y": 560
+  },
+  "mains-rack-front": {
+   "file": "stage-side/closeups/mains-rack-front.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "mains-rack-front",
+   "src": "IMG_4219",
+   "people": false,
+   "x": 1600,
+   "y": 560
+  },
+  "mains-rack-mix5-closeup": {
+   "file": "stage-side/closeups/mains-rack-mix5-closeup.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "mains-rack-mix5-closeup",
+   "src": "IMG_4221",
+   "people": false,
+   "x": 1960,
+   "y": 560
+  },
+  "mains-rack-rear": {
+   "file": "stage-side/closeups/mains-rack-rear.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "mains-rack-rear",
+   "src": "IMG_4227",
+   "people": false,
+   "x": 2140,
+   "y": 560
+  },
+  "monitor-amp-rack-front": {
+   "file": "stage-side/closeups/monitor-amp-rack-front.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "monitor-amp-rack-front",
+   "src": "IMG_4220",
+   "people": false,
+   "x": 2320,
+   "y": 560
+  },
+  "monitor-amp-rack-rear": {
+   "file": "stage-side/closeups/monitor-amp-rack-rear.jpg",
+   "region": "stage-side",
+   "kind": "closeup",
+   "label": "monitor-amp-rack-rear",
+   "src": "IMG_4225",
+   "people": false,
+   "x": 2500,
+   "y": 560
+  },
+  "racks-rear-wide": {
+   "file": "stage-side/racks-rear-wide.jpg",
+   "region": "stage-side",
+   "kind": "hub",
+   "label": "racks-rear-wide",
+   "src": "IMG_4224",
+   "people": false,
+   "x": 300,
+   "y": 720
+  },
+  "racks-front-wide": {
+   "file": "stage-side/racks-front-wide.jpg",
+   "region": "stage-side",
+   "kind": "hub",
+   "label": "racks-front-wide",
+   "src": "IMG_4218",
+   "people": false,
+   "x": 300,
+   "y": 520
+  },
+  "musician-pov": {
+   "file": "stage/musician-pov.jpg",
+   "region": "stage",
+   "kind": "hub",
+   "label": "musician-pov",
+   "src": "IMG_4249",
+   "people": true,
+   "x": 620,
+   "y": 620
+  },
+  "upstage-back-wide": {
+   "file": "stage/upstage-back-wide.jpg",
+   "region": "stage",
+   "kind": "hub",
+   "label": "upstage-back-wide",
+   "src": "IMG_4248",
+   "people": true,
+   "x": 620,
+   "y": 820
+  },
+  "storage-door-latch": {
+   "file": "storage/closeups/storage-door-latch.jpg",
+   "region": "storage",
+   "kind": "closeup",
+   "label": "storage-door-latch",
+   "src": "IMG_4139",
+   "people": false,
+   "x": 1500,
+   "y": 800
+  },
+  "storage-husky-toolbox": {
+   "file": "storage/closeups/storage-husky-toolbox.jpg",
+   "region": "storage",
+   "kind": "closeup",
+   "label": "storage-husky-toolbox",
+   "src": "IMG_4143",
+   "people": false,
+   "x": 1680,
+   "y": 800
+  },
+  "storage-live-sound-cart": {
+   "file": "storage/closeups/storage-live-sound-cart.jpg",
+   "region": "storage",
+   "kind": "closeup",
+   "label": "storage-live-sound-cart",
+   "src": "IMG_4141",
+   "people": false,
+   "x": 1860,
+   "y": 800
+  },
+  "storage-rear": {
+   "file": "storage/closeups/storage-rear.jpg",
+   "region": "storage",
+   "kind": "closeup",
+   "label": "storage-rear",
+   "src": "IMG_4142",
+   "people": false,
+   "x": 2040,
+   "y": 800
+  },
+  "storage-school-of-rock-cart": {
+   "file": "storage/closeups/storage-school-of-rock-cart.jpg",
+   "region": "storage",
+   "kind": "closeup",
+   "label": "storage-school-of-rock-cart",
+   "src": "IMG_4140",
+   "people": false,
+   "x": 2220,
+   "y": 800
+  },
+  "storage-closet": {
+   "file": "storage/storage-closet.jpg",
+   "region": "storage",
+   "kind": "hub",
+   "label": "storage-closet",
+   "src": "IMG_4138",
+   "people": false,
+   "x": 1480,
+   "y": 500
+  },
+  "storage-entry": {
+   "file": "storage/storage-entry.jpg",
+   "region": "storage",
+   "kind": "hub",
+   "label": "storage-entry",
+   "src": "IMG_4256",
+   "people": false,
+   "x": 1480,
+   "y": 330
+  }
+ },
+ "edges": [
+  {
+   "from": "outside-entry",
+   "to": "first-entry",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": "only exit"
+  },
+  {
+   "from": "first-entry",
+   "to": "racks-front-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "first-entry",
+   "to": "path-entry-to-center-step1",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "path-entry-to-center-step1",
+   "to": "path-entry-to-center-step2",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "path-entry-to-center-step2",
+   "to": "center-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "center-wide",
+   "to": "path-center-to-entry-step1",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "path-center-to-entry-step1",
+   "to": "first-entry",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "center-wide",
+   "to": "foh-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-wide",
+   "to": "center-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "center-wide",
+   "to": "crossroads",
+   "kind": "walk",
+   "turn_degrees": 0,
+   "note": "direct, no stop between"
+  },
+  {
+   "from": "crossroads",
+   "to": "center-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "crossroads",
+   "to": "crossroads-left",
+   "kind": "walk",
+   "turn_degrees": -90,
+   "note": "crossroads-left is also the middle step toward first entry"
+  },
+  {
+   "from": "crossroads-left",
+   "to": "first-entry",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "first-entry",
+   "to": "crossroads-left",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "crossroads-left",
+   "to": "crossroads",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "crossroads-left",
+   "to": "racks-front-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": "racks visible from here"
+  },
+  {
+   "from": "crossroads",
+   "to": "crossroads-right",
+   "kind": "walk",
+   "turn_degrees": 90,
+   "note": ""
+  },
+  {
+   "from": "crossroads-right",
+   "to": "path-to-storage",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "path-to-storage",
+   "to": "storage-entry",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-entry",
+   "to": "storage-closet",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "crossroads",
+   "to": "musician-pov",
+   "kind": "walk",
+   "turn_degrees": 180,
+   "note": "spin around then forward"
+  },
+  {
+   "from": "musician-pov",
+   "to": "racks-front-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "musician-pov",
+   "to": "upstage-back-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "upstage-back-wide",
+   "to": "musician-pov",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "upstage-back-wide",
+   "to": "racks-rear-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-rear-wide",
+   "to": "upstage-back-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "musician-pov",
+   "to": "racks-rear-wide",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-rear-wide",
+   "to": "musician-pov",
+   "kind": "walk",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-front-wide",
+   "to": "racks-rear-wide",
+   "kind": "control",
+   "turn_degrees": 180,
+   "note": "go around back"
+  },
+  {
+   "from": "foh-wide",
+   "to": "foh-rear-wide",
+   "kind": "control",
+   "turn_degrees": 180,
+   "note": "not a walk edge"
+  },
+  {
+   "from": "racks-front-wide",
+   "to": "mains-rack-front",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-front-wide",
+   "to": "monitor-amp-rack-front",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "mains-rack-front",
+   "to": "mains-rack-front-closeup",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "mains-rack-front",
+   "to": "mains-rack-mix5-closeup",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-rear-wide",
+   "to": "mains-rack-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "racks-rear-wide",
+   "to": "monitor-amp-rack-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-wide",
+   "to": "x32-top",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-wide",
+   "to": "foh-rack",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-wide",
+   "to": "foh-computer",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-wide",
+   "to": "foh-right-side",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rack",
+   "to": "foh-rack-closeup",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rack",
+   "to": "foh-rack-drawer",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-computer",
+   "to": "ssl2plus",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-computer",
+   "to": "logic-settings-screen",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-computer",
+   "to": "dante-controller-screen",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "x32-top",
+   "to": "x32-screen-1",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "x32-top",
+   "to": "x32-screen-2",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "x32-top",
+   "to": "x32-screen-3",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "x32-top",
+   "to": "x32-screen-4",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-right-side",
+   "to": "foh-mic-drawer",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rear-wide",
+   "to": "x32-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rear-wide",
+   "to": "foh-rack-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rear-wide",
+   "to": "foh-computer-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "foh-rear-wide",
+   "to": "foh-iem-rack-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-closet",
+   "to": "storage-door-latch",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-closet",
+   "to": "storage-husky-toolbox",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-closet",
+   "to": "storage-live-sound-cart",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-closet",
+   "to": "storage-rear",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  },
+  {
+   "from": "storage-closet",
+   "to": "storage-school-of-rock-cart",
+   "kind": "closeup",
+   "turn_degrees": null,
+   "note": ""
+  }
+ ]
+}
