@@ -35,6 +35,18 @@ To try it locally: `cd tools/scene-graph-editor/dist && python3 -m http.server 8
 only", nothing saved) — fine for checking the code works, but edits don't persist and won't
 show live per-viewer position/rotation drags.
 
+## Test it
+
+After `build.py`, with Playwright + Chromium available (each test serves `dist/` itself):
+
+```bash
+node tools/scene-graph-editor/tests/walk-touch.mjs   # phone touch + desktop keyboard, Back pill, labels, all-pairs routing
+node tools/scene-graph-editor/tests/hotspots.mjs     # every hotspot: zoom in, land, Back, at phone and desktop size
+```
+
+`hotspots.mjs` prints a WARN when arrow icons cover part of a hotspot at phone size; that is a
+layout call (move the arrow in Edit mode), not a failure. Run both before republishing.
+
 ## Publish it live (so it has the drag-to-edit, saved-in-the-cloud behavior)
 
 Use the `Artifact` tool: `file_path` = `dist/index.html`, `root` = `dist`, `files` = every

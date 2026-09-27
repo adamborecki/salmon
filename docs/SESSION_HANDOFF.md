@@ -1,5 +1,12 @@
 # Session handoff — Salmon Recital Hall simulator
 
+> **Update 2026-09-27:** an overnight session has since changed things this file describes. Read
+> `docs/IMPLEMENTATION_STATUS.md` for the current state (sync status, what changed, what was tested,
+> what needs the owner). In short: hotspots are now 24/29, dragged arrow positions are honoured for
+> every arrow, "Walk to..." can route through turn controls, there are validation/sync scripts and
+> Playwright tests, and a first gameplay slice (engine + content + a throwaway harness) lives in
+> `tools/gameplay-slice/`. Numbers below that disagree are from before that session.
+
 Written by the Sonnet session that did the photo/asset organization and built the first
 interactive prototype, for a fresh agent (Opus) taking over. Read this whole file before
 touching anything — the git repo alone is misleading about how far the build has actually
@@ -136,8 +143,8 @@ salmon/
     around a device; tapping it grows that exact polygon shape to fill the frame (CSS
     `clip-path` + `transform`, canonicalized point winding so it doesn't twist), landing on the
     closeup photo. A fixed "Back" pill button (only shown while inside an inset) reverses it.
-    Only 10 of ~29 closeup edges have a drawn hotspot so far; the rest fall back to a plain
-    thumbnail-grid "Insets" list in the sidebar with a simple zoom crossfade (still works, just
+    24 of 29 closeup edges have a drawn hotspot as of 2026-09-27 (10 when this was written); the
+    rest fall back to a plain thumbnail-grid "Insets" list in the sidebar with a simple zoom crossfade (still works, just
     not the polished polygon-tap interaction).
   - **Letterboxing**: many closeups are portrait photos (device racks shot vertically); cropping
     them to the landscape frame was cutting off the actual subject. Fixed by comparing each
@@ -150,6 +157,8 @@ salmon/
 - **Not implemented at all**: gameplay (no interactivity beyond navigation — no device state,
   no faults/troubleshooting, no signal-flow logic, no X32 emulator, no scoring/objectives,
   no character dialogue). This has all been pure "walk around and look at things" so far.
+  (Since 2026-09-27 a first gameplay slice exists separately, in `tools/gameplay-slice/`: a DOM-free
+  engine, labelled content and a throwaway harness. The prototype itself still has no gameplay.)
 
 ### Current playable flow
 Open the Artifact, use the Walk tab. Start at `outside-entry` → `first-entry`. From there you
@@ -234,11 +243,13 @@ the exact rules if you need to add a new photo.
   interactive control (no X32 fader you can move, no signal-flow simulation).
 
 ### Incomplete
-- **Hotspots**: 10/29 closeup edges have a drawn polygon; the other ~19 only work via the
-  sidebar thumbnail list (functional, just not the polished tap-on-the-photo interaction).
+- **Hotspots**: 24/29 closeup edges have a drawn polygon as of 2026-09-27; the other 5 only work
+  via the sidebar thumbnail list, and each needs an owner decision (see `IMPLEMENTATION_STATUS.md`).
 - **Floor plan**: 19/63 nodes are placed; most `stage-side`/`storage` closeups and all
   `foh` closeups/screens are unplaced, so their edges still use estimated/default distances
-  rather than plan-derived ones.
+  rather than plan-derived ones. (All 19 hubs and waypoints, i.e. everything you walk between, are
+  placed; closeup edges use the hotspot zoom, which has no distance model, so unplaced closeups cost
+  nothing in the Walk view.)
 - **Characters** (Cary, Morgan, Magnolia): photographed, in the graph as orphan nodes, not
   linked into any scene or given any role in the UI.
 - **Device reference content** (`DEVICE_REFERENCE.md`) has never been surfaced in the prototype
@@ -256,8 +267,13 @@ committed. That said, this was one session's testing, not a QA pass — treat "n
 testing here was via automated browser control on desktop viewport sizes plus emulated mobile
 widths, never a real phone).
 
+2026-09-27: a later session found and fixed several real ones (arrow labels covering hotspots on
+phones, dragged walk-arrow positions never drawn, 35 un-routable "Walk to..." destinations); see
+`docs/IMPLEMENTATION_STATUS.md`.
+
 ## 4. Files Opus should read first
 
+0. **`docs/IMPLEMENTATION_STATUS.md`**: the current state, newer than this file.
 1. **This file**, all of it.
 2. **`docs/PRODUCT_DESIGN.md`**, all of it — the canonical product/pedagogy/design doc, higher
    authority than anything below. Read it before forming opinions about what to build next.
@@ -316,7 +332,8 @@ design/content decision only they can make — do the safe groundwork but don't 
 
 ## 6. Git status
 
-- Branch: `main` (only branch, no others).
+- Branch: `main` (as of 2026-09-27 there is also `claude/compassionate-volta-5zruvy`, a session
+  branch whose commits were all fast-forwarded into `main`).
 - Remote: `https://github.com/adamborecki/salmon.git`, **public**.
 - Working tree: clean as of this handoff (verify with `git status` — if it's not clean when you
   read this, someone made changes after this file was written; check `git log -1` against the
