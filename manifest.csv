@@ -1,0 +1,63 @@
+batch,source_name,working_file,scene_group,scene,view,devices,role,usefulness,duplicate_of,retake,has_people,notes
+round2-newer,IMG_4240,round2-newer/salmon-character-cary-01.jpg,characters,Cary Trott,portrait,,character,reference,,,y,Requested to appear in game. Keeping face in MVP.
+round2-newer,IMG_4260,round2-newer/salmon-character-magnolia-01.jpg,characters,Magnolia,portrait,,character,reference,,,y,Future character.
+round2-newer,IMG_4259,round2-newer/salmon-character-morgan-01.jpg,characters,Morgan,portrait,,character,reference,,,y,Future character.
+round2-newer,IMG_4257,round2-newer/salmon-foh-dante-controller-screen-01.jpg,foh,Dante Controller screen,screen,dante-controller; stagebox-s32; dante-virtual-soundcard,screen,high,,,n,One-to-one routing shown; key signal-flow asset.
+round1-older,IMG_4132,round1-older/salmon-foh-computer-area-02.jpg,foh,FOH computer,side,monitor; keyboard; x32,alt,low,,,y,"Older, weaker."
+round2-newer,IMG_4241,round2-newer/salmon-foh-computer-area-01.jpg,foh,FOH computer,closeup,monitor; ssl2plus; mac-mini; mouse; keyboard,device-view,high,,,n,
+round3-newer,IMG_4265,round3-newer/salmon-foh-computer-rear-01.jpg,foh,FOH computer rear,rear,mac-mini; ssl2plus,device-view,high,,,y,New view. HDMI/power/data to monitor not fully in frame; retake maybe.
+round1-older,IMG_4126,round1-older/salmon-foh-rack-front-closeup-02.jpg,foh,FOH rack,front-closeup,furman; ptu6000 receivers; headphone amps,alt,low,,,n,"Older; 4238 is better. Dictation called this an amp; photo shows wireless rack, please confirm."
+round2-newer,IMG_4238,round2-newer/salmon-foh-rack-front-closeup-01.jpg,foh,FOH rack,front-closeup,furman; 3x ptu6000 (24 ch); lav receivers; 2 headphone distribution amps; drawer,device-closeup,high,,,n,Furman on top should be on; not being used that way today.
+round2-newer,IMG_4237,round2-newer/salmon-foh-rack-medium-01.jpg,foh,FOH rack and computer,medium,tv monitor; ssl2plus; mac-mini; keyboard; foh rack,device-view,high,,,n,Slightly zoomed from FOH wide. Mac mini upside down with mouse on top.
+round2-newer,IMG_4239,round2-newer/salmon-foh-rack-drawer-01.jpg,foh,FOH rack drawer,closeup,"bodypack transmitters and receivers (headset, lav)",device-closeup,medium,,,n,Drawer contents.
+round1-older,IMG_4145,round1-older/salmon-foh-rack-rear-02.jpg,foh,FOH rack rear,rear,,alt,low,,,n,Older; 4264 preferred.
+round3-newer,IMG_4264,round3-newer/salmon-foh-rack-rear-01.jpg,foh,FOH rack rear,rear,ptu6000; lav receivers; furman,device-view,medium,,,n,Rear of wireless rack section.
+round1-older,IMG_4144,round1-older/salmon-foh-rear-wide-02.jpg,foh,FOH rear,rear-wide,,alt,low,,,n,Older; 4262 preferred (newer).
+round3-newer,IMG_4262,round3-newer/salmon-foh-rear-wide-01.jpg,foh,FOH rear,rear-wide,x32; foh rack; computer,nav-hub,high,,,y,"Reached from FOH wide via a control, not the walking path (180 degree turn)."
+round2-newer,IMG_4244,round2-newer/salmon-foh-right-side-wide-01.jpg,foh,FOH right side,medium-wide,binders; charged/needs-charging drawers; iem transmitters; battery chargers,device-view,medium,,,n,"Messy now. Needs a bad/suspicious batteries bin (high value, does not exist yet). Charger count 16 or 18? Mic drawers not clearly shown here."
+round2-newer,IMG_4231,round2-newer/salmon-foh-wide-01.jpg,foh,FOH wide,wide,x32; mac-mini; monitor; foh rack,nav-hub,high,,,y,"FOH hub with nested views: console, rack, computer, right side; rear view via a control."
+round3-newer,IMG_4266,round3-newer/salmon-foh-iem-rack-rear-01.jpg,foh,IEM rack rear,rear,iem transmitter; x32 outputs,device-view,medium,,,y,Right-most rack from behind; IEM fed from X32 outputs.
+round2-newer,IMG_4243,round2-newer/salmon-foh-logic-audio-settings-screen-01.jpg,foh,Logic settings screen,screen,mac-mini; logic; dante-virtual-soundcard,screen,high,,,n,Input device = Dante Virtual Soundcard. Signal on many but not all channels.
+round2-newer,IMG_4242,round2-newer/salmon-foh-ssl2plus-closeup-01.jpg,foh,SSL 2+,closeup,ssl2plus,device-closeup,high,,,n,
+round2-newer,IMG_4232,round2-newer/salmon-foh-x32-top-01.jpg,foh,X32,top,behringer-x32,device-view,high,,,n,
+round1-older,IMG_4146,round1-older/salmon-foh-x32-rear-02.jpg,foh,X32 rear,rear,behringer-x32,alt,low,,,n,Older; 4263 preferred. Useful for AES50 vs Dante cabling and analog wireless inputs.
+round3-newer,IMG_4263,round3-newer/salmon-foh-x32-rear-01.jpg,foh,X32 rear,rear,behringer-x32,device-view,high,,,n,"AES50/Dante Ethernet, analog line inputs from cheap wireless receivers."
+round2-newer,IMG_4233,round2-newer/salmon-foh-x32-screen-01.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (home/dynamics). Likely replaced by emulator overlay.
+round2-newer,IMG_4234,round2-newer/salmon-foh-x32-screen-02.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (routing).
+round2-newer,IMG_4235,round2-newer/salmon-foh-x32-screen-03.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (routing).
+round2-newer,IMG_4236,round2-newer/salmon-foh-x32-screen-04.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (EQ).
+round1-older,IMG_4127,round1-older/salmon-foh-mic-drawer-rack-01.jpg,foh,mic drawer / IEM rack,closeup,iem transmitter; battery chargers; handheld mics in drawer; audio tester box,device-closeup,high,,,n,Best mic drawer view so far. Second drawer has more mics.
+round2-newer,IMG_4247,round2-newer/salmon-center-to-stage-01.jpg,house,center aisle to stage,waypoint,,waypoint,medium,,,y,First step of alternate route from center wide toward stage. Color balance differs.
+round2-newer,IMG_4254,round2-newer/salmon-center-crossroads-01.jpg,house,center crossroads,wide,,nav-hub,high,,,y,House center facing stage. Four exits.
+round1-older,IMG_4130,round1-older/salmon-center-wide-03.jpg,house,center wide,wide,x32,reject,low,,,y,Ignore per owner. Near-duplicate.
+round2-newer,IMG_4230,round2-newer/salmon-center-wide-01.jpg,house,center wide,wide,x32; foh rack,nav-hub,high,,,y,"Whole hall, next to FOH wide. Best of the center-wide shots (pianist at piano)."
+round2-newer,IMG_4246,round2-newer/salmon-center-wide-02.jpg,house,center wide,wide,,alt,low,,,y,Near-duplicate of center-wide-01; slightly weaker.
+round2-newer,IMG_4252,round2-newer/salmon-crossroads-left-01.jpg,house,crossroads left,waypoint,piano; monitor,waypoint,high,,,y,House left / stage right toward stage-side racks. Can reach racks directly.
+round2-newer,IMG_4253,round2-newer/salmon-crossroads-right-01.jpg,house,crossroads right,waypoint,,waypoint,high,,,y,"Toward storage closet (green exit sign, two doors)."
+round2-newer,IMG_4251,round2-newer/salmon-first-entry-wide-01.jpg,house,first entry,wide,piano,nav-hub,high,,,y,First entry position inside the hall.
+round2-newer,IMG_4217,round2-newer/salmon-outside-entry-wide-01.jpg,outside,outside entry,wide,,intro,high,,,n,Intro screen. Only exit: go inside (first entry).
+round2-newer,IMG_4228,round2-newer/salmon-path-entry-to-foh-01.jpg,path,entry to FOH path,waypoint,,waypoint,medium,,,n,"First-entry to FOH-wide route, step 1."
+round2-newer,IMG_4229,round2-newer/salmon-path-entry-to-foh-02.jpg,path,entry to FOH path,waypoint,,waypoint,medium,,,y,Route step 2.
+round1-older,IMG_4131,round1-older/salmon-path-house-left-01.jpg,path,house-left path,waypoint,,waypoint,medium,,,y,"From center wide, click left. Part of house-left route from first entry to back row."
+round2-newer,IMG_4255,round2-newer/salmon-path-to-storage-01.jpg,path,path to storage,waypoint,,waypoint,medium,,,n,
+round2-newer,IMG_4249,round2-newer/salmon-listening-closeup-01.jpg,stage,listening position,closeup,monitor wedges; mic stands,device-view,medium,,,y,Closer performer-side view with wedges.
+round2-newer,IMG_4248,round2-newer/salmon-listening-wide-01.jpg,stage,listening position wide,wide,,nav-hub,medium,,,y,A2/monitor-listen perspective (where monitors are).
+round2-newer,IMG_4224,round2-newer/salmon-amp-racks-rear-wide-01.jpg,stage-side,amp racks rear,rear-wide,rack power plugs; subwoofer,nav-hub,high,,,n,"Wide back view. Power plugs visible (can be unplugged). Subwoofer with RCA input: aware of it in MVP, no routing. Reached via a ""go around back"" control, not a click."
+round1-older,IMG_4133,round1-older/salmon-mains-rack-front-medium-02.jpg,stage-side,mains rack,front-medium,mains-rack,alt,low,,,n,Older; 4219 better.
+round1-older,IMG_4134,round1-older/salmon-mains-rack-rear-02.jpg,stage-side,mains rack,rear,mains-rack,alt,low,,,n,"Older, dark."
+round2-newer,IMG_4222,round2-newer/salmon-mains-rack-front-closeup-01.jpg,stage-side,mains rack,front-closeup,furman; numark-mp103 (unused); stagebox-s32 (rear); crown-comtech210,device-closeup,high,,,n,"Top to bottom: Furman, CD player, S32 (rear shown), Crown 210."
+round2-newer,IMG_4219,round2-newer/salmon-mains-rack-front-medium-01.jpg,stage-side,mains rack,front-medium,mains-rack; mackie-mix5,device-view,medium,,,n,Rack has no lid now; front lid piece also missing. Later: AI version with lid/front piece.
+round2-newer,IMG_4221,round2-newer/salmon-mains-rack-mix5-closeup-01.jpg,stage-side,mains rack,top-closeup,mackie-mix5; 3.5mm cable; usb-c and lightning adapters,device-closeup,high,,,n,Mix5 with 3.5 mm cable and phone adapters. Affects gameplay/signal flow: phone playback via Mix5.
+round2-newer,IMG_4227,round2-newer/salmon-mains-rack-rear-01.jpg,stage-side,mains rack,rear,stagebox-s32,device-view,high,,,n,"S32 is mounted backwards, so its front faces us while the rest show rears."
+round1-older,IMG_4135,round1-older/salmon-monitor-amp-rack-front-02.jpg,stage-side,monitor amp rack,front,monitor-amp-rack,alt,low,,,n,Older; 4220 better.
+round1-older,IMG_4136,round1-older/salmon-monitor-amp-rack-rear-02.jpg,stage-side,monitor amp rack,rear,monitor-amp-rack,alt,low,,,n,"Older, dark."
+round2-newer,IMG_4220,round2-newer/salmon-monitor-amp-rack-front-01.jpg,stage-side,monitor amp rack,front,monitor-amp-rack; furman-m8lx; behringer amps; crown-comtech800,device-view,high,,,n,Furman plus four amps visible.
+round2-newer,IMG_4225,round2-newer/salmon-monitor-amp-rack-rear-01.jpg,stage-side,monitor amp rack,rear,monitor-amp-rack,device-view,high,,,n,
+round2-newer,IMG_4218,round2-newer/salmon-stageside-racks-wide-01.jpg,stage-side,stage-side racks,front-wide,mains-rack; monitor-amp-rack,nav-hub,high,,,n,"Primary hub. Mains Rack left, Monitor Amp Rack right, front view, zoomed out."
+round1-older,IMG_4143,round1-older/salmon-storage-husky-toolbox-01.jpg,storage,Husky toolbox,closeup,DIs; adapters; quarter-inch and other cables,device-closeup,medium,,,n,
+round1-older,IMG_4141,round1-older/salmon-storage-live-sound-cart-01.jpg,storage,Salmon live sound cart,medium,passive wedges (2 visible); cables; adapters; mic stand bucket,device-view,high,,,n,Photo taken with the 3 monitors already out. Want AI version with 5 wedges on cart.
+round1-older,IMG_4140,round1-older/salmon-storage-school-of-rock-cart-01.jpg,storage,School of Rock van cart,medium,,reference,low,,,n,"Chapman jams/commercial ensemble cart. Show, not used for monitors."
+round1-older,IMG_4138,round1-older/salmon-storage-closet-one-door-open-01.jpg,storage,storage closet,wide,,nav,medium,,,n,"Right door open, left closed. Camera slightly right of 4256."
+round1-older,IMG_4139,round1-older/salmon-storage-door-latch-01.jpg,storage,storage closet door latch,closeup,,mini-game,high,,,n,"Left door has a manual lever lock. If left unlocked, doors open without card. Teaching moment."
+round2-newer,IMG_4256,round2-newer/salmon-storage-entry-doors-open-01.jpg,storage,storage entry,wide,,nav-hub,high,,,n,"Doors open, gear out. Want AI variants: doors closed, one open."
+round1-older,IMG_4142,round1-older/salmon-storage-rear-view-01.jpg,storage,storage rear,wide,projector screens; projector; 2 large passive speakers; behringer wedge on stand,reference,medium,,,n,Behind the live sound cart.
