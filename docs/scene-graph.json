@@ -210,9 +210,9 @@
    "people": true,
    "x": 680,
    "y": -70,
-   "plan_x": 0.9,
-   "plan_y": 8.8,
-   "heading_deg": 0
+   "plan_x": 5.5,
+   "plan_y": 10.8,
+   "heading_deg": -165
   },
   "foh-wide": {
    "file": "foh/foh-wide.jpg",
@@ -223,8 +223,8 @@
    "people": true,
    "x": 680,
    "y": 90,
-   "plan_x": 2.0,
-   "plan_y": 8.5,
+   "plan_x": 1.5,
+   "plan_y": 10,
    "heading_deg": 20
   },
   "dante-controller-screen": {
@@ -316,7 +316,7 @@
    "people": true,
    "x": 900,
    "y": 330,
-   "plan_x": 8.5,
+   "plan_x": 8.2,
    "plan_y": 8.2,
    "heading_deg": 0
   },
@@ -340,8 +340,8 @@
    "x": 680,
    "y": 260,
    "heading_deg": 0,
-   "plan_x": 2.4,
-   "plan_y": 7.3
+   "plan_x": 0.6,
+   "plan_y": 7.8
   },
   "crossroads-left": {
    "file": "house/crossroads-left.jpg",
@@ -405,8 +405,8 @@
    "x": 380,
    "y": 120,
    "heading_deg": -33,
-   "plan_x": 6.0,
-   "plan_y": 5.4
+   "plan_x": 2.2,
+   "plan_y": 3.2
   },
   "path-to-storage": {
    "file": "path/path-to-storage.jpg",
@@ -417,7 +417,7 @@
    "people": false,
    "x": 1300,
    "y": 330,
-   "plan_x": 11.0,
+   "plan_x": 11,
    "plan_y": 12.8,
    "heading_deg": 90
   },
@@ -530,9 +530,9 @@
    "people": false,
    "x": 300,
    "y": 720,
-   "plan_x": 15.8,
-   "plan_y": 1.2,
-   "heading_deg": -150
+   "plan_x": 15.3,
+   "plan_y": 3.1,
+   "heading_deg": -115
   },
   "racks-front-wide": {
    "file": "stage-side/racks-front-wide.jpg",
@@ -543,9 +543,9 @@
    "people": false,
    "x": 300,
    "y": 520,
-   "plan_x": 14.0,
-   "plan_y": 2.7,
-   "heading_deg": -75
+   "plan_x": 13.5,
+   "plan_y": 2.3,
+   "heading_deg": -50
   },
   "musician-pov": {
    "file": "stage/musician-pov.jpg",
@@ -569,8 +569,8 @@
    "people": true,
    "x": 620,
    "y": 820,
-   "plan_x": 17.7,
-   "plan_y": 8.2,
+   "plan_x": 19,
+   "plan_y": 8.3,
    "heading_deg": 180
   },
   "storage-door-latch": {
@@ -632,8 +632,8 @@
    "people": false,
    "x": 1480,
    "y": 500,
-   "plan_x": 12.2,
-   "plan_y": 17.7,
+   "plan_x": 11.7,
+   "plan_y": 19.4,
    "heading_deg": 90
   },
   "storage-entry": {
@@ -652,15 +652,15 @@
   "first-entry-look-right": {
    "file": "intro/first-entry-look-right.jpg",
    "region": "intro",
-   "kind": "closeup",
+   "kind": "waypoint",
    "label": "first-entry-look-right",
    "src": "IMG_4228",
    "people": false,
    "x": 280,
    "y": 260,
-   "heading_deg": 144,
-   "plan_x": 12.8,
-   "plan_y": 1.1
+   "heading_deg": -175,
+   "plan_x": 12.6,
+   "plan_y": 0.9
   },
   "path-entry-to-center": {
    "file": "path/path-entry-to-center.jpg",
@@ -672,8 +672,21 @@
    "x": 480,
    "y": 260,
    "heading_deg": 88,
-   "plan_x": 9.6,
-   "plan_y": 3.4
+   "plan_x": 6.5,
+   "plan_y": 1.1
+  },
+  "first-entry-rj45-ports": {
+   "file": "intro/first-entry-rj45-ports.jpg",
+   "region": "intro",
+   "kind": "hub",
+   "label": "first-entry-rj45-ports",
+   "src": "IMG_4131 for RJ45 ports",
+   "people": false,
+   "x": 460,
+   "y": 380,
+   "plan_x": 12.8,
+   "plan_y": 1.1,
+   "heading_deg": -90
   }
  },
  "edges": [
@@ -693,7 +706,7 @@
    "turn_degrees": null,
    "note": "",
    "dir_degrees": -125,
-   "distance_m": 2.0
+   "distance_m": 2
   },
   {
    "from": "center-wide",
@@ -711,7 +724,7 @@
    "turn_degrees": null,
    "note": "",
    "dir_degrees": 10,
-   "distance_m": 8.0
+   "distance_m": 8
   },
   {
    "from": "center-wide",
@@ -889,7 +902,7 @@
    "turn_degrees": null,
    "note": "",
    "dir_degrees": 120,
-   "distance_m": 7.0
+   "distance_m": 7
   },
   {
    "from": "racks-rear-wide",
@@ -898,7 +911,7 @@
    "turn_degrees": null,
    "note": "",
    "dir_degrees": -130,
-   "distance_m": 7.0
+   "distance_m": 7
   },
   {
    "from": "racks-front-wide",
@@ -1141,7 +1154,7 @@
    "turn_degrees": null,
    "dir_degrees": -120,
    "note": "auto reverse of first-entry -> racks-front-wide",
-   "distance_m": 2.0
+   "distance_m": 2
   },
   {
    "from": "racks-front-wide",
@@ -1275,6 +1288,26 @@
    "dir_degrees": -124,
    "distance_m": 3.9,
    "note": "auto reverse: walk back and to the left"
+  },
+  {
+   "from": "first-entry-look-right",
+   "to": "first-entry-rj45-ports",
+   "kind": "control",
+   "motion": "turn",
+   "turn_degrees": 85,
+   "dir_degrees": 90,
+   "distance_m": 0,
+   "note": "keeps turning right toward the wall network panel (placeholder photo)"
+  },
+  {
+   "from": "first-entry-rj45-ports",
+   "to": "first-entry-look-right",
+   "kind": "control",
+   "motion": "turn",
+   "turn_degrees": -85,
+   "dir_degrees": -90,
+   "distance_m": 0,
+   "note": "turn back left; continues on to first-entry"
   }
  ]
 }

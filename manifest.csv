@@ -35,6 +35,7 @@ round2-newer,IMG_4252,house/crossroads-left.jpg,house,crossroads left,waypoint,p
 round2-newer,IMG_4253,house/crossroads-right.jpg,house,crossroads right,waypoint,,waypoint,high,,,y,"Toward storage closet (green exit sign, two doors)."
 round2-newer,IMG_4254,house/crossroads.jpg,house,center crossroads,wide,,nav-hub,high,,,y,House center facing stage. Four exits.
 round2-newer,IMG_4228,intro/first-entry-look-right.jpg,intro,first entry look right,look,,turn-look,medium,,,n,"Option B: a look right (about 53 degrees, in place) from first-entry, not a step on the path. Heading 144 deg (stage = 0)."
+round1-older,IMG_4131 for RJ45 ports,intro/first-entry-rj45-ports.jpg,intro,first entry rj45 ports,look,wall network panel (RJ45 jacks),placeholder,medium,IMG_4131,y,n,"Placeholder: a crop of IMG_4131 standing in until a proper photo is taken from first-entry, continuing the turn right past first-entry-look-right."
 round2-newer,IMG_4251,intro/first-entry.jpg,house,first entry,wide,piano,nav-hub,high,,,y,First entry position inside the hall.
 round2-newer,IMG_4217,intro/outside-entry.jpg,outside,outside entry,wide,,intro,high,,,n,Intro screen. Only exit: go inside (first entry).
 round1-older,IMG_4131,path/path-center-to-entry-step1.jpg,path,center wide to first entry,waypoint,,waypoint,medium,,,y,Seen going from center wide (4230) toward first entry. Reverse direction shows path-entry-to-center-01/02 instead.

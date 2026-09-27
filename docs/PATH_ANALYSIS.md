@@ -32,3 +32,8 @@ IMG_4131 faces 33 degrees left of center-wide, so it is not on the straight line
 - `path-entry-to-center-step2` (IMG_4229) is now `path-entry-to-center`, the only waypoint between first-entry and center-wide.
 - Path: first-entry to path-entry-to-center (walk 4 m forward-right, camera turn -3), then to center-wide (walk 9 m, turn -88). Walking through the waypoint plays as one chained move.
 - Distances are estimates. Headings above were measured; earlier names in the tables refer to the old step1/step2.
+
+## RJ45 ports view (placeholder)
+- `first-entry-rj45-ports` (`intro/first-entry-rj45-ports.jpg`) is a crop of IMG_4131 showing the wall network panel beside the three doors. It is a stand-in until a proper photo is taken from the first-entry spot.
+- Choosing the turn icon at first-entry now plays one continuous right turn: first-entry, through `first-entry-look-right` (now a waypoint), to the RJ45 view. Turning back from the RJ45 view unwinds the same way to first-entry.
+- Chaining now also continues through turn-in-place links, not just walk links.
