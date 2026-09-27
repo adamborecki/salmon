@@ -760,7 +760,9 @@
    "turn_degrees": 0,
    "note": "direct, no stop between",
    "dir_degrees": 0,
-   "distance_m": 7.7
+   "distance_m": 7.7,
+   "icon_x": 51.5,
+   "icon_y": 9.6
   },
   {
    "from": "crossroads",
@@ -956,7 +958,25 @@
    "to": "mains-rack-front",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 28.6,
+     "y": 41.4
+    },
+    {
+     "x": 31.2,
+     "y": 75.2
+    },
+    {
+     "x": 46.1,
+     "y": 76.6
+    },
+    {
+     "x": 46.6,
+     "y": 41.5
+    }
+   ]
   },
   {
    "from": "racks-front-wide",
