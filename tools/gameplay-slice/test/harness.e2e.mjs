@@ -1,5 +1,6 @@
-// End-to-end: play the slice on a phone-sized touch screen by tapping the photo and buttons like a
-// player would. Run from the repo root after `python3 tools/gameplay-slice/build.py`:
+// End-to-end: play the battery-in check on a phone-sized touch screen by tapping the photo and buttons
+// like a player would: three mics by hand (one of them the muted one), then "Check the rest".
+// Run from the repo root after `python3 tools/gameplay-slice/build.py`:
 //   node tools/gameplay-slice/test/harness.e2e.mjs            (SHOTS=<dir> saves screenshots)
 // Needs Playwright with Chromium (local or global install). Serves dist/ itself.
 import { createRequire } from 'node:module';
@@ -29,50 +30,69 @@ await page.goto(BASE + '#VJ-48217', { waitUntil: 'networkidle' });
 const shot = async n => { if (SHOTS) await page.screenshot({ path: `${SHOTS}/slice-${n}.png`, fullPage: true }); };
 const tapHot = async label => { await page.tap(`#hot polygon[aria-label="${label}"]`); await page.waitForTimeout(250); };
 const tapBack = async () => { await page.tap('#back'); await page.waitForTimeout(250); };
+const tap = async sel => { await page.tap(sel); await page.waitForTimeout(150); };
 const where = () => page.textContent('#where');
-const chip = ch => page.$eval(`.chips .chip:nth-child(${ch}) span`, s => s.textContent);
-const fault = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-0\d)/)[1]);
-const faultCh = +fault.slice(-1);
-ok(fault === 'handheld-04', `seed VJ-48217 from the link picks ${fault}`);
-ok((await page.$$eval('.chips .chip', c => c.length)) === 4, 'objective shows four channels');
+const chip = ch => page.$eval(`.chips .chip[data-ch="${ch}"]`, c => c.dataset.s);
+const stepsDone = () => page.$$eval('#steps li', ls => ls.filter(l => l.classList.contains('done')).map(l => l.dataset.step));
+const fault = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-\d\d)/)[1]);
+const faultCh = +fault.slice(-2);
+ok(faultCh === 2 || faultCh === 3, `seed VJ-48217 from the link mutes ch ${faultCh} (always 2 or 3)`);
+ok((await page.$$eval('.chips .chip', c => c.length)) === 16, 'objective shows 16 channels');
+ok(/Next: Mic 1 \(black \/ red\)/.test(await page.textContent('#steps .now')), 'step list starts at Mic 1 (black / red)');
+ok(await page.$eval('#skipBtn', b => b.disabled), 'Check the rest is not offered yet');
+ok(/not simulated yet/.test(await page.textContent('#steps li[data-step="batteries"]')), 'battery step is listed as not simulated yet');
 await shot('1-start');
 
-// the drawer: FOH -> Mic cabinet -> Mic drawer, all by tapping hotspots on the photo
-await tapHot('Mic cabinet'); ok((await where()) === 'Mic cabinet', 'hotspot to the mic cabinet');
-await tapHot('Mic drawer'); ok((await where()) === 'Mic drawer', 'hotspot into the mic drawer');
-for (let ch = 1; ch <= 4; ch++) {
-  await page.tap(`.mic[data-id="handheld-0${ch}"]`); await page.waitForTimeout(100);
-  await tapBack(); await tapBack();                          // back out to FOH
+for (let ch = 1; ch <= 3; ch++) {
+  const id = 'handheld-0' + ch;
+  await tapHot('Mic cabinet'); ok((await where()) === 'Mic cabinet', `CH ${ch}: hotspot to the mic cabinet`);
+  await tapHot('Mic drawer'); ok((await where()) === 'Mic drawer', `CH ${ch}: hotspot into the mic drawer`);
+  ok((await page.$$eval('.drawer .slot[data-id] svg.mic', s => s.length)) === 17 - ch, `CH ${ch}: ${17 - ch} mics drawn in the drawer`);
+  if (ch === 1) await shot('2-drawer');
+  await tap(`.slot[data-id="${id}"]`);
+  ok((await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))).join() === id, `CH ${ch}: in the left hand, right hand empty`);
+  ok((await stepsDone()).join() === 'take', `CH ${ch}: step 1 ticked`);
+  await tapBack(); await tapBack();
   await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
-  await page.tap('#talkHere'); await page.waitForTimeout(200);
-  if (ch === 1) await shot('2-talk-at-x32');
+  await tap('#readBtn');
+  const lcd = await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'));
+  ok(lcd.includes(`channel ${ch}`) && lcd.includes('muted') === (ch === faultCh), `CH ${ch}: display reads "${lcd}"`);
+  await tap('#talkHere');
   if (ch !== faultCh) {
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
     ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"] i`, i => i.getAnimations().length > 0), `CH ${ch}: its X32 meter animates`);
-  }
-  else {
-    ok((await chip(ch)) === 'no signal', `CH ${ch}: no signal (NOTICE)`);
+  } else {
+    await shot('3-muted-display');
+    ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: no signal (NOTICE)`);
     ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"]`, s => s.classList.contains('dead')), `CH ${ch}: its X32 strip flags no signal`);
     await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
-    await page.tap('#talkHere'); await page.waitForTimeout(200);
-    ok((await page.textContent('#dbg')).length > 0 && (await chip(ch)) === 'no signal', `CH ${ch}: dead at the receiver too (TRACE)`);
-    await page.tap('#inspectBtn'); await page.waitForTimeout(100);
-    ok(/muted/.test(await page.textContent('#toast')), `CH ${ch}: inspecting shows it is muted`);
-    await page.tap('#tapBtn'); await page.waitForTimeout(100);                                   // ACT
+    await tap('#talkHere');
+    ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: dead at the receiver too (TRACE)`);
+    await tap('#tapBtn');                                                                     // ACT
     ok((await chip(ch)) !== 'verified', `CH ${ch}: unmuting alone does not verify it`);
+    ok(!(await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'))).includes('muted'), `CH ${ch}: the display no longer shows mute`);
     await tapBack(); await tapBack(); await tapHot('X32');
-    await page.tap('#talkHere'); await page.waitForTimeout(200);                                 // VERIFY
+    await tap('#talkHere');                                                                  // VERIFY
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32 again`);
   }
-  await tapBack(); await tapHot('Mic cabinet'); await tapHot('Mic drawer');
-  await page.tap(`.mic[data-id="handheld-0${ch}"]`); await page.waitForTimeout(100);        // put it back
+  ok((await stepsDone()).join() === 'take,display,talk', `CH ${ch}: steps 1, 3, 4 ticked`);
+  await tap('#chairBtn');
+  ok(await page.$(`#chair button[data-id="${id}"][data-s="verified"]`) !== null, `CH ${ch}: on the chair left of FOH, verified`);
+  await tapBack(); ok((await where()) === 'FOH', `CH ${ch}: back at FOH`);
 }
+ok(/Next: Mic 4/.test(await page.textContent('#steps .now')), 'step list moves on to Mic 4');
+ok(!(await page.$eval('#skipBtn', b => b.disabled)), 'Check the rest is offered after 3 by hand');
+await shot('4-skip-offered');
+await tap('#skipBtn');
 await page.waitForTimeout(1600);
+ok((await page.$$eval('.chips .chip[data-s="verified"]', c => c.length)) === 16, 'Check the rest verifies the other 13');
+ok((await page.$$eval('#chair button', b => b.length)) === 16, 'all 16 on the chair');
 ok(!(await page.$eval('#sheet', s => s.hidden)), 'debrief opens when every mic is verified');
 const lines = await page.$$eval('#dbList li', ls => ls.map(l => l.textContent));
-ok(/Ready: all 4 mics verified/.test(lines[0]), 'debrief: ready');
+ok(/Ready: all 16 mics verified/.test(lines[0]), 'debrief: ready');
 for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(lines.some(l => l.startsWith(step)), `debrief: ${step}`);
-await shot('3-debrief');
+ok(lines.some(l => /3 mics checked by hand, 13 by Check the rest\. All on the chair\./.test(l)), 'debrief: 3 by hand, 13 by Check the rest');
+await shot('5-debrief');
 ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'no sideways scroll at phone width');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
 await browser.close(); server.close();

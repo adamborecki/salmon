@@ -1,4 +1,4 @@
-<title>Salmon Line Check</title>
+<title>Salmon Battery-In Check</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
@@ -7,6 +7,7 @@
   --stage:#0b0f13; --tape:#efe3b0; --tape-ink:#2b2615;
   --sig:#1f9d57; --sig-hi:#34d27b; --warn:#b77900; --warn-hi:#f2b233; --bad:#c9353b; --bad-hi:#e5484d;
   --accent:#0f7f78;
+  --lcd:#b7c4a2; --lcd-ink:#1d2718; --lcd-off:#262b27; --body:#2b3036; --body-hi:#474e56;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --cond:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -23,7 +24,7 @@ body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans
 button{font:inherit;color:inherit;touch-action:manipulation}
 button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:12px 28px;display:grid;gap:12px}
-.col{display:grid;gap:12px;min-width:0}
+.col{display:grid;gap:12px;min-width:0;align-content:start}
 @media (min-width:900px){.wrap{grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);align-items:start}}
 
 /* status bar: the game clock against the 5:00 rehearsal */
@@ -38,17 +39,18 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);ou
 .btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 .btn.talk{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
 
-/* objective with scribble-strip chips, one per mic */
+/* objective: one scribble-strip chip per channel, status as a glyph (legend below) */
 .obj{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}
 .obj h2{margin:0;font:600 15px var(--sans);text-wrap:balance}
 .obj p{margin:0;color:var(--muted);font-size:12.5px}
-.chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-.chip{display:grid;gap:2px;justify-items:center;padding:6px 4px 5px;border-radius:4px;border:1px solid var(--line);background:var(--paper)}
-.chip b{font:600 13px var(--cond);letter-spacing:.06em;background:var(--tape);color:var(--tape-ink);padding:0 6px;border-radius:2px}
-.chip span{font:500 11px var(--mono);color:var(--muted);white-space:nowrap}
-.chip[data-s="verified"]{border-color:var(--sig)} .chip[data-s="verified"] span{color:var(--sig)}
-.chip[data-s="no-signal-seen"]{border-color:var(--bad)} .chip[data-s="no-signal-seen"] span{color:var(--bad)}
-.chip[data-s="recheck"],.chip[data-s="receiver-only"]{border-color:var(--warn)} .chip[data-s="recheck"] span,.chip[data-s="receiver-only"] span{color:var(--warn)}
+.chips{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.chip{display:grid;gap:1px;justify-items:center;padding:4px 2px 3px;border-radius:4px;border:1px solid var(--line);background:var(--paper)}
+.chip b{font:600 12px var(--cond);letter-spacing:.04em;background:var(--tape);color:var(--tape-ink);padding:0 4px;border-radius:2px;font-variant-numeric:tabular-nums}
+.chip i{font:600 12px/1.2 var(--mono);font-style:normal;color:var(--muted)}
+.chip[data-s="verified"]{border-color:var(--sig)} .chip[data-s="verified"] i{color:var(--sig)}
+.chip[data-s="no-signal-seen"]{border-color:var(--bad)} .chip[data-s="no-signal-seen"] i{color:var(--bad)}
+.chip[data-s="recheck"],.chip[data-s="receiver-only"]{border-color:var(--warn)} .chip[data-s="recheck"] i,.chip[data-s="receiver-only"] i{color:var(--warn)}
+.legend{font:500 11px var(--mono);color:var(--muted)}
 
 /* stage: the real photo, 4:3 like the Walk view, so hotspot percentages mean the same thing */
 .stage{position:relative;width:100%;max-width:100%;aspect-ratio:4/3;background:var(--stage);border-radius:8px;overflow:hidden;color:#fff}
@@ -58,35 +60,69 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);ou
 #photo.fading{opacity:0}
 #hot{position:absolute;inset:0;width:100%;height:100%}
 .hot{fill:#fff;fill-opacity:.07;stroke:#fff;stroke-opacity:.85;stroke-width:1.6;vector-effect:non-scaling-stroke;cursor:pointer;outline:none;transition:fill-opacity .15s}
-.hot:hover,.hot:focus-visible{fill-opacity:.24}
+@media (hover:hover){.hot:hover{fill-opacity:.24}}
+.hot:focus-visible{fill-opacity:.24}
 .hlabel{position:absolute;transform:translate(-50%,-50%);font:600 11px/1.2 var(--mono);background:rgba(0,0,0,.62);padding:2px 7px;border-radius:8px;pointer-events:none;max-width:78px;text-align:center;text-wrap:balance}
 .where{position:absolute;left:8px;top:8px;font:500 11px var(--mono);background:rgba(0,0,0,.6);padding:3px 8px;border-radius:4px}
 #back{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(0,0,0,.66);color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:18px;padding:7px 18px;font-weight:600;cursor:pointer}
-.toast{position:absolute;left:8px;right:8px;top:36px;background:rgba(11,15,19,.86);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:7px 10px;font-size:13px;text-align:center}
+.toast{position:absolute;left:8px;right:8px;top:36px;background:rgba(11,15,19,.86);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:7px 10px;font-size:13px;text-align:center;pointer-events:none}
 .toast.good{border-color:var(--sig-hi)} .toast.bad{border-color:var(--bad-hi)} .toast.hint{border-color:var(--warn-hi)}
 
-/* context panel under the stage */
+/* cards */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:10px}
 .card h3{margin:0;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .card p{margin:0}
 .fine{font-size:12px;color:var(--muted)}
 .row{display:flex;flex-wrap:wrap;gap:8px}
+
+/* step list: the per-mic routine */
+.now{font-weight:600}
+.steps{margin:0;padding:0;list-style:none;display:grid;gap:4px;counter-reset:st}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:baseline;counter-increment:st;padding:3px 0}
+.steps li::before{content:counter(st);font:600 11px/20px var(--mono);text-align:center;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);color:var(--muted)}
+.steps li.done::before{content:"✓";background:var(--sig);border-color:var(--sig);color:#fff}
+.steps li.done span{color:var(--muted)}
+.steps li.off span{color:var(--muted)}
+.steps em{font:500 10.5px var(--mono);font-style:normal;color:var(--muted);border:1px dashed var(--line);border-radius:3px;padding:0 4px;margin-left:4px;white-space:nowrap}
+.skip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-top:1px solid var(--line);padding-top:10px}
+.skip .fine{flex:1 1 160px}
+
 /* meters: simplified channel strips, not a copy of the device's own screen */
-.meters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--stage);border-radius:6px;padding:10px 10px 8px}
-.strip{display:grid;justify-items:center;gap:5px}
-.meter{position:relative;width:18px;height:96px;border-radius:3px;background:repeating-linear-gradient(to top,#1a232c 0 6px,#0b0f13 6px 8px);overflow:hidden}
-.meter i{position:absolute;left:0;right:0;bottom:0;height:0;background:repeating-linear-gradient(to top,var(--sig-hi) 0 6px,transparent 6px 8px);
-}
-.meter i::after{content:"";position:absolute;left:0;right:0;top:0;height:24px;background:repeating-linear-gradient(to top,var(--warn-hi) 0 6px,transparent 6px 8px)}
+.meters{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px 4px;background:var(--stage);border-radius:6px;padding:10px 6px 8px}
+.strip{display:grid;justify-items:center;gap:4px}
+.meter{position:relative;width:14px;height:64px;border-radius:3px;background:repeating-linear-gradient(to top,#1a232c 0 5px,#0b0f13 5px 7px);overflow:hidden}
+.meter i{position:absolute;left:0;right:0;bottom:0;height:0;background:repeating-linear-gradient(to top,var(--sig-hi) 0 5px,transparent 5px 7px)}
+.meter i::after{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:repeating-linear-gradient(to top,var(--warn-hi) 0 5px,transparent 5px 7px)}
 .strip.dead .meter{box-shadow:0 0 0 2px var(--bad-hi)}
-.strip b{font:600 12px var(--cond);letter-spacing:.06em;background:var(--tape);color:var(--tape-ink);padding:0 5px;border-radius:2px}
-.strip span{font:500 10px var(--mono);color:#aeb9c4}
-.mics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.mic{display:grid;gap:4px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer}
-.mic small{font:500 11px var(--mono);color:var(--muted)}
-.mic[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.hand{display:grid;gap:8px}
-.hand .state{font:500 12px var(--mono);color:var(--muted)}
+.strip.mine b{outline:2px solid var(--accent);outline-offset:1px}
+.strip b{font:600 11px var(--cond);letter-spacing:.04em;background:var(--tape);color:var(--tape-ink);padding:0 3px;border-radius:2px;font-variant-numeric:tabular-nums}
+
+/* the mic drawer: the handhelds drawn from data, in colour order */
+.drawer{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px 4px}
+.slot{display:grid;justify-items:center;gap:3px;padding:4px 0 3px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer;min-height:112px}
+.slot svg{width:100%;max-width:30px;height:84px}
+.slot b{font:600 11px var(--cond);background:var(--tape);color:var(--tape-ink);padding:0 3px;border-radius:2px;font-variant-numeric:tabular-nums}
+.slot.gone{border-style:dashed;background:transparent;cursor:default}
+.slot.gone small{font:500 9.5px/1.2 var(--mono);color:var(--muted);text-align:center;align-self:center}
+
+/* hands: two slots, no hand art */
+.hands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.handslot{border:1px dashed var(--line);border-radius:6px;padding:8px;display:grid;gap:6px;align-content:start;min-height:84px}
+.handslot.full{border-style:solid;border-color:var(--accent)}
+.handslot .lbl{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.inhand{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center}
+.inhand svg.mic{width:34px;height:124px}
+.lcdbox svg{width:100%;max-width:150px;height:auto;display:block}
+.lcdbox text{font-family:var(--mono);font-weight:600}
+.bd{fill:var(--body)} .bdh{fill:var(--body-hi)} .bdhs{stroke:var(--body-hi)} .lcdoff{fill:var(--lcd-off)} .lcdon{fill:var(--lcd)} .lk{fill:var(--lcd-ink)} .lks{stroke:var(--lcd-ink)}
+
+/* chair left of FOH: not in any photo, so a box of text */
+.chair{display:flex;flex-wrap:wrap;gap:4px}
+.chair button{border:1px solid var(--line);background:var(--paper);border-radius:4px;padding:3px 5px;cursor:pointer;display:inline-flex;gap:4px;align-items:center}
+.chair button b{font:600 11px var(--cond);background:var(--tape);color:var(--tape-ink);padding:0 3px;border-radius:2px}
+.chair button i{font:600 11px var(--mono);font-style:normal}
+.chair button[data-s="verified"] i{color:var(--sig)} .chair button[data-s="no-signal-seen"] i{color:var(--bad)}
+
 .log{max-height:180px;overflow:auto;font:12px/1.5 var(--mono);color:var(--muted);margin:0;padding-left:18px}
 details summary{cursor:pointer;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);margin:8px 0 0;color:var(--muted)}
@@ -120,17 +156,19 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
       <div class="toast" id="toast" hidden></div>
       <button id="back" hidden>Back</button>
     </div>
+    <div class="card" id="steps"></div>
   </div>
   <div class="col">
     <div class="card" id="panel"></div>
-    <div class="card hand" id="hand"></div>
+    <div class="card" id="hand"></div>
+    <div class="card" id="chair"></div>
     <div class="card">
       <details id="logBox"><summary>Activity</summary><ol class="log" id="log"></ol></details>
       <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button></div></details>
     </div>
   </div>
 </div>
-<div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, channel numbering, what the transmitter shows) are placeholders, not room facts.</p></div></div>
+<div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, which channels are the spares, the chair, the display layout and mute glyph) are placeholders, not room facts.</p></div></div>
 
 <script type="application/json" id="contentData">__CONTENT__</script>
 <script type="application/json" id="graphData">__GRAPH__</script>
@@ -140,28 +178,36 @@ const content = JSON.parse(document.getElementById('contentData').textContent);
 const G = JSON.parse(document.getElementById('graphData').textContent);
 const eng = engine(content);
 const $ = s => document.querySelector(s);
+const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.chair.label;
 // player-facing names for the places the slice uses (UI copy, not room data)
 const PLACE = { 'foh-wide': 'FOH', 'x32-top': 'X32', 'foh-rack': 'Wireless rack', 'foh-rack-closeup': 'Receivers', 'foh-right-side': 'Mic cabinet', 'foh-mic-drawer': 'Mic drawer' };
-const STATUS = { 'not-checked': 'not checked', 'no-signal-seen': 'no signal', 'recheck': 're-check', 'receiver-only': 'check X32', 'verified': 'verified' };
+const STATUS = { 'not-checked': ['–', 'not checked'], 'no-signal-seen': ['✕', 'no signal'], 'recheck': ['↻', 're-check'], 'receiver-only': ['◐', 'check X32'], 'verified': ['✓', 'verified'] };
+// how the named colours are drawn (rendering only; which mic has which colour comes from content)
+const PAINT = { black: '#1c1e21', grey: '#8d949b', red: '#d8323c', orange: '#ef7b1d', yellow: '#f0c419', green: '#2f9e50', blue: '#2f6fd6', purple: '#7d4cc2' };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const two = n => String(n).padStart(2, '0');
 
-let game, trail = [], lastEvents = [], toastT = null;
+let game, trail = [], toastT = null;
 const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
 function boot(seed) {
-  game = eng.start(seed); trail = []; lastEvents = [];
+  game = eng.start(seed); trail = [];
   $('#log').innerHTML = ''; $('#sheet').hidden = true;
-  say('4:50 PM, doors are open. Vocal Jazz rehearses at 5:00. Line-check the wireless mics before then.', 'hint', 6000);
+  say('4:50 PM. Batteries are going into the wireless mics. Check each one here at FOH before it goes to the stage.', 'hint', 6500);
   render(true);
 }
 function act(a) {
   const r = eng.act(game, a);
   if (r.error) { say(r.error.message, 'bad'); return r; }
-  game = r.game; lastEvents = r.events;
-  const e = game.log[game.log.length - 1]; logLine(e);
-  render(a.type === 'go');   // render first: the meters below animate the freshly drawn strips
+  const before = game.log.length, sceneBefore = game.scene;
+  game = r.game;
+  for (const e of game.log.slice(before)) logLine(e);
+  if (a.type === 'check_rest') trail = game.scene === 'foh-wide' ? [] : ['foh-wide'];
+  render(game.scene !== sceneBefore);   // render first: the meters below animate the freshly drawn strips
   for (const ev of r.events) {
     if (ev.type === 'meter') pulse(ev.point, ev.signal);
-    if (ev.text) say(ev.text, ev.type === 'verified' || ev.type === 'objective-complete' ? 'good' : ev.type === 'hint' ? 'hint' : ev.type === 'nothing' || ev.type === 'no-display' ? 'bad' : '');
-    if (ev.type === 'inspect') { const s = ev.state; say(`${content.devices[ev.device].label}: power ${s.power}${s.power === 'on' ? (s.muted ? ', muted' : ', not muted') : ''}.`, s.muted ? 'bad' : ''); }
+    if (ev.type === 'skip-stopped') pulse(eng.path(ev.mic).at(-1), false);
+    if (ev.type === 'inspect') { const l = ev.lcd; say(`${D[ev.device].label}: ${l.on ? `display shows CH ${two(l.channel)}${l.muted ? ' and MUTED' : ', not muted'}` : 'display is blank'}.`, l.on && !l.muted ? '' : 'bad'); }
+    else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['nothing', 'no-display', 'skip-stopped'].includes(ev.type) ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
   return r;
@@ -173,22 +219,50 @@ function say(text, kind = '', ms = 3200) {
   clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms);
 }
 function logLine(e) {
-  const n = content.devices[e.device || e.mic]; const li = document.createElement('li');
-  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${n && n.label}`, put_back: `put back ${n && n.label}`,
-    press: `${e.how === 'tap' ? 'tapped' : 'held'} the button on ${n && n.label}`, inspect: `inspected ${n && n.label}`,
-    talk: `talked into ${n && n.label}${e.observed && e.observed.length ? e.observed.map(o => o.signal ? ' - signal' : ' - no signal').join('') : ' (no meter in view)'}`, hint: `took hint ${e.level}` }[e.type];
-  li.textContent = what; $('#log').prepend(li);
+  const n = D[e.device || e.mic], L = n && n.label; const li = document.createElement('li');
+  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${L}`, put: `put ${L} ${e.place === 'chair' ? 'on the chair' : 'back in the drawer'}`,
+    press: `${e.how === 'tap' ? 'tapped' : 'held'} the button on ${L}`, inspect: `read the display on ${L}`,
+    talk: `talked into ${L}${e.observed && e.observed.length ? e.observed.map(o => o.signal ? ': signal' : ': no signal').join('') : ' (no meter in view)'}`, hint: `took hint ${e.level}`,
+    check_rest: e.type !== 'check_rest' ? '' : e.stoppedAt ? `${SKIP}: ${e.checked.length} verified, stopped at ${D[e.stoppedAt].label}` : `${SKIP}: ${e.checked.length} verified` }[e.type];
+  li.textContent = (e.via === 'skip' ? '↳ ' : '') + what; $('#log').prepend(li);
+}
+
+// a handheld drawn from its content data: windscreen colour, ring colour, body, display window, button
+function micSVG(dv, cls = '') {
+  const ws = PAINT[dv.windscreen], ring = PAINT[dv.ring] || '#777';
+  const head = ws ? `<circle cx="24" cy="22" r="19" fill="${ws}"/><ellipse cx="18" cy="15" rx="7" ry="5" fill="#fff" fill-opacity=".14"/>`
+    : `<circle cx="24" cy="22" r="17" fill="#9aa2a9"/><path d="M9 16h30M7 22h34M9 28h30M14 10h20M14 34h20" stroke="#6c747b" stroke-width="1.2"/>`;
+  return `<svg class="mic ${cls}" viewBox="0 0 48 176" aria-hidden="true">${head}
+    <rect x="11" y="40" width="26" height="9" rx="2" fill="${ring}" stroke="#fff" stroke-opacity=".35" stroke-width=".8"/>
+    <path d="M12 49h24l-4 118a4 4 0 0 1-4 4h-8a4 4 0 0 1-4-4z" class="bd"/>
+    <path d="M14 49h4l-1 118h-2z" class="bdh"/>
+    <rect x="16" y="60" width="16" height="12" rx="1.5" class="lcdoff" stroke="#000" stroke-opacity=".4" stroke-width=".6"/>
+    <circle cx="24" cy="84" r="3.6" fill="#15181b" class="bdhs" stroke-width="1"/></svg>`;
+}
+// the display close-up, once read; a placeholder layout (content behaviour.lcd and muted_indication)
+function lcdSVG(l) {
+  if (!l.on) return `<svg viewBox="0 0 160 88" role="img" aria-label="Display: blank"><rect x="1" y="1" width="158" height="86" rx="8" class="bd"/><rect x="10" y="10" width="140" height="68" rx="4" class="lcdoff"/></svg>`;
+  const glyph = content.behaviour.muted_indication.glyph.value;
+  const mute = !l.muted ? '' : glyph === 'MUTE' ? `<text x="140" y="70" text-anchor="end" font-size="15" class="lk">MUTE</text>`
+    : `<g transform="translate(112 50)" class="lk lks"><path d="M0 7h6l8-7v24l-8-7H0z" stroke="none"/><path d="M-2 24L22 -2" stroke-width="2.6"/></g>`;
+  return `<svg viewBox="0 0 160 88" role="img" aria-label="Display: channel ${l.channel}${l.muted ? ', muted' : ''}, battery full">
+    <rect x="1" y="1" width="158" height="86" rx="8" class="bd"/><rect x="10" y="10" width="140" height="68" rx="4" class="lcdon"/>
+    <text x="20" y="32" font-size="12" class="lk">CH</text>
+    <text x="20" y="70" font-size="36" class="lk">${two(l.channel)}</text>
+    <g transform="translate(112 20)"><rect x="0" y="0" width="26" height="12" rx="1.5" fill="none" class="lks" stroke-width="1.6"/><rect x="26" y="3.5" width="3" height="5" class="lk"/>
+    <rect x="3" y="3" width="5.5" height="6" class="lk"/><rect x="10.3" y="3" width="5.5" height="6" class="lk"/><rect x="17.6" y="3" width="5.5" height="6" class="lk"/></g>${mute}</svg>`;
 }
 
 function render(sceneChanged) {
   const v = eng.view(game);
   const clk = $('#clock'); clk.textContent = v.clock; $('#due').textContent = 'Rehearsal ' + v.readyBy;
-  const mins = (game.t + 0) / 60; clk.className = 'clock' + (mins >= 10 ? ' over' : mins >= 7 ? ' late' : '');
+  const mins = game.t / 60; clk.className = 'clock' + (mins >= 10 ? ' over' : mins >= 7 ? ' late' : '');
   $('#hintBtn').textContent = v.hintsLeft ? `Hint (${v.hintsLeft})` : 'No hints left'; $('#hintBtn').disabled = !v.hintsLeft;
-  $('#obj').innerHTML = `<h2>${v.objective.label}</h2><p>${v.objective.goal}</p><div class="chips">${v.objective.mics.map(m =>
-    `<div class="chip" data-s="${m.status}"><b>CH ${String(m.channel).padStart(2, '0')}</b><span>${STATUS[m.status]}</span></div>`).join('')}</div>`;
+  $('#obj').innerHTML = `<h2>${esc(v.objective.label)} <span class="fine">${v.objective.verified} of ${v.objective.of} verified</span></h2><p>${esc(v.objective.goal)}</p><div class="chips">${v.objective.mics.map(m =>
+    `<div class="chip" data-s="${m.status}" data-ch="${m.channel}" title="CH ${two(m.channel)}: ${STATUS[m.status][1]}" aria-label="Channel ${m.channel}: ${STATUS[m.status][1]}"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></div>`).join('')}</div>
+    <div class="legend">✓ verified · ✕ no signal · ↻ re-check · ◐ check X32 · – not checked</div>`;
   if (sceneChanged) renderStage();
-  renderPanel(v); renderHand(v);
+  renderSteps(v); renderPanel(v); renderHand(v); renderChair(v);
   $('#dbg').textContent = `seed ${v.debug.seed}\nfault: ${v.debug.fault.device} (${content.fault.label.toLowerCase()})\n` +
     Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
   try { window.claude?.hot?.snapshot?.(() => ({ game, trail })); } catch (e) {}
@@ -211,20 +285,30 @@ function renderStage() {
   $('#hot').querySelectorAll('.hot').forEach(p => { const go = () => goTo(kids[+p.dataset.i].to); p.onclick = go; p.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } }; });
   $('#back').hidden = !trail.length;
 }
+function renderSteps(v) {
+  const p = v.procedure, s = p.skip, cur = p.mic && D[p.mic];
+  $('#steps').innerHTML = `<h3>Battery-in check, for each mic</h3>
+    <p class="now">${cur ? `${v.holding ? 'In hand' : 'Next'}: ${esc(cur.label)}` : 'Every mic is verified and on the chair.'}</p>
+    <ol class="steps">${p.steps.map(st => `<li class="${st.done ? 'done' : ''}${st.simulated ? '' : ' off'}" data-step="${st.id}"><span>${esc(st.text)}${st.simulated ? '' : '<em>not simulated yet</em>'}</span></li>`).join('')}</ol>
+    <div class="skip"><button class="btn primary" id="skipBtn" ${s.available ? '' : 'disabled'}>${esc(s.label)}${s.left ? ` (${s.left})` : ''}</button>
+    <p class="fine">${s.available ? `Does the same routine for the other ${s.left}, in colour order, and stops at the first mic that looks or sounds wrong.` : esc(s.reason) + (s.byHand < s.need ? ` By hand so far: ${s.byHand} of ${s.need}.` : '')}</p></div>`;
+  $('#skipBtn').onclick = () => act({ type: 'check_rest' });
+}
 function renderPanel(v) {
-  const p = $('#panel'), d = v.display, micsInPlay = v.objective.mics;
+  const p = $('#panel'), d = v.display, mics = v.objective.mics;
   if (d) {
     const rx = d.device === 'ptu6000-rx';
     p.innerHTML = `<h3>${rx ? 'PTU-6000 receivers: audio' : 'X32 input meters'}</h3>
-      <div class="meters">${micsInPlay.map(m => `<div class="strip" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${String(m.channel).padStart(2, '0')}</b><span>${rx ? 'RX' : 'IN'} ${m.channel}</span></div>`).join('')}</div>
-      ${game.holding ? `<div class="row"><button class="btn talk" id="talkHere">Talk into ${content.devices[game.holding].label}</button></div>` : ''}
-      <p class="fine">${game.holding ? 'Watch its channel while you talk.' : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
+      <div class="meters">${mics.map(m => `<div class="strip${m.id === v.holding ? ' mine' : ''}" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${two(m.channel)}</b></div>`).join('')}</div>
+      ${v.holding ? `<div class="row"><button class="btn talk" id="talkHere">Talk into ${esc(D[v.holding].label)}</button></div>` : ''}
+      <p class="fine">${v.holding ? `Watch channel ${D[v.holding].channel} while you talk.` : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
     const th = $('#talkHere'); if (th) th.onclick = () => act({ type: 'talk' });
-  } else if (game.scene === 'foh-mic-drawer') {
-    p.innerHTML = `<h3>Mic drawer</h3><div class="mics">${micsInPlay.map(m => { const dv = content.devices[m.id];
-      return `<button class="mic" data-id="${m.id}" aria-pressed="${game.holding === m.id}"><span>${dv.label}</span><small>${dv.windscreen} windscreen · CH ${String(dv.channel).padStart(2, '0')}</small></button>`; }).join('')}</div>
-      <p class="fine">${game.holding ? 'Put the one in your hand back before taking another.' : 'Pick a mic up to test it.'}</p>`;
-    p.querySelectorAll('.mic').forEach(b => b.onclick = () => { if (game.holding === b.dataset.id) act({ type: 'put_back' }); else act({ type: 'pick_up', device: b.dataset.id }); });
+  } else if (game.scene === content.places.drawer.scene) {
+    p.innerHTML = `<h3>Mic drawer</h3><div class="drawer">${mics.map(m => { const dv = D[m.id];
+      return m.where === 'drawer' ? `<button class="slot" data-id="${m.id}" aria-label="Pick up ${esc(dv.label)}">${micSVG(dv)}<b>${two(dv.channel)}</b></button>`
+        : `<div class="slot gone"><small>${m.where === 'hand' ? 'in hand' : 'on chair'}</small><b>${two(dv.channel)}</b></div>`; }).join('')}</div>
+      <p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. Tap one to pick it up.</p>`;
+    p.querySelectorAll('.slot[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
   } else {
     const where = { 'foh-wide': 'Front of house. The X32, the wireless rack and the mic cabinet are all within reach: tap one on the photo.',
       'foh-rack': 'The wireless rack under the desk. Tap the receivers to see their audio indicators.',
@@ -233,16 +317,29 @@ function renderPanel(v) {
   }
 }
 function renderHand(v) {
-  const h = $('#hand');
-  if (!game.holding) { h.innerHTML = `<h3>In your hand</h3><p class="fine">Nothing. The handhelds are in the mic drawer (Mic cabinet).</p>`; return; }
-  const dv = content.devices[game.holding];
-  h.innerHTML = `<h3>In your hand</h3><div><b>${dv.label}</b> <span class="state">· CH ${String(dv.channel).padStart(2, '0')} · ${dv.windscreen} windscreen</span></div>
-    <div class="row"><button class="btn talk" id="talkBtn">Talk into it</button><button class="btn" id="inspectBtn">Inspect</button></div>
-    <div class="row"><button class="btn" id="tapBtn">Tap the button</button><button class="btn" id="holdBtn">Hold the button</button>${game.scene === 'foh-mic-drawer' ? '<button class="btn" id="putBtn">Put it back</button>' : ''}</div>
-    <p class="fine">One button: a tap mutes or unmutes, a hold switches it on or off (the hold is an assumption to confirm).</p>`;
-  $('#talkBtn').onclick = () => act({ type: 'talk' }); $('#inspectBtn').onclick = () => act({ type: 'inspect' });
-  $('#tapBtn').onclick = () => act({ type: 'press', how: 'tap' }); $('#holdBtn').onclick = () => act({ type: 'press', how: 'hold' });
-  const pb = $('#putBtn'); if (pb) pb.onclick = () => act({ type: 'put_back' });
+  const h = $('#hand'), names = ['Left hand', 'Right hand'];
+  const slots = v.hands.map((id, i) => {
+    if (!id) return `<div class="handslot"><span class="lbl">${names[i] || 'Hand'}</span><span class="fine">empty</span></div>`;
+    const dv = D[id], l = v.lcd[id];
+    return `<div class="handslot full" data-id="${id}"><span class="lbl">${names[i] || 'Hand'}</span><div class="inhand">${micSVG(dv)}<div class="lcdbox">${l ? lcdSVG(l) : '<button class="btn" id="readBtn">Read the display</button>'}</div></div><b>${esc(dv.label)}</b></div>`;
+  }).join('');
+  const id = v.holding;
+  h.innerHTML = `<h3>In your hands</h3><div class="hands">${slots}</div>
+    ${id ? `<div class="row"><button class="btn talk" id="talkBtn">Talk into it</button><button class="btn" id="tapBtn">Tap the button</button><button class="btn" id="holdBtn">Hold the button</button></div>
+    <div class="row">${v.canPut.chair ? '<button class="btn" id="chairBtn">Put it on the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn" id="drawerBtn">Put it back in the drawer</button>' : ''}</div>
+    <p class="fine">One button: a tap mutes or unmutes, a press and hold switches it on or off. One mic at a time for now.</p>`
+      : '<p class="fine">The handhelds are in the mic drawer (Mic cabinet, right of the desk).</p>'}`;
+  const on = (s, f) => { const b = h.querySelector(s); if (b) b.onclick = f; };
+  on('#readBtn', () => act({ type: 'inspect' })); on('#talkBtn', () => act({ type: 'talk' }));
+  on('#tapBtn', () => act({ type: 'press', how: 'tap' })); on('#holdBtn', () => act({ type: 'press', how: 'hold' }));
+  on('#chairBtn', () => act({ type: 'put', place: 'chair' })); on('#drawerBtn', () => act({ type: 'put', place: 'drawer' }));
+}
+function renderChair(v) {
+  const on = v.objective.mics.filter(m => m.where === 'chair');
+  $('#chair').innerHTML = `<h3>${esc(CHAIR)}</h3>
+    ${on.length ? `<div class="chair">${on.map(m => `<button data-id="${m.id}" data-s="${m.status}" aria-label="Pick up ${esc(m.label)} (${STATUS[m.status][1]})"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></button>`).join('')}</div>` : '<p class="fine">Nothing yet. Checked mics wait here for the stage.</p>'}
+    <p class="fine">${on.length} of ${v.objective.of} on the chair. A spare chair just left of FOH; it is not in the photos, so it is a box here (tentative).</p>`;
+  $('#chair').querySelectorAll('button[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
 }
 function pulse(point, signal) {
   const s = document.querySelector(`.strip[data-point="${point}"]`); if (!s) return;
@@ -253,7 +350,7 @@ function pulse(point, signal) {
 }
 function showDebrief() {
   const d = eng.debrief(game);
-  $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${l.trim().replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))}</li>`).join('');
+  $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${esc(l.trim())}</li>`).join('');
   $('#sheet').hidden = false; $('#againBtn').focus();
 }
 $('#hintBtn').onclick = () => act({ type: 'hint' });
@@ -265,6 +362,6 @@ $('#back').onclick = () => { if (trail.length) goTo(trail.pop(), true); };
 addEventListener('keydown', ev => { if (ev.key === 'Escape' && !$('#sheet').hidden) $('#sheet').hidden = true; });
 
 const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
-const start = data => { if (data && data.game && data.game.content === content.id) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed()); };
+const start = data => { if (data && data.game && data.game.content === content.id && data.game.v === 2) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed()); };
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 </script>

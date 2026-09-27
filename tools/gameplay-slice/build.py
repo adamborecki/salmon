@@ -27,14 +27,16 @@ def main():
         from PIL import Image
     except ImportError:
         sys.exit('Needs Pillow: pip3 install Pillow')
-    content = json.load(open(os.path.join(HERE, 'content', 'vj-line-check.json')))
+    content = json.load(open(os.path.join(HERE, 'content', 'vj-battery-in-check.json')))
     graph = json.load(open(os.path.join(ROOT, 'docs', 'scene-graph.json')))
     sub = {'nodes': {k: graph['nodes'][k] for k in SCENES},
            'edges': [e for e in graph['edges'] if e['from'] in SCENES and e['to'] in SCENES]}
     missing = [e['from'] + ' -> ' + e['to'] for e in sub['edges'] if not e.get('hotspot')]
     if missing:
         print('  ! these slice links have no hotspot, so they will not be tappable:', ', '.join(missing))
-    for scene in set(d['scene'] for d in content['devices'].values()) | set(content['displays']):
+    used = {d['scene'] for d in content['devices'].values() if 'scene' in d} | set(content['displays'])
+    used |= {content['places']['drawer']['scene']} | set(content['places']['chair']['reachable_from'])
+    for scene in used:
         if scene not in SCENES:
             sys.exit(f'content refers to scene {scene!r}, which the harness does not include')
 
