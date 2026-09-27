@@ -672,8 +672,8 @@
    "x": 480,
    "y": 260,
    "heading_deg": 88,
-   "plan_x": 6.5,
-   "plan_y": 1.1
+   "plan_x": 6,
+   "plan_y": 1
   },
   "first-entry-rj45-ports": {
    "file": "intro/first-entry-rj45-ports.jpg",
@@ -695,7 +695,7 @@
    "to": "center-wide",
    "kind": "walk",
    "turn_degrees": 30,
-   "dir_degrees": 163,
+   "dir_degrees": 160,
    "distance_m": 10.9,
    "note": "walk to the ultra-wide view (values derived from the plan poses)"
   },
@@ -853,6 +853,7 @@
   {
    "from": "crossroads",
    "to": "musician-pov",
+   "motion": "turn",
    "kind": "walk",
    "turn_degrees": 180,
    "note": "walk forward toward the stage; camera ends up facing the house (180 spin)",
@@ -1213,6 +1214,7 @@
   {
    "from": "musician-pov",
    "to": "crossroads",
+   "motion": "turn",
    "kind": "walk",
    "turn_degrees": 180,
    "dir_degrees": -10,
@@ -1317,8 +1319,8 @@
    "dir_degrees": -90,
    "distance_m": 0,
    "note": "turn back left; continues on to first-entry",
-   "icon_x": 83.7,
-   "icon_y": 69.2,
+   "icon_x": 81.7,
+   "icon_y": 61,
    "icon_rot": 90
   }
  ]
