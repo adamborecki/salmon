@@ -210,9 +210,9 @@
    "people": true,
    "x": 680,
    "y": -70,
-   "plan_x": 5.5,
-   "plan_y": 10.8,
-   "heading_deg": -165
+   "plan_x": 4.9,
+   "plan_y": 10.9,
+   "heading_deg": 175
   },
   "foh-wide": {
    "file": "foh/foh-wide.jpg",
@@ -223,9 +223,9 @@
    "people": true,
    "x": 680,
    "y": 90,
-   "plan_x": 1.5,
-   "plan_y": 10,
-   "heading_deg": 20
+   "plan_x": 1.3,
+   "plan_y": 10.3,
+   "heading_deg": 10
   },
   "dante-controller-screen": {
    "file": "foh/screens/dante-controller-screen.jpg",
@@ -316,8 +316,8 @@
    "people": true,
    "x": 900,
    "y": 330,
-   "plan_x": 8.2,
-   "plan_y": 8.2,
+   "plan_x": 8,
+   "plan_y": 8.1,
    "heading_deg": 0
   },
   "center-to-stage-omitted": {
@@ -340,8 +340,8 @@
    "x": 680,
    "y": 260,
    "heading_deg": 0,
-   "plan_x": 0.6,
-   "plan_y": 7.8
+   "plan_x": 0.3,
+   "plan_y": 8.2
   },
   "crossroads-left": {
    "file": "house/crossroads-left.jpg",
@@ -352,9 +352,9 @@
    "people": true,
    "x": 900,
    "y": 500,
-   "plan_x": 8.5,
-   "plan_y": 6.4,
-   "heading_deg": -30
+   "plan_x": 8.8,
+   "plan_y": 4.2,
+   "heading_deg": 10
   },
   "crossroads-right": {
    "file": "house/crossroads-right.jpg",
@@ -379,7 +379,7 @@
    "x": 80,
    "y": 260,
    "heading_deg": 91,
-   "plan_x": 12.8,
+   "plan_x": 12.7,
    "plan_y": 1.1
   },
   "outside-entry": {
@@ -543,8 +543,8 @@
    "people": false,
    "x": 300,
    "y": 520,
-   "plan_x": 13.5,
-   "plan_y": 2.3,
+   "plan_x": 13.4,
+   "plan_y": 2.5,
    "heading_deg": -50
   },
   "musician-pov": {
@@ -556,9 +556,9 @@
    "people": true,
    "x": 620,
    "y": 620,
-   "plan_x": 15.2,
-   "plan_y": 8.2,
-   "heading_deg": 180
+   "plan_x": 13.9,
+   "plan_y": 9.7,
+   "heading_deg": -155
   },
   "upstage-back-wide": {
    "file": "stage/upstage-back-wide.jpg",
@@ -684,12 +684,21 @@
    "people": false,
    "x": 460,
    "y": 380,
-   "plan_x": 12.8,
-   "plan_y": 1.1,
-   "heading_deg": -90
+   "plan_x": 7.7,
+   "plan_y": 0.2,
+   "heading_deg": -30
   }
  },
  "edges": [
+  {
+   "from": "first-entry-rj45-ports",
+   "to": "center-wide",
+   "kind": "walk",
+   "turn_degrees": 30,
+   "dir_degrees": 163,
+   "distance_m": 10.9,
+   "note": "walk to the ultra-wide view (values derived from the plan poses)"
+  },
   {
    "from": "outside-entry",
    "to": "first-entry",
@@ -1307,7 +1316,10 @@
    "turn_degrees": -85,
    "dir_degrees": -90,
    "distance_m": 0,
-   "note": "turn back left; continues on to first-entry"
+   "note": "turn back left; continues on to first-entry",
+   "icon_x": 83.7,
+   "icon_y": 69.2,
+   "icon_rot": 90
   }
  ]
 }
