@@ -69,6 +69,9 @@ const visiblePv = page => page.evaluate(() => [...document.querySelectorAll('.ar
   ok((await page.textContent('#hud')).startsWith('x32-top'), 'key 1 lands on x32-top');
   await page.keyboard.press('Backspace'); await page.waitForTimeout(1300);
   ok((await page.textContent('#hud')).startsWith('foh-wide'), 'Backspace returns to foh-wide');
+  const unroutable = await page.evaluate(() => { const hubs = Object.keys(G.nodes).filter(id => G.nodes[id].kind === 'hub'), out = [];
+    for (const a of hubs) for (const z of hubs) if (a !== z && !findRoutes(a, z, 1).length) out.push(a + ' -> ' + z); return out; });
+  ok(unroutable.length === 0, 'Walk to... can route between every pair of hubs' + (unroutable.length ? ': missing ' + unroutable.slice(0, 5).join(', ') : ''));
   ok(errs.length === 0, 'no page errors on desktop: ' + errs.join('; '));
   await ctx.close();
 }

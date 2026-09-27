@@ -822,13 +822,22 @@ function chainAfter(e){
   return out;
 }
 function findRoutes(from,to,max){
-  const adj={}; G.edges.forEach(e=>{if(e.kind==='walk')(adj[e.from]=adj[e.from]||[]).push(e)});
+  // walking links first, so every route that already worked stays exactly the same. Only when there is
+  // no walking route at all (FOH rear, the RJ45 view) are turn-around / go-around-back controls used,
+  // costed by the cameras' real plan distance: the look-right turns are 0 m on purpose so they animate
+  // as a quick glance, and at that cost they would look like free shortcuts.
+  const walkOnly=searchRoutes(from,to,max,e=>e.kind==='walk',e=>motionOf(e).dist);
+  if(walkOnly.length)return walkOnly;
+  return searchRoutes(from,to,max,e=>e.kind==='walk'||e.kind==='control',e=>{const d=derive(e);return d?d.dist:motionOf(e).dist});
+}
+function searchRoutes(from,to,max,use,cost){
+  const adj={}; G.edges.forEach(e=>{if(use(e))(adj[e.from]=adj[e.from]||[]).push(e)});
   const res=[];
-  (function dfs(node,path,seen,cost){
+  (function dfs(node,path,seen,c){
     if(res.length>500)return;
-    if(node===to){res.push({path:[...path],cost});return}
+    if(node===to){res.push({path:[...path],cost:c});return}
     if(path.length>=9)return;
-    for(const e of adj[node]||[]){ if(seen.has(e.to))continue; seen.add(e.to); path.push(e); dfs(e.to,path,seen,cost+motionOf(e).dist); path.pop(); seen.delete(e.to) }
+    for(const e of adj[node]||[]){ if(seen.has(e.to))continue; seen.add(e.to); path.push(e); dfs(e.to,path,seen,c+cost(e)); path.pop(); seen.delete(e.to) }
   })(from,[],new Set([from]),0);
   res.sort((x,y)=>x.cost-y.cost||x.path.length-y.path.length);
   return res.slice(0,max||3);
