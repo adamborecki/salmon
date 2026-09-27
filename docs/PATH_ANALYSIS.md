@@ -26,3 +26,9 @@ IMG_4131 faces 33 degrees left of center-wide, so it is not on the straight line
 - A. Keep both: turn right 53, walk and swing left 56, long walk and turn left 88. Three moves.
 - B. Make step1 a side look from first-entry (turn icon, not on the path) and go first-entry to step2 directly, then step2 to center-wide. Two moves.
 - C. Keep IMG_4131 only for the return trip (center-wide to entry).
+
+## Decision: option B (applied)
+- `path-entry-to-center-step1` (IMG_4228) is now `first-entry-look-right`: a turn-in-place of +53 degrees from first-entry and a turn back of -53 (control links, curved turn icon). It is no longer on the path.
+- `path-entry-to-center-step2` (IMG_4229) is now `path-entry-to-center`, the only waypoint between first-entry and center-wide.
+- Path: first-entry to path-entry-to-center (walk 4 m forward-right, camera turn -3), then to center-wide (walk 9 m, turn -88). Walking through the waypoint plays as one chained move.
+- Distances are estimates. Headings above were measured; earlier names in the tables refer to the old step1/step2.

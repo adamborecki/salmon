@@ -384,28 +384,6 @@
    "y": 120,
    "heading_deg": -33
   },
-  "path-entry-to-center-step1": {
-   "file": "path/path-entry-to-center-step1.jpg",
-   "region": "path",
-   "kind": "waypoint",
-   "label": "path-entry-to-center-step1",
-   "src": "IMG_4228",
-   "people": false,
-   "x": 280,
-   "y": 260,
-   "heading_deg": 144
-  },
-  "path-entry-to-center-step2": {
-   "file": "path/path-entry-to-center-step2.jpg",
-   "region": "path",
-   "kind": "waypoint",
-   "label": "path-entry-to-center-step2",
-   "src": "IMG_4229",
-   "people": true,
-   "x": 480,
-   "y": 260,
-   "heading_deg": 88
-  },
   "path-to-storage": {
    "file": "path/path-to-storage.jpg",
    "region": "path",
@@ -625,6 +603,28 @@
    "people": false,
    "x": 1480,
    "y": 330
+  },
+  "first-entry-look-right": {
+   "file": "intro/first-entry-look-right.jpg",
+   "region": "intro",
+   "kind": "closeup",
+   "label": "first-entry-look-right",
+   "src": "IMG_4228",
+   "people": false,
+   "x": 280,
+   "y": 260,
+   "heading_deg": 144
+  },
+  "path-entry-to-center": {
+   "file": "path/path-entry-to-center.jpg",
+   "region": "path",
+   "kind": "waypoint",
+   "label": "path-entry-to-center",
+   "src": "IMG_4229",
+   "people": true,
+   "x": 480,
+   "y": 260,
+   "heading_deg": 88
   }
  },
  "edges": [
@@ -643,34 +643,6 @@
    "turn_degrees": null,
    "note": "",
    "dir_degrees": -125
-  },
-  {
-   "from": "first-entry",
-   "to": "path-entry-to-center-step1",
-   "kind": "walk",
-   "turn_degrees": 53,
-   "note": "look right about 53 degrees in place (measured by feature match, 554 inliers)",
-   "dir_degrees": 65,
-   "motion": "turn",
-   "distance_m": 0
-  },
-  {
-   "from": "path-entry-to-center-step1",
-   "to": "path-entry-to-center-step2",
-   "kind": "walk",
-   "turn_degrees": -56,
-   "note": "walk forward then swing left about 56 degrees (from step1 and first-entry headings); distance is an estimate",
-   "dir_degrees": 10,
-   "distance_m": 4
-  },
-  {
-   "from": "path-entry-to-center-step2",
-   "to": "center-wide",
-   "kind": "walk",
-   "turn_degrees": -88,
-   "note": "long walk forward, ending with a left turn of about 88 degrees to face the stage (room axes); distance is an estimate",
-   "dir_degrees": 20,
-   "distance_m": 9
   },
   {
    "from": "center-wide",
@@ -1096,25 +1068,6 @@
    "note": "auto reverse of first-entry -> racks-front-wide"
   },
   {
-   "from": "path-entry-to-center-step1",
-   "to": "first-entry",
-   "kind": "walk",
-   "turn_degrees": -53,
-   "dir_degrees": 180,
-   "note": "auto reverse: turn back left 53 degrees in place",
-   "motion": "turn",
-   "distance_m": 0
-  },
-  {
-   "from": "path-entry-to-center-step2",
-   "to": "path-entry-to-center-step1",
-   "kind": "walk",
-   "turn_degrees": 56,
-   "dir_degrees": 180,
-   "note": "auto reverse: walk back, undoing the 56 degree left swing",
-   "distance_m": 4
-  },
-  {
    "from": "racks-front-wide",
    "to": "crossroads-left",
    "kind": "walk",
@@ -1192,6 +1145,53 @@
    "icon_y": 35.1,
    "icon_flip": true,
    "icon_rot": 45
+  },
+  {
+   "from": "path-entry-to-center",
+   "to": "center-wide",
+   "kind": "walk",
+   "turn_degrees": -88,
+   "note": "long walk forward, ending with a left turn of about 88 degrees to face the stage (room axes); distance is an estimate",
+   "dir_degrees": 20,
+   "distance_m": 9
+  },
+  {
+   "from": "first-entry",
+   "to": "first-entry-look-right",
+   "kind": "control",
+   "motion": "turn",
+   "turn_degrees": 53,
+   "dir_degrees": 90,
+   "distance_m": 0,
+   "note": "look right about 53 degrees in place (feature match, 554 inliers)"
+  },
+  {
+   "from": "first-entry-look-right",
+   "to": "first-entry",
+   "kind": "control",
+   "motion": "turn",
+   "turn_degrees": -53,
+   "dir_degrees": 180,
+   "distance_m": 0,
+   "note": "turn back left 53 degrees"
+  },
+  {
+   "from": "first-entry",
+   "to": "path-entry-to-center",
+   "kind": "walk",
+   "turn_degrees": -3,
+   "dir_degrees": 53,
+   "distance_m": 4,
+   "note": "walk forward-right along the aisle; camera ends up almost where it started (3 deg left). Distance is an estimate."
+  },
+  {
+   "from": "path-entry-to-center",
+   "to": "first-entry",
+   "kind": "walk",
+   "turn_degrees": 3,
+   "dir_degrees": -124,
+   "distance_m": 4,
+   "note": "auto reverse: walk back and to the left"
   }
  ]
 }

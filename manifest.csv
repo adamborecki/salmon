@@ -7,14 +7,14 @@ round1-older,IMG_4126,foh/_alts/foh-rack-closeup-alt1.jpg,foh,FOH rack,front-clo
 round1-older,IMG_4145,foh/_alts/foh-rack-rear-alt1.jpg,foh,FOH rack rear,rear,,alt,low,,,n,Older; 4264 preferred.
 round1-older,IMG_4144,foh/_alts/foh-rear-wide-alt1.jpg,foh,FOH rear,rear-wide,,alt,low,,,n,Older; 4262 preferred (newer).
 round1-older,IMG_4146,foh/_alts/x32-rear-alt1.jpg,foh,X32 rear,rear,behringer-x32,alt,low,,,n,Older; 4263 preferred. Useful for AES50 vs Dante cabling and analog wireless inputs.
-round2-newer,IMG_4241,foh/closeups/foh-computer.jpg,foh,FOH computer,closeup,monitor; ssl2plus; mac-mini; mouse; keyboard,device-view,high,,,n,
 round3-newer,IMG_4265,foh/closeups/foh-computer-rear.jpg,foh,FOH computer rear,rear,mac-mini; ssl2plus,device-view,high,,,y,New view. HDMI/power/data to monitor not fully in frame; retake maybe.
+round2-newer,IMG_4241,foh/closeups/foh-computer.jpg,foh,FOH computer,closeup,monitor; ssl2plus; mac-mini; mouse; keyboard,device-view,high,,,n,
 round3-newer,IMG_4266,foh/closeups/foh-iem-rack-rear.jpg,foh,IEM rack rear,rear,iem transmitter; x32 outputs,device-view,medium,,,y,Right-most rack from behind; IEM fed from X32 outputs.
 round1-older,IMG_4127,foh/closeups/foh-mic-drawer.jpg,foh,mic drawer / IEM rack,closeup,iem transmitter; battery chargers; handheld mics in drawer; audio tester box,device-closeup,high,,,n,Best mic drawer view so far. Second drawer has more mics.
-round2-newer,IMG_4239,foh/closeups/foh-rack-drawer.jpg,foh,FOH rack drawer,closeup,"bodypack transmitters and receivers (headset, lav)",device-closeup,medium,,,n,Drawer contents.
 round2-newer,IMG_4238,foh/closeups/foh-rack-closeup.jpg,foh,FOH rack,front-closeup,furman; 3x ptu6000 (24 ch); lav receivers; 2 headphone distribution amps; drawer,device-closeup,high,,,n,Furman on top should be on; not being used that way today.
-round2-newer,IMG_4237,foh/closeups/foh-rack.jpg,foh,FOH rack and computer,medium,tv monitor; ssl2plus; mac-mini; keyboard; foh rack,device-view,high,,,n,Slightly zoomed from FOH wide. Mac mini upside down with mouse on top.
+round2-newer,IMG_4239,foh/closeups/foh-rack-drawer.jpg,foh,FOH rack drawer,closeup,"bodypack transmitters and receivers (headset, lav)",device-closeup,medium,,,n,Drawer contents.
 round3-newer,IMG_4264,foh/closeups/foh-rack-rear.jpg,foh,FOH rack rear,rear,ptu6000; lav receivers; furman,device-view,medium,,,n,Rear of wireless rack section.
+round2-newer,IMG_4237,foh/closeups/foh-rack.jpg,foh,FOH rack and computer,medium,tv monitor; ssl2plus; mac-mini; keyboard; foh rack,device-view,high,,,n,Slightly zoomed from FOH wide. Mac mini upside down with mouse on top.
 round2-newer,IMG_4244,foh/closeups/foh-right-side.jpg,foh,FOH right side,medium-wide,binders; charged/needs-charging drawers; iem transmitters; battery chargers,device-view,medium,,,n,"Messy now. Needs a bad/suspicious batteries bin (high value, does not exist yet). Charger count 16 or 18? Mic drawers not clearly shown here."
 round2-newer,IMG_4242,foh/closeups/ssl2plus.jpg,foh,SSL 2+,closeup,ssl2plus,device-closeup,high,,,n,
 round3-newer,IMG_4263,foh/closeups/x32-rear.jpg,foh,X32 rear,rear,behringer-x32,device-view,high,,,n,"AES50/Dante Ethernet, analog line inputs from cheap wireless receivers."
@@ -27,18 +27,18 @@ round2-newer,IMG_4233,foh/screens/x32-screen-1.jpg,foh,X32 screen,screen,behring
 round2-newer,IMG_4234,foh/screens/x32-screen-2.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (routing).
 round2-newer,IMG_4235,foh/screens/x32-screen-3.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (routing).
 round2-newer,IMG_4236,foh/screens/x32-screen-4.jpg,foh,X32 screen,screen,behringer-x32,reference,low,,,n,Screen variant (EQ).
+round2-newer,IMG_4247,house/_alts/center-to-stage-omitted.jpg,house,center aisle to stage,waypoint,,omit,none,,,y,Omitted per owner. Center-wide goes straight to crossroads with no stop between.
 round2-newer,IMG_4246,house/_alts/center-wide-alt1.jpg,house,center wide,wide,,alt,low,,,y,Near-duplicate of center-wide-01; slightly weaker.
 round1-older,IMG_4130,house/_alts/center-wide-alt2.jpg,house,center wide,wide,x32,reject,low,,,y,Ignore per owner. Near-duplicate.
-round2-newer,IMG_4254,house/crossroads.jpg,house,center crossroads,wide,,nav-hub,high,,,y,House center facing stage. Four exits.
-round2-newer,IMG_4247,house/_alts/center-to-stage-omitted.jpg,house,center aisle to stage,waypoint,,omit,none,,,y,Omitted per owner. Center-wide goes straight to crossroads with no stop between.
 round2-newer,IMG_4230,house/center-wide.jpg,house,center wide,wide,x32; foh rack,nav-hub,high,,,y,"Whole hall, next to FOH wide. Best of the center-wide shots (pianist at piano)."
 round2-newer,IMG_4252,house/crossroads-left.jpg,house,crossroads left,waypoint,piano; monitor,waypoint,high,,,y,House left / stage right toward stage-side racks. Can reach racks directly. Also the middle step between crossroads and first entry.
 round2-newer,IMG_4253,house/crossroads-right.jpg,house,crossroads right,waypoint,,waypoint,high,,,y,"Toward storage closet (green exit sign, two doors)."
+round2-newer,IMG_4254,house/crossroads.jpg,house,center crossroads,wide,,nav-hub,high,,,y,House center facing stage. Four exits.
+round2-newer,IMG_4228,intro/first-entry-look-right.jpg,intro,first entry look right,look,,turn-look,medium,,,n,"Option B: a look right (about 53 degrees, in place) from first-entry, not a step on the path. Heading 144 deg (stage = 0)."
 round2-newer,IMG_4251,intro/first-entry.jpg,house,first entry,wide,piano,nav-hub,high,,,y,First entry position inside the hall.
 round2-newer,IMG_4217,intro/outside-entry.jpg,outside,outside entry,wide,,intro,high,,,n,Intro screen. Only exit: go inside (first entry).
 round1-older,IMG_4131,path/path-center-to-entry-step1.jpg,path,center wide to first entry,waypoint,,waypoint,medium,,,y,Seen going from center wide (4230) toward first entry. Reverse direction shows path-entry-to-center-01/02 instead.
-round2-newer,IMG_4228,path/path-entry-to-center-step1.jpg,path,first entry to center wide,waypoint,,waypoint,medium,,,n,Route step 1 going first entry -> center wide.
-round2-newer,IMG_4229,path/path-entry-to-center-step2.jpg,path,first entry to center wide,waypoint,,waypoint,medium,,,y,Route step 2 going first entry -> center wide.
+round2-newer,IMG_4229,path/path-entry-to-center.jpg,path,first entry to center wide,waypoint,,waypoint,medium,,,y,Only waypoint between first-entry and center-wide. Heading 88 deg (stage = 0).
 round2-newer,IMG_4255,path/path-to-storage.jpg,path,path to storage,waypoint,,waypoint,medium,,,n,
 round1-older,IMG_4133,stage-side/_alts/mains-rack-front-alt1.jpg,stage-side,mains rack,front-medium,mains-rack,alt,low,,,n,Older; 4219 better.
 round1-older,IMG_4134,stage-side/_alts/mains-rack-rear-alt1.jpg,stage-side,mains rack,rear,mains-rack,alt,low,,,n,"Older, dark."
@@ -50,8 +50,8 @@ round2-newer,IMG_4221,stage-side/closeups/mains-rack-mix5-closeup.jpg,stage-side
 round2-newer,IMG_4227,stage-side/closeups/mains-rack-rear.jpg,stage-side,mains rack,rear,stagebox-s32,device-view,high,,,n,"S32 is mounted backwards, so its front faces us while the rest show rears."
 round2-newer,IMG_4220,stage-side/closeups/monitor-amp-rack-front.jpg,stage-side,monitor amp rack,front,monitor-amp-rack; furman-m8lx; behringer amps; crown-comtech800,device-view,high,,,n,Furman plus four amps visible.
 round2-newer,IMG_4225,stage-side/closeups/monitor-amp-rack-rear.jpg,stage-side,monitor amp rack,rear,monitor-amp-rack,device-view,high,,,n,
-round2-newer,IMG_4224,stage-side/racks-rear-wide.jpg,stage-side,amp racks rear,rear-wide,rack power plugs; subwoofer,nav-hub,high,,,n,"Wide back view. Power plugs visible (can be unplugged). Subwoofer with RCA input: aware of it in MVP, no routing. Reached via a ""go around back"" control, not a click."
 round2-newer,IMG_4218,stage-side/racks-front-wide.jpg,stage-side,stage-side racks,front-wide,mains-rack; monitor-amp-rack,nav-hub,high,,,n,"Primary hub. Mains Rack left, Monitor Amp Rack right, front view, zoomed out."
+round2-newer,IMG_4224,stage-side/racks-rear-wide.jpg,stage-side,amp racks rear,rear-wide,rack power plugs; subwoofer,nav-hub,high,,,n,"Wide back view. Power plugs visible (can be unplugged). Subwoofer with RCA input: aware of it in MVP, no routing. Reached via a ""go around back"" control, not a click."
 round2-newer,IMG_4249,stage/musician-pov.jpg,stage,musician POV (center stage),pov,monitor wedges; mic stands,nav-hub,medium,,,y,"Center stage, monitor wedges at feet. Reached from crossroads by a 180 degree spin."
 round2-newer,IMG_4248,stage/upstage-back-wide.jpg,stage,upstage back,wide,,nav-hub,medium,,,y,"From the back of the stage (furthest upstage) looking out at the hall. Connects musician POV, amp-rack rear wide (carts), and the back of the hall."
 round1-older,IMG_4139,storage/closeups/storage-door-latch.jpg,storage,storage closet door latch,closeup,,mini-game,high,,,n,"Left door has a manual lever lock. If left unlocked, doors open without card. Teaching moment."
