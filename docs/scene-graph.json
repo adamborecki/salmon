@@ -714,8 +714,8 @@
    "from": "crossroads",
    "to": "crossroads-left",
    "kind": "walk",
-   "turn_degrees": -90,
-   "note": "crossroads-left is also the middle step toward first entry",
+   "turn_degrees": null,
+   "note": "sideways step; strafes (turn unset)",
    "dir_degrees": -70
   },
   {
@@ -754,7 +754,7 @@
    "from": "crossroads",
    "to": "crossroads-right",
    "kind": "walk",
-   "turn_degrees": 90,
+   "turn_degrees": null,
    "note": ""
   },
   {
@@ -762,7 +762,8 @@
    "to": "path-to-storage",
    "kind": "walk",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "dir_degrees": 10
   },
   {
    "from": "path-to-storage",
@@ -1104,8 +1105,8 @@
    "from": "crossroads-right",
    "to": "crossroads",
    "kind": "walk",
-   "turn_degrees": -90,
-   "dir_degrees": 180,
+   "turn_degrees": null,
+   "dir_degrees": -135,
    "note": "auto reverse of crossroads -> crossroads-right"
   },
   {
