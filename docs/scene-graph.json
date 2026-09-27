@@ -1210,28 +1210,100 @@
    "to": "foh-rack-closeup",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 37.5,
+     "y": 56.5
+    },
+    {
+     "x": 62.5,
+     "y": 56.5
+    },
+    {
+     "x": 62.5,
+     "y": 72.5
+    },
+    {
+     "x": 37.5,
+     "y": 72.5
+    }
+   ]
   },
   {
    "from": "foh-rack",
    "to": "foh-rack-drawer",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 37.5,
+     "y": 72.8
+    },
+    {
+     "x": 62.5,
+     "y": 72.8
+    },
+    {
+     "x": 62.5,
+     "y": 85
+    },
+    {
+     "x": 37.5,
+     "y": 85
+    }
+   ]
   },
   {
    "from": "foh-computer",
    "to": "ssl2plus",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 43.5,
+     "y": 61.5
+    },
+    {
+     "x": 56.5,
+     "y": 61.5
+    },
+    {
+     "x": 57.5,
+     "y": 73.5
+    },
+    {
+     "x": 42.5,
+     "y": 73.5
+    }
+   ]
   },
   {
    "from": "foh-computer",
    "to": "logic-settings-screen",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 26.7,
+     "y": 24.7
+    },
+    {
+     "x": 71.7,
+     "y": 26.7
+    },
+    {
+     "x": 69.2,
+     "y": 58.5
+    },
+    {
+     "x": 30.2,
+     "y": 56.3
+    }
+   ]
   },
   {
    "from": "foh-computer",
@@ -1245,7 +1317,25 @@
    "to": "x32-screen-1",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 55,
+     "y": 15.5
+    },
+    {
+     "x": 89.5,
+     "y": 17
+    },
+    {
+     "x": 89.5,
+     "y": 40.5
+    },
+    {
+     "x": 55,
+     "y": 43.5
+    }
+   ]
   },
   {
    "from": "x32-top",
@@ -1273,63 +1363,229 @@
    "to": "foh-mic-drawer",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 46.5,
+     "y": 33.5
+    },
+    {
+     "x": 65,
+     "y": 33
+    },
+    {
+     "x": 70,
+     "y": 42
+    },
+    {
+     "x": 69.5,
+     "y": 69
+    },
+    {
+     "x": 48.5,
+     "y": 69.5
+    }
+   ]
   },
   {
    "from": "foh-rear-wide",
    "to": "x32-rear",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 50.5,
+     "y": 42
+    },
+    {
+     "x": 83.5,
+     "y": 42.5
+    },
+    {
+     "x": 83.5,
+     "y": 58
+    },
+    {
+     "x": 50.5,
+     "y": 58
+    }
+   ]
   },
   {
    "from": "foh-rear-wide",
    "to": "foh-rack-rear",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 30.5,
+     "y": 39.5
+    },
+    {
+     "x": 50,
+     "y": 39.5
+    },
+    {
+     "x": 50,
+     "y": 64
+    },
+    {
+     "x": 31,
+     "y": 64
+    }
+   ]
   },
   {
    "from": "foh-rear-wide",
    "to": "foh-computer-rear",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 34.8,
+     "y": 14.5
+    },
+    {
+     "x": 54.8,
+     "y": 14.5
+    },
+    {
+     "x": 54.8,
+     "y": 39
+    },
+    {
+     "x": 34.5,
+     "y": 39
+    }
+   ]
   },
   {
    "from": "foh-rear-wide",
    "to": "foh-iem-rack-rear",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 3,
+     "y": 46.5
+    },
+    {
+     "x": 24.5,
+     "y": 45.5
+    },
+    {
+     "x": 26.5,
+     "y": 66
+    },
+    {
+     "x": 3.5,
+     "y": 72
+    }
+   ]
   },
   {
    "from": "storage-closet",
    "to": "storage-door-latch",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 11.5,
+     "y": 21
+    },
+    {
+     "x": 46.5,
+     "y": 20
+    },
+    {
+     "x": 49,
+     "y": 90.5
+    },
+    {
+     "x": 21.5,
+     "y": 89
+    }
+   ]
   },
   {
    "from": "storage-closet",
    "to": "storage-husky-toolbox",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 48.5,
+     "y": 63.5
+    },
+    {
+     "x": 60,
+     "y": 63.5
+    },
+    {
+     "x": 59.8,
+     "y": 87
+    },
+    {
+     "x": 49,
+     "y": 87
+    }
+   ]
   },
   {
    "from": "storage-closet",
    "to": "storage-live-sound-cart",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 47.5,
+     "y": 33
+    },
+    {
+     "x": 60,
+     "y": 35
+    },
+    {
+     "x": 60,
+     "y": 62
+    },
+    {
+     "x": 48,
+     "y": 62
+    }
+   ]
   },
   {
    "from": "storage-closet",
    "to": "storage-rear",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 47,
+     "y": 19.5
+    },
+    {
+     "x": 61,
+     "y": 18.5
+    },
+    {
+     "x": 61,
+     "y": 32.5
+    },
+    {
+     "x": 47.5,
+     "y": 32.5
+    }
+   ]
   },
   {
    "from": "storage-closet",
@@ -1403,7 +1659,9 @@
    "turn_degrees": 0,
    "dir_degrees": 180,
    "note": "auto reverse of storage-entry -> storage-closet",
-   "distance_m": 3.2
+   "distance_m": 3.2,
+   "icon_x": 86,
+   "icon_y": 88
   },
   {
    "from": "musician-pov",
