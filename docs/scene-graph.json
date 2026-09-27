@@ -404,7 +404,7 @@
    "people": true,
    "x": 380,
    "y": 120,
-   "heading_deg": -33,
+   "heading_deg": -5,
    "plan_x": 2.2,
    "plan_y": 3.2
   },
@@ -778,7 +778,7 @@
    "turn_degrees": 10,
    "note": "sideways step; strafes (turn unset)",
    "dir_degrees": -75,
-   "distance_m": 4.0
+   "distance_m": 4
   },
   {
    "from": "crossroads-left",
@@ -787,7 +787,7 @@
    "turn_degrees": 81,
    "note": "",
    "dir_degrees": -110,
-   "distance_m": 5.0
+   "distance_m": 5
   },
   {
    "from": "first-entry",
@@ -796,7 +796,7 @@
    "turn_degrees": -81,
    "note": "",
    "dir_degrees": 0,
-   "distance_m": 5.0
+   "distance_m": 5
   },
   {
    "from": "crossroads-left",
@@ -805,7 +805,7 @@
    "turn_degrees": -10,
    "note": "",
    "dir_degrees": 90,
-   "distance_m": 4.0
+   "distance_m": 4
   },
   {
    "from": "crossroads-left",
@@ -937,7 +937,8 @@
    "icon_x": 81.4,
    "icon_y": 38.3,
    "icon_flip": true,
-   "icon_rot": 60
+   "icon_rot": 60,
+   "distance_m": 2.0
   },
   {
    "from": "foh-wide",
@@ -947,7 +948,8 @@
    "note": "not a walk edge",
    "icon_x": 13.7,
    "icon_y": 26.6,
-   "icon_rot": -45
+   "icon_rot": -45,
+   "distance_m": 3.6
   },
   {
    "from": "racks-front-wide",
@@ -1246,7 +1248,8 @@
    "note": "auto reverse of racks-front-wide -> racks-rear-wide",
    "icon_x": 6.3,
    "icon_y": 43.1,
-   "icon_rot": -30
+   "icon_rot": -30,
+   "distance_m": 2.0
   },
   {
    "from": "foh-rear-wide",
@@ -1258,7 +1261,8 @@
    "icon_x": 92.9,
    "icon_y": 35.1,
    "icon_flip": true,
-   "icon_rot": 45
+   "icon_rot": 45,
+   "distance_m": 3.6
   },
   {
    "from": "path-entry-to-center",
@@ -1276,8 +1280,10 @@
    "motion": "turn",
    "turn_degrees": 53,
    "dir_degrees": 90,
-   "distance_m": 0,
-   "note": "look right about 53 degrees in place (feature match, 554 inliers)"
+   "distance_m": 0.2,
+   "note": "look right about 53 degrees in place (feature match, 554 inliers)",
+   "icon_x": 80.5,
+   "icon_y": 78.1
   },
   {
    "from": "first-entry-look-right",
@@ -1286,7 +1292,7 @@
    "motion": "turn",
    "turn_degrees": -53,
    "dir_degrees": 180,
-   "distance_m": 0,
+   "distance_m": 0.2,
    "note": "turn back left 53 degrees"
   },
   {
@@ -1294,7 +1300,7 @@
    "to": "path-entry-to-center",
    "kind": "walk",
    "turn_degrees": -3,
-   "dir_degrees": 53,
+   "dir_degrees": 70,
    "distance_m": 6.7,
    "note": "walk forward-right along the aisle; camera ends up almost where it started (3 deg left). Distance is an estimate."
   },
@@ -1315,7 +1321,7 @@
    "turn_degrees": 85,
    "dir_degrees": 90,
    "distance_m": 0,
-   "note": "keeps turning right toward the wall network panel (placeholder photo)"
+   "note": "keeps turning right toward the wall network panel (placeholder photo) Kept at 0m deliberately: this should feel like continuing the same turn, not a walk, even though the two photos plan-poses are far apart."
   },
   {
    "from": "first-entry-rj45-ports",
@@ -1325,7 +1331,7 @@
    "turn_degrees": -85,
    "dir_degrees": -90,
    "distance_m": 0,
-   "note": "turn back left; continues on to first-entry",
+   "note": "turn back left; continues on to first-entry Kept at 0m deliberately: this should feel like continuing the same turn, not a walk, even though the two photos plan-poses are far apart.",
    "icon_x": 81.7,
    "icon_y": 61,
    "icon_rot": 90
