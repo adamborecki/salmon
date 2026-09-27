@@ -25,6 +25,10 @@ def main():
         sys.exit("Needs Pillow: pip3 install Pillow")
 
     graph = json.load(open(os.path.join(ROOT, 'docs', 'scene-graph.json')))
+    sys.path.insert(0, HERE)
+    import validate
+    if validate.check(graph, os.path.join(ROOT, graph.get('photos_root') or 'photos-working'), quiet=True):
+        sys.exit('Not building: fix the ERROR lines above (details: python3 tools/scene-graph-editor/validate.py)')
     graph = {k: graph[k] for k in ('nodes', 'edges')}  # drop photos_root before embedding
 
     tpl = open(os.path.join(HERE, 'template.html')).read()
