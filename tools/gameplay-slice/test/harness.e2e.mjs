@@ -33,6 +33,7 @@ const tapBack = async () => { await page.tap('#back'); await page.waitForTimeout
 const tap = async sel => { await page.tap(sel); await page.waitForTimeout(150); };
 const where = () => page.textContent('#where');
 const chip = ch => page.$eval(`.chips .chip[data-ch="${ch}"]`, c => c.dataset.s);
+const inSlot = (id, act) => `.handslot[data-id="${id}"] [data-act="${act}"]`;
 const stepsDone = () => page.$$eval('#steps li', ls => ls.filter(l => l.classList.contains('done')).map(l => l.dataset.step));
 const fault = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-\d\d)/)[1]);
 const faultCh = +fault.slice(-2);
@@ -54,10 +55,10 @@ for (let ch = 1; ch <= 3; ch++) {
   ok((await stepsDone()).join() === 'take', `CH ${ch}: step 1 ticked`);
   await tapBack(); await tapBack();
   await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
-  await tap('#readBtn');
+  await tap(inSlot(id, 'read'));
   const lcd = await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'));
   ok(lcd.includes(`channel ${ch}`) && lcd.includes('muted') === (ch === faultCh), `CH ${ch}: display reads "${lcd}"`);
-  await tap('#talkHere');
+  await tap(`.talkHere[data-id="${id}"]`);
   if (ch !== faultCh) {
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
     ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"] i`, i => i.getAnimations().length > 0), `CH ${ch}: its X32 meter animates`);
@@ -66,21 +67,30 @@ for (let ch = 1; ch <= 3; ch++) {
     ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: no signal (NOTICE)`);
     ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"]`, s => s.classList.contains('dead')), `CH ${ch}: its X32 strip flags no signal`);
     await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
-    await tap('#talkHere');
+    await tap(`.talkHere[data-id="${id}"]`);
     ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: dead at the receiver too (TRACE)`);
-    await tap('#tapBtn');                                                                     // ACT
+    await tap(inSlot(id, 'tap'));                                                                     // ACT
     ok((await chip(ch)) !== 'verified', `CH ${ch}: unmuting alone does not verify it`);
     ok(!(await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'))).includes('muted'), `CH ${ch}: the display no longer shows mute`);
     await tapBack(); await tapBack(); await tapHot('X32');
-    await tap('#talkHere');                                                                  // VERIFY
+    await tap(`.talkHere[data-id="${id}"]`);                                                                  // VERIFY
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32 again`);
   }
   ok((await stepsDone()).join() === 'take,display,talk', `CH ${ch}: steps 1, 3, 4 ticked`);
-  await tap('#chairBtn');
+  await tap(inSlot(id, 'chair'));
   ok(await page.$(`#chair button[data-id="${id}"][data-s="verified"]`) !== null, `CH ${ch}: on the chair left of FOH, verified`);
   await tapBack(); ok((await where()) === 'FOH', `CH ${ch}: back at FOH`);
 }
 ok(/Next: Mic 4/.test(await page.textContent('#steps .now')), 'step list moves on to Mic 4');
+// two mics in hand (owner: allowed), then both back in the drawer
+await tapHot('Mic cabinet'); await tapHot('Mic drawer');
+await tap('.slot[data-id="handheld-04"]'); await tap('.slot[data-id="handheld-05"]');
+ok((await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))).join() === 'handheld-04,handheld-05', 'two mics in hand, one per slot');
+ok(await page.$eval('#skipBtn', b => b.disabled), 'Check the rest waits while your hands are full');
+await tap('.slot[data-id="handheld-06"]');
+ok(/hands are full/.test(await page.textContent('#toast')), 'a third mic is refused');
+await tap(inSlot('handheld-04', 'drawer')); await tap(inSlot('handheld-05', 'drawer'));
+await tapBack(); await tapBack();
 ok(!(await page.$eval('#skipBtn', b => b.disabled)), 'Check the rest is offered after 3 by hand');
 await shot('4-skip-offered');
 await tap('#skipBtn');

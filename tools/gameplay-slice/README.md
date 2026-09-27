@@ -7,8 +7,8 @@ and principle 4.10), as small as it can be while still being real:
   before the mics go to the stage, check that each one produces signal. The official on-stage line
   check is a later, separate scenario.
 - **one signal chain:** handheld -> PTU-6000 receiver -> XLR -> X32 input (section 37)
-- **16 mics:** 13 musicians + 2 spares + 1 FOH talkback (owner, 2026-09-27), channels 1-16 (the
-  channels are an assumption; which ones are the spares and the talkback is unknown)
+- **16 mics:** channels 1-13 for the musicians; 14-16 stay at FOH, the A1's talkback mic and two
+  spares (owner, 2026-09-27; which of 14-16 is the A1's is unknown)
 - **one fault:** a handheld powered on but muted (section 46), always channel 2 or 3 (owner: "2nd or
   3rd of the first 3"), picked by a reproducible seed. The owner notes this is really an on-stage
   fault (a freshly powered mic starts unmuted); it stays here until the line check is built.
@@ -59,13 +59,13 @@ state change of any device on its path**. Unmuting alone never completes anythin
 verified earlier drops back to "re-check" if anything on its path changes.
 
 "Check the rest" is a macro of the same basic actions (take it, read the display, talk at the X32,
-put it on the chair), so it produces the same evidence and costs the same game time; it only saves
-the player's taps. It is offered after 3 mics have been verified **by hand** with empty hands. It
+put it on the chair), carrying two per trip, so it produces the same evidence and costs the same
+game time as doing that by hand; it only saves the player's taps. It is offered after 3 mics have been verified **by hand** with empty hands. It
 stops on anything in `skip.stop_if` (`display-warning`, `no-signal-at-x32`) and leaves that mic in
 the player's hand at the X32. The debrief credits NOTICE to the skip when the skip found the fault,
 but not TRACE (the skip read the display, the player didn't).
 
-Tests cover these, plus: hands (two slots, one mic at a time), the chair's reach, the step list,
+Tests cover these, plus: hands (two slots, two mics, naming the mic), the chair's reach, the step list,
 a skip stop on a mic other than 2/3 (via `start(seed, { faultChannel })`), a future battery fault
 that the skip must catch, and a no-soft-lock property test (150 random 80-action runs always recover
 to READY). Key rules were mutation-checked: breaking each one fails a test.
@@ -86,10 +86,9 @@ them yet. Putting batteries in is step 2 of the step list and marked "not simula
 
 - **No architecture choice.** The engine has no UI and no persistence, so it fits either option in
   section 84. It is an ES module; the scene ids it uses are scene-graph node ids.
-- **Hands:** two slots, at most one mic (content `behaviour.hands`); the owner hasn't decided whether
-  carrying several is allowed.
+- **Hands:** two slots, up to two mics (owner). With two held, an action must name its mic (`device`).
 - **The chair** left of FOH is not in any photo, so the harness shows it as a text box (tentative).
 - **Not modelled:** battery insertion, X32 controls (gain, mute, buses), Monitor 1 / mains output, RF,
-  frequencies, which channels are spares/talkback, the FOH talkback routing, carrying several mics.
+  frequencies, the FOH talkback routing, anything role-specific about mics 14-16.
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
   slash; `"MUTE"` is also drawable), per-action game seconds, the step list wording.

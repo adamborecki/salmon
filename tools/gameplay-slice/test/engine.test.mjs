@@ -23,11 +23,12 @@ const healthy = g => g.inPlay.filter(m => m !== g.fault.device);
 const status = (g, mic) => eng.view(g).objective.mics.find(m => m.id === mic).status;
 const mic = ch => 'handheld-' + String(ch).padStart(2, '0');
 
-test('16 mics in play (13 musicians + 2 spares + 1 FOH talkback), in channel order', () => {
+test('16 mics in play, in channel order: 1-13 for musicians, 14-16 stay at FOH (A1 talkback + 2 spares)', () => {
   const g = eng.start('x');
-  assert.equal(g.inPlay.length, 16);
   assert.deepEqual(g.inPlay, Array.from({ length: 16 }, (_, i) => mic(i + 1)));
-  const s = content.setup.mic_roles.value; assert.equal(s.musicians + s.spares + s.foh_talkback, 16);
+  const r = content.setup.mic_roles.value;
+  assert.deepEqual([...r.musicians, ...r.stay_at_foh], Array.from({ length: 16 }, (_, i) => i + 1));
+  for (const m of g.inPlay) assert.equal(content.devices[m].role, content.devices[m].channel <= 13 ? 'musician' : 'stays-at-foh');
 });
 
 test('the seed decides which mic is muted, reproducibly, and it is always channel 2 or 3 (owner)', () => {
@@ -69,15 +70,20 @@ test('the muted mic shows no signal at the receiver or the X32 (NOTICE), and its
   assert.equal(eng.view(g).lcd[f].muted, true);
 });
 
-test('hands: two slots, one mic at a time (owner undecided); reading a display needs it in hand', () => {
+test('hands: two slots, up to two mics (owner); with two in hand, an action must say which mic', () => {
   let g = eng.start('VJ-1');
   assert.deepEqual(g.hands, [null, null]);
   assert.equal(eng.act(g, { type: 'inspect' }).error.code, 'empty-hands');
   ({ g } = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: mic(1) }));
+  run(g, { type: 'inspect' });                                             // one in hand: no need to say which
+  ({ g } = run(g, { type: 'pick_up', device: mic(4) }));
+  assert.deepEqual(eng.view(g).hands, [mic(1), mic(4)]);
+  assert.equal(eng.act(g, { type: 'pick_up', device: mic(5) }).error.code, 'hands-full');
+  for (const t of ['inspect', 'talk', 'press', 'put']) assert.equal(eng.act(g, { type: t, how: 'tap', place: 'drawer' }).error.code, 'which-mic', t);
+  assert.equal(eng.act(g, { type: 'talk', device: mic(7) }).error.code, 'not-held');
+  ({ g } = run(g, { type: 'go', scene: 'x32-top' }, { type: 'talk', device: mic(4) }, { type: 'talk', device: mic(1) }, { type: 'put', place: 'chair', device: mic(4) }));
+  assert.equal(status(g, mic(1)), 'verified'); assert.equal(status(g, mic(4)), 'verified');
   assert.deepEqual(eng.view(g).hands, [mic(1), null]);
-  const r = eng.act(g, { type: 'pick_up', device: mic(4) });
-  assert.equal(r.error.code, 'hands-full');
-  assert.match(r.error.message, /one mic at a time/);
 });
 
 test('the chair left of FOH: reachable from the FOH scenes, not from elsewhere; mics can be picked up again', () => {
@@ -187,7 +193,8 @@ test('Check the rest: only after 3 mics by hand and with empty hands; then it do
   assert.ok(v.objective.mics.every(m => m.where === 'chair'));
   assert.ok(events.some(e => e.type === 'skip-done' && e.checked.length === 13));
   assert.ok(events.some(e => e.type === 'objective-complete'));
-  assert.ok(g2.t - t0 >= 13 * (2 * content.clock.move_s + 4 * content.clock.action_s), 'costs the same game time as by hand');
+  // two mics per trip: 2 moves + 2 pick-ups, then read, talk, chair for each = per mic 1 move + 4 actions
+  assert.equal(g2.t - t0, 13 * (content.clock.move_s + 4 * content.clock.action_s) + content.clock.move_s, 'same game time as doing it by hand, two at a time (13 is odd: the last trip carries one)');
   const d = eng.debrief(g2);
   assert.equal(d.byHand, 3); assert.equal(d.bySkip, 13); assert.deepEqual(d.skipStops, []);
   assert.deepEqual(d.loop, { notice: true, trace: true, act: true, verify: true });
@@ -203,7 +210,7 @@ test('Check the rest stops at the first abnormal mic, with it in hand at the X32
   assert.equal(stop.mic, mic(9));
   assert.match(stop.text, /muted.*no signal at X32 ch 9/);
   assert.deepEqual(stop.checked, [4, 5, 6, 7, 8].map(mic));
-  assert.deepEqual(eng.view(g2).hands, [mic(9), null]);
+  assert.deepEqual(eng.view(g2).held, [mic(9)], 'mic 8 (its trip partner) was fine and went on the chair');
   assert.equal(g2.scene, 'x32-top');
   for (let ch = 10; ch <= 16; ch++) assert.equal(status(g2, mic(ch)), 'not-checked', `ch ${ch} untouched`);
   // the player fixes it, verifies it, and runs the skip again
@@ -226,8 +233,9 @@ test('future battery faults: a mic that will not switch on is caught by the skip
   const x = e2.act(g, { type: 'check_rest' }); g = x.game;
   const stop = x.events.find(e => e.type === 'skip-stopped');
   assert.equal(stop.mic, mic(12));
-  assert.match(stop.text, /display is blank/);
-  const y = e2.act(g, { type: 'press', how: 'hold' });
+  assert.match(stop.text, /display is blank.*with Mic 13 \(grey \/ blue\) \(not checked yet\)/);
+  assert.deepEqual(e2.view(g).held, [mic(12), mic(13)], 'its trip partner is still in hand, unchecked');
+  const y = e2.act(g, { type: 'press', how: 'hold', device: mic(12) });
   assert.ok(y.events.some(e => e.type === 'nothing' && /does not switch on/.test(e.text)));
 });
 
@@ -270,7 +278,7 @@ test('no soft-locks: after any random sequence of actions, the same recovery alw
     }
     // recovery: put down whatever you hold, then for every mic make it on + unmuted, verify it at the X32 and put it on the chair
     g = run(g, { type: 'go', scene: 'x32-top' }).g;
-    if (eng.view(g).holding) g = run(g, { type: 'put', place: 'chair' }).g;
+    for (const m of eng.view(g).held) g = run(g, { type: 'put', place: 'chair', device: m }).g;
     for (const m of g.inPlay) {
       g = run(g, { type: 'go', scene: g.where[m] === 'drawer' ? 'foh-mic-drawer' : 'x32-top' }, { type: 'pick_up', device: m }).g;
       if (g.devices[m].state.power === 'off') g = run(g, { type: 'press', how: 'hold' }).g;

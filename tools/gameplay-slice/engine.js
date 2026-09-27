@@ -83,7 +83,7 @@ export function engine(content) {
     const n = byHand(g).length, left = remaining(g);
     if (n < S.after_by_hand) return { available: false, byHand: n, need: S.after_by_hand, left: left.length, reason: `Check ${S.after_by_hand - n} more by hand first.` };
     if (!left.length) return { available: false, byHand: n, need: S.after_by_hand, left: 0, reason: 'Every mic is verified and on the chair.' };
-    if (held(g).length) return { available: false, byHand: n, need: S.after_by_hand, left: left.length, reason: 'Put the mic in your hand down first.' };
+    if (held(g).length) return { available: false, byHand: n, need: S.after_by_hand, left: left.length, reason: `Put the mic${held(g).length > 1 ? 's' : ''} in your hands down first.` };
     return { available: true, byHand: n, need: S.after_by_hand, left: left.length, reason: null };
   }
 
@@ -110,9 +110,12 @@ export function engine(content) {
     const tick = s => { g.t += s; };
     const entry = { seq: g.seq + 1, t: null, type: a.type };
     if (via !== 'hand') entry.via = via;
-    const inHand = () => {                       // the mic an action is about: the one named, or the only one held
-      if (a.device) return g.hands.includes(a.device) ? a.device : null;
-      const h = held(g); return h.length === 1 ? h[0] : null;
+    // the mic an action is about: the one named, or the only one held; [id, error]
+    const inHand = empty => {
+      const h = held(g);
+      if (a.device) return h.includes(a.device) ? [a.device, null] : [null, fail('not-held', `you are not holding ${D[a.device] ? D[a.device].label : a.device}`)];
+      if (!h.length) return [null, fail('empty-hands', empty)];
+      return h.length === 1 ? [h[0], null] : [null, fail('which-mic', 'you have two mics in hand: say which one')];
     };
 
     switch (a.type) {
@@ -126,7 +129,7 @@ export function engine(content) {
         const id = a.device, d = D[id];
         if (!d || d.type !== 'wireless-handheld') return fail('bad-device', 'you can only pick up a handheld here');
         if (g.hands.includes(id)) return fail('already-held', `${d.label} is already in your hand`);
-        if (held(g).length >= HANDS.max_mics) return fail('hands-full', `Put ${D[held(g)[0]].label} down first: one mic at a time for now.`);
+        if (held(g).length >= HANDS.max_mics) return fail('hands-full', HANDS.max_mics === 1 ? `Put ${D[held(g)[0]].label} down first: one mic at a time for now.` : 'Your hands are full: put a mic down first.');
         const from = g.where[id];
         if (from === 'drawer' && g.scene !== P.drawer.scene) return fail('not-here', `${d.label} is in the ${P.drawer.label.toLowerCase()}`);
         if (from === 'chair' && !chairScenes.has(g.scene)) return fail('not-here', `${d.label} is on the ${P.chair.label.toLowerCase()}`);
@@ -135,8 +138,7 @@ export function engine(content) {
         break;
       }
       case 'put': {
-        const id = inHand();
-        if (!id) return fail('empty-hands', 'you are not holding a mic');
+        const [id, err] = inHand('you are not holding a mic'); if (err) return err;
         if (a.place === 'drawer' && g.scene !== P.drawer.scene) return fail('not-here', 'the mic drawer is not here');
         if (a.place === 'chair' && !chairScenes.has(g.scene)) return fail('not-here', 'the chair is not here');
         if (a.place !== 'drawer' && a.place !== 'chair') return fail('bad-action', "put needs place: 'drawer' or 'chair'");
@@ -145,8 +147,7 @@ export function engine(content) {
         break;
       }
       case 'press': {
-        const id = inHand();
-        if (!id) return fail('empty-hands', 'pick up a handheld first');
+        const [id, err] = inHand('pick up a handheld first'); if (err) return err;
         const s = g.devices[id].state, before = clone(s), passedBefore = passes(g, id);
         if (a.how === 'tap') { if (s.power === 'on') s.muted = !s.muted; }
         else if (a.how === 'hold') {
@@ -160,15 +161,13 @@ export function engine(content) {
         break;
       }
       case 'inspect': {                          // read the small display: it has to be in your hand
-        const id = inHand();
-        if (!id) return fail('empty-hands', 'pick up a mic to read its display');
+        const [id, err] = inHand('pick up a mic to read its display'); if (err) return err;
         g.read[id] = true; tick(C.action_s); entry.device = id; entry.lcd = lcd(g, id);
         events.push({ type: 'inspect', device: id, lcd: lcd(g, id) });
         break;
       }
       case 'talk': {
-        const mic = inHand();
-        if (!mic) return fail('empty-hands', 'hold a handheld to talk into it');
+        const [mic, err] = inHand('hold a handheld to talk into it'); if (err) return err;
         const r = reach(g, mic), disp = content.displays[g.scene];
         tick(C.action_s); entry.mic = mic; entry.scene = g.scene;
         const seen = disp ? r.filter(x => devOf(x.point) === disp.device) : [];
@@ -195,20 +194,26 @@ export function engine(content) {
     const st = skipState(g);
     if (!st.available) return { code: 'skip-unavailable', message: st.reason };
     const step = a => { const e = apply(g, a, 'skip', []); if (e) throw new Error(`check the rest, ${a.type}: ${e.message}`); };
-    const checked = []; let stoppedAt = null, why = null;
-    for (const m of remaining(g)) {
-      if (g.where[m] === 'drawer') { step({ type: 'go', scene: P.drawer.scene }); step({ type: 'pick_up', device: m }); step({ type: 'go', scene: x32Scene }); }
-      else { step({ type: 'go', scene: x32Scene }); step({ type: 'pick_up', device: m }); }
-      step({ type: 'inspect' }); step({ type: 'talk' });
-      const blank = !lcd(g, m).on, warn = S.stop_if.includes('display-warning') && displayWarning(g, m);
-      const silent = S.stop_if.includes('no-signal-at-x32') && !validPositive(g, m);
-      if (warn || silent) { stoppedAt = m; why = [warn && (blank ? 'its display is blank' : 'its display shows it is muted'), silent && `no signal at X32 ch ${D[m].channel}`].filter(Boolean).join(', and '); break; }
-      step({ type: 'put', place: 'chair' }); checked.push(m);
+    const checked = [], todo = remaining(g); let stoppedAt = null, why = null;
+    // one trip per hands-full: take up to max_mics from the same place, then check each at the X32
+    for (let i = 0; i < todo.length && !stoppedAt;) {
+      const from = g.where[todo[i]], trip = [];
+      while (trip.length < HANDS.max_mics && i < todo.length && g.where[todo[i]] === from) trip.push(todo[i++]);
+      step({ type: 'go', scene: from === 'drawer' ? P.drawer.scene : x32Scene });
+      for (const m of trip) step({ type: 'pick_up', device: m });
+      if (from === 'drawer') step({ type: 'go', scene: x32Scene });
+      for (const m of trip) {
+        step({ type: 'inspect', device: m }); step({ type: 'talk', device: m });
+        const blank = !lcd(g, m).on, warn = S.stop_if.includes('display-warning') && displayWarning(g, m);
+        const silent = S.stop_if.includes('no-signal-at-x32') && !validPositive(g, m);
+        if (warn || silent) { stoppedAt = m; why = [warn && (blank ? 'its display is blank' : 'its display shows it is muted'), silent && `no signal at X32 ch ${D[m].channel}`].filter(Boolean).join(', and '); break; }
+        step({ type: 'put', place: 'chair', device: m }); checked.push(m);
+      }
     }
     const entry = { seq: g.seq + 1, t: g.t, type: 'check_rest', checked, stoppedAt, why };
     g.seq = entry.seq; g.log.push(entry);
     events.push(stoppedAt
-      ? { type: 'skip-stopped', mic: stoppedAt, checked, text: `${S.label} stopped at ${D[stoppedAt].label}: ${why}. It is in your hand, at the X32.` }
+      ? { type: 'skip-stopped', mic: stoppedAt, checked, text: `${S.label} stopped at ${D[stoppedAt].label}: ${why}. It is in your hand, at the X32${held(g).length > 1 ? `, with ${held(g).filter(m => m !== stoppedAt).map(m => D[m].label).join(', ')} (not checked yet)` : ''}.` }
       : { type: 'skip-done', checked, text: `${S.label}: ${checked.length} more verified at the X32 and put on the chair.` });
     return null;
   }
@@ -239,7 +244,7 @@ export function engine(content) {
   }
   // the visible step list, ticked for the mic in hand, or else the next one not yet done
   function procedure(g) {
-    const cur = held(g)[0] || remaining(g)[0] || null;
+    const h = held(g), cur = h.find(m => !validPositive(g, m)) || h[0] || remaining(g)[0] || null;
     const tick = {
       take: m => g.where[m] === 'hand',
       display: m => g.where[m] === 'hand' && !!g.read[m],
@@ -256,7 +261,7 @@ export function engine(content) {
     const mics = g.inPlay.map(m => ({ id: m, label: D[m].label, channel: D[m].channel, windscreen: D[m].windscreen, ring: D[m].ring, status: micStatus(g, m), where: g.where[m] }));
     return {
       clock: clockText(toSec(C.start) + g.t), readyBy: clockText(toSec(C.ready_by)),
-      scene: g.scene, hands: [...g.hands], holding: held(g)[0] || null, display: content.displays[g.scene] || null,
+      scene: g.scene, hands: [...g.hands], held: held(g), holding: held(g)[0] || null, display: content.displays[g.scene] || null,
       lcd: Object.fromEntries(held(g).filter(m => g.read[m]).map(m => [m, lcd(g, m)])),
       canPut: { drawer: g.scene === P.drawer.scene, chair: chairScenes.has(g.scene) },
       objective: { label: content.objective.label, goal: content.objective.goal, verified: mics.filter(m => m.status === 'verified').length, of: mics.length, complete: g.completedAt != null, mics },

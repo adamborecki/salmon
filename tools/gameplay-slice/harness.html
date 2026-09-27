@@ -106,9 +106,11 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);ou
 .slot.gone small{font:500 9.5px/1.2 var(--mono);color:var(--muted);text-align:center;align-self:center}
 
 /* hands: two slots, no hand art */
-.hands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.handslot{border:1px dashed var(--line);border-radius:6px;padding:8px;display:grid;gap:6px;align-content:start;min-height:84px}
+.hands{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px}
+.handslot{border:1px dashed var(--line);border-radius:6px;padding:8px;display:grid;gap:6px;align-content:start}
 .handslot.full{border-style:solid;border-color:var(--accent)}
+.btn.sm{padding:5px 9px;min-height:32px;font-size:13px}
+.role{font:500 11px var(--mono);color:var(--muted)}
 .handslot .lbl{font:600 10.5px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
 .inhand{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center}
 .inhand svg.mic{width:34px;height:124px}
@@ -179,6 +181,7 @@ const G = JSON.parse(document.getElementById('graphData').textContent);
 const eng = engine(content);
 const $ = s => document.querySelector(s);
 const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.chair.label;
+const ROLE = { musician: 'for a musician', 'stays-at-foh': 'stays at FOH' };
 // player-facing names for the places the slice uses (UI copy, not room data)
 const PLACE = { 'foh-wide': 'FOH', 'x32-top': 'X32', 'foh-rack': 'Wireless rack', 'foh-rack-closeup': 'Receivers', 'foh-right-side': 'Mic cabinet', 'foh-mic-drawer': 'Mic drawer' };
 const STATUS = { 'not-checked': ['–', 'not checked'], 'no-signal-seen': ['✕', 'no signal'], 'recheck': ['↻', 're-check'], 'receiver-only': ['◐', 'check X32'], 'verified': ['✓', 'verified'] };
@@ -299,15 +302,15 @@ function renderPanel(v) {
   if (d) {
     const rx = d.device === 'ptu6000-rx';
     p.innerHTML = `<h3>${rx ? 'PTU-6000 receivers: audio' : 'X32 input meters'}</h3>
-      <div class="meters">${mics.map(m => `<div class="strip${m.id === v.holding ? ' mine' : ''}" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${two(m.channel)}</b></div>`).join('')}</div>
-      ${v.holding ? `<div class="row"><button class="btn talk" id="talkHere">Talk into ${esc(D[v.holding].label)}</button></div>` : ''}
-      <p class="fine">${v.holding ? `Watch channel ${D[v.holding].channel} while you talk.` : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
-    const th = $('#talkHere'); if (th) th.onclick = () => act({ type: 'talk' });
+      <div class="meters">${mics.map(m => `<div class="strip${v.held.includes(m.id) ? ' mine' : ''}" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${two(m.channel)}</b></div>`).join('')}</div>
+      ${v.held.length ? `<div class="row">${v.held.map(id => `<button class="btn talk talkHere" data-id="${id}">Talk into ${esc(D[id].label)}</button>`).join('')}</div>` : ''}
+      <p class="fine">${v.held.length ? `Watch channel ${v.held.map(id => D[id].channel).join(' or ')} while you talk.` : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
+    p.querySelectorAll('.talkHere').forEach(b => b.onclick = () => act({ type: 'talk', device: b.dataset.id }));
   } else if (game.scene === content.places.drawer.scene) {
     p.innerHTML = `<h3>Mic drawer</h3><div class="drawer">${mics.map(m => { const dv = D[m.id];
       return m.where === 'drawer' ? `<button class="slot" data-id="${m.id}" aria-label="Pick up ${esc(dv.label)}">${micSVG(dv)}<b>${two(dv.channel)}</b></button>`
         : `<div class="slot gone"><small>${m.where === 'hand' ? 'in hand' : 'on chair'}</small><b>${two(dv.channel)}</b></div>`; }).join('')}</div>
-      <p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. Tap one to pick it up.</p>`;
+      <p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. 1-13 go to the musicians; 14-16 stay at FOH (the A1's talkback mic and two spares). Tap one to pick it up; you can carry two.</p>`;
     p.querySelectorAll('.slot[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
   } else {
     const where = { 'foh-wide': 'Front of house. The X32, the wireless rack and the mic cabinet are all within reach: tap one on the photo.',
@@ -321,18 +324,16 @@ function renderHand(v) {
   const slots = v.hands.map((id, i) => {
     if (!id) return `<div class="handslot"><span class="lbl">${names[i] || 'Hand'}</span><span class="fine">empty</span></div>`;
     const dv = D[id], l = v.lcd[id];
-    return `<div class="handslot full" data-id="${id}"><span class="lbl">${names[i] || 'Hand'}</span><div class="inhand">${micSVG(dv)}<div class="lcdbox">${l ? lcdSVG(l) : '<button class="btn" id="readBtn">Read the display</button>'}</div></div><b>${esc(dv.label)}</b></div>`;
+    return `<div class="handslot full" data-id="${id}"><span class="lbl">${names[i] || 'Hand'}</span>
+      <div class="inhand">${micSVG(dv)}<div class="lcdbox">${l ? lcdSVG(l) : `<button class="btn sm" data-act="read">Read the display</button>`}</div></div>
+      <div><b>${esc(dv.label)}</b> <span class="role">${ROLE[dv.role] || ''}</span></div>
+      <div class="row"><button class="btn sm talk" data-act="talk">Talk into it</button><button class="btn sm" data-act="tap">Tap the button</button><button class="btn sm" data-act="hold">Hold the button</button>
+      ${v.canPut.chair ? '<button class="btn sm" data-act="chair">Put on the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn sm" data-act="drawer">Back in the drawer</button>' : ''}</div></div>`;
   }).join('');
-  const id = v.holding;
   h.innerHTML = `<h3>In your hands</h3><div class="hands">${slots}</div>
-    ${id ? `<div class="row"><button class="btn talk" id="talkBtn">Talk into it</button><button class="btn" id="tapBtn">Tap the button</button><button class="btn" id="holdBtn">Hold the button</button></div>
-    <div class="row">${v.canPut.chair ? '<button class="btn" id="chairBtn">Put it on the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn" id="drawerBtn">Put it back in the drawer</button>' : ''}</div>
-    <p class="fine">One button: a tap mutes or unmutes, a press and hold switches it on or off. One mic at a time for now.</p>`
-      : '<p class="fine">The handhelds are in the mic drawer (Mic cabinet, right of the desk).</p>'}`;
-  const on = (s, f) => { const b = h.querySelector(s); if (b) b.onclick = f; };
-  on('#readBtn', () => act({ type: 'inspect' })); on('#talkBtn', () => act({ type: 'talk' }));
-  on('#tapBtn', () => act({ type: 'press', how: 'tap' })); on('#holdBtn', () => act({ type: 'press', how: 'hold' }));
-  on('#chairBtn', () => act({ type: 'put', place: 'chair' })); on('#drawerBtn', () => act({ type: 'put', place: 'drawer' }));
+    <p class="fine">${v.held.length ? 'One button: a tap mutes or unmutes, a press and hold switches it on or off. ' : 'The handhelds are in the mic drawer (Mic cabinet, right of the desk). '}You can carry two mics.</p>`;
+  const A = { read: { type: 'inspect' }, talk: { type: 'talk' }, tap: { type: 'press', how: 'tap' }, hold: { type: 'press', how: 'hold' }, chair: { type: 'put', place: 'chair' }, drawer: { type: 'put', place: 'drawer' } };
+  h.querySelectorAll('.handslot[data-id] [data-act]').forEach(b => b.onclick = () => act({ ...A[b.dataset.act], device: b.closest('.handslot').dataset.id }));
 }
 function renderChair(v) {
   const on = v.objective.mics.filter(m => m.where === 'chair');
