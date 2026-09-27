@@ -983,14 +983,50 @@
    "to": "monitor-amp-rack-front",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 51.3,
+     "y": 55.8
+    },
+    {
+     "x": 50.1,
+     "y": 77.4
+    },
+    {
+     "x": 64,
+     "y": 76.5
+    },
+    {
+     "x": 68,
+     "y": 55.5
+    }
+   ]
   },
   {
    "from": "mains-rack-front",
    "to": "mains-rack-front-closeup",
    "kind": "closeup",
    "turn_degrees": null,
-   "note": ""
+   "note": "",
+   "hotspot": [
+    {
+     "x": 20.1,
+     "y": 56.9
+    },
+    {
+     "x": 32.7,
+     "y": 95.7
+    },
+    {
+     "x": 66.6,
+     "y": 96.6
+    },
+    {
+     "x": 81.4,
+     "y": 55.4
+    }
+   ]
   },
   {
    "from": "mains-rack-front",
@@ -1274,8 +1310,8 @@
    "dir_degrees": 150,
    "note": "auto reverse of crossroads-left -> racks-front-wide",
    "distance_m": 4.9,
-   "icon_x": 57.4,
-   "icon_y": 80.2
+   "icon_x": 59,
+   "icon_y": 71.9
   },
   {
    "from": "crossroads-right",

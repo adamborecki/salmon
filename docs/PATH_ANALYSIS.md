@@ -55,3 +55,6 @@ CSS `clip-path: polygon()` animations interpolate vertex-by-vertex by index. The
 ## Back button and reverse-transition fixes
 - The fixed bottom Back button no longer shows a "(n)" step count, and it only appears while viewing an inset (a closeup-kind scene); it stays hidden during ordinary walking, where the arrows and sidebar already cover navigation.
 - Fixed a real bug in the reverse inset transition: going back out of an inset briefly showed the wrong photo full-frame before the shrink animation caught up and self-corrected, because the two image layers were assigned backwards for that direction. The layer holding the outgoing (inset) photo and the layer holding the destination (parent) photo are now swapped correctly for the reverse case, so leaving an inset now shows the wide shot underneath immediately with no flash.
+
+## Overlays now clear immediately on any transition
+Turn icons, walk arrows, and inset hotspot polygons stayed visible throughout the animation and only refreshed at the very end. Now every kind of move (walk, turn in place, zoom into an inset, and going back from any of those) clears all on-photo overlays and hides the fixed Back button the instant the move starts, before any animation plays, so nothing stale sits on top of a photo that's already changing.
