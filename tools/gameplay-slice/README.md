@@ -9,14 +9,18 @@ and principle 4.10), as small as it can be while still being real:
 - **one signal chain:** handheld -> PTU-6000 receiver -> XLR -> X32 input (section 37)
 - **16 mics:** channels 1-13 for the musicians; 14-16 are interchangeable spares kept at FOH, any of
   which can be the A1's talkback mic or a replacement run to the stage (owner, 2026-09-27)
-- **one fault:** a handheld powered on but muted (section 46), always channel 2 or 3 (owner: "2nd or
-  3rd of the first 3"), picked by a reproducible seed. The owner notes this is really an on-stage
-  fault (a freshly powered mic starts unmuted); it stays here until the line check is built.
+- **batteries:** mics start off and empty; at the charger on the mic cabinet, two cells go in (the
+  charger counts down), then you switch the mic on
+- **one fault:** batteries in the wrong way round on channel 2 or 3 (owner), picked by a reproducible
+  seed: it won't switch on, checking the batteries shows why, putting them back in fixes it. The
+  section 46 mute fault lives in `content.fault_library` for the on-stage line check; the engine takes
+  hints and debrief text from whichever fault the content picks
+- **RF group/channel:** seeded, unique per mic (6 x 6, placeholder), on the mic display and receivers
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
 - **a visible step list**: the owner's per-mic procedure (take the right mic, batteries in [not simulated yet], switch on, check at the X32, chair); reading the display is optional
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
   and stops at the first mic whose display is blank or muted or whose X32 input is silent
-- **one hint ladder:** the three hints from section 46, verbatim
+- **one hint ladder** per fault (concept, location, direct; the mute one is section 46 verbatim)
 - **one debrief:** what failed, whether NOTICE / TRACE / ACT / VERIFY each happened, and how much was
   done by hand vs by the skip (section 63)
 
@@ -75,12 +79,13 @@ device state (`devices`), signal state (derived by `reach()`, never stored), ver
 (`evidence`, tagged `via: 'hand' | 'skip'`), assistance (`hints`), scenario (`seed`, `fault`, clock),
 and an action `log` that the debrief reads.
 
-## Room for battery faults (not built)
+## Batteries
 
-Each handheld has `state.battery` (`"ok"` in v2). Power-on is refused unless it is `"ok"`, so a mic
-with a bad battery stays off, its display is blank, and there is no signal: the skip stops on it.
-`content.future_faults` lists `battery-reversed` and `battery-dead` as data only; no scenario uses
-them yet. Putting batteries in is step 2 of the step list and marked "not simulated yet".
+Each handheld has `state.battery`: `none` -> `ok` when batteries go in (or the fault's value, for the
+fault mic). Power-on needs `ok`, so a reversed or dead set leaves the mic off with a blank display and
+no signal, and the skip stops on it. `check_batteries` shows orientation (not charge), and
+`reseat_batteries` fixes a reversed set. `battery-dead` is in the fault library (tested, not used by a
+scenario).
 
 ## What is deliberately not decided or not modelled
 
@@ -88,7 +93,7 @@ them yet. Putting batteries in is step 2 of the step list and marked "not simula
   section 84. It is an ES module; the scene ids it uses are scene-graph node ids.
 - **Hands:** two slots, up to two mics (owner). With two held, an action must name its mic (`device`).
 - **The chair** left of FOH is not in any photo, so the harness shows it as a text box (tentative).
-- **Not modelled:** battery insertion, X32 controls (gain, mute, buses), Monitor 1 / mains output, RF,
+- **Not modelled:** taking batteries out for charging, X32 controls (gain, mute, buses), Monitor 1 / mains output, RF,
   frequencies, the FOH talkback routing, running a spare to the stage.
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
   slash, fine with the owner for now; `"MUTE"` is also drawable) and per-action game seconds. The

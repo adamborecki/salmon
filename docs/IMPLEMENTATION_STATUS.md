@@ -17,6 +17,52 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 2, part 4 (2026-09-28): batteries from the charger
+
+### What changed
+- **The battery-in check now has batteries.** Mics start in the drawer, off, with no batteries. The
+  charger is on top of the mic cabinet (seen in photo IMG_4127, so it's in the Mic drawer scene).
+  With a mic in hand there, "Batteries in" uses two cells (the charger starts at 32, a placeholder),
+  then you switch it on.
+- **The fault is now reversed batteries** on ch 2 or 3 (owner: one of the first few mics):
+  - it won't switch on (NOTICE);
+  - "Check the batteries" shows them the wrong way round (TRACE);
+  - "Put them back in" fixes it (ACT);
+  - switch on, then talk at the X32 (VERIFY).
+  The hints are my wording in the section 46 shape (tentative).
+- **The mute fault is kept for the on-stage line check** in `content.fault_library`. The engine is
+  fault-generic, meaning the hints and debrief text come from the chosen fault. The mute variant keeps
+  its tests, including the section 46 ladder verbatim.
+- **RF group/channel:** seeded and unique per mic, 6 groups x 6 channels (owner's suggestion). It is
+  shown on the mic's display and under each receiver slot. Routing (mic N -> slot N -> X32 in N)
+  was confirmed by the owner.
+- "Check the rest" does the full routine (take up to two, batteries, switch on, X32, chair). The
+  debrief no longer counts switching mics on as an "extra change".
+- The harness UI is plain and functional on purpose. The owner wants the game played on the photos
+  with fewer boxes later; gameplay first.
+
+### Tested
+Engine 24/24. I broke 8 new rules on purpose and a test caught each one:
+- reversed batteries still power on;
+- reseating doesn't fix them;
+- the charger never runs down;
+- batteries go in anywhere;
+- the fault never happens;
+- the RF numbers aren't shuffled;
+- switching on counts as an extra change;
+- the skip forgets to switch mics on.
+
+The harness e2e plays the battery fault by hand, checks the RF labels, then runs Check the rest.
+All the other suites pass too.
+
+### Open (owner)
+- The charger: is 32 charged cells right, and where do the cells beyond one 16-slot charger come from?
+- The battery-fault hint wording.
+- Next candidates:
+  - a "bad mic -> swap for a spare" action (unpaired or broken mics);
+  - the on-stage line check (where the mute fault lives);
+  - the UI pass onto the photos.
+
 ## Session 2, part 3 (2026-09-28): public site, owner's procedure
 
 ### What changed
@@ -59,9 +105,9 @@ under `/salmon/` like Pages, it checks:
 - Look over the anonymized photos on the site; boxes are by eye.
 - The public **repo** still has the original photos with people (and git history). Removing them would
   mean rewriting history, which is a separate decision.
-- Confirm routing: mic N -> receiver slot N -> X32 input N still holds (only the RF numbers differ)?
+- ~~Confirm routing~~ confirmed by the owner (2026-09-28): only the RF numbers differ.
 
-### Next build session (owner-described, ask before starting)
+### Next build session (owner-described) — item 1 done in part 4 above
 1. **Batteries from the charger:** with a mic in hand, tap the charger: two cells go in and the charger
    count drops (charger location and count: ask; section 27 says 16 or 18). Mics start **off** after
    that, so "switch it on" becomes real. An early mic (one of the first few) gets **reversed batteries**
@@ -147,7 +193,7 @@ under `/salmon/` like Pages, it checks:
 - Live editor page: **not republished**; still Artifact version 27. Live DB: owner edits up to **v337**,
   pulled into the repo on 2026-09-28 (identical). No DB writes this session.
 - Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
-  **version 2**, then versions 3-5 after the owner follow-ups.
+  **version 2**, then versions 3-6 after the owner follow-ups.
 
 ## Artifact synchronization
 
@@ -353,7 +399,7 @@ node tools/gameplay-slice/test/harness.e2e.mjs
 ## Final state of session 2
 - Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`: engine/content, harness, docs, then the
   owner follow-up (faster, roles, two hands) and its docs. Working tree clean after the docs commit.
-- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 5 (the owner's procedure).
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 6 (batteries from the charger).
 - Public site: built from `main` by `.github/workflows/pages.yml` (needs the one-time Pages setting).
 - **Merged to `main`** (fast-forward, owner-approved 2026-09-27); `main` = the session branch.
 - Live editor / DB unchanged (version 27 / v270).

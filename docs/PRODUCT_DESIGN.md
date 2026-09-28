@@ -1616,6 +1616,11 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
   pairing with the receivers (a procedure of its own). For now every mic is assumed paired; an unpaired
   mic, or any other problem, is a "bad mic" that gets swapped for a spare. Pairing can be a later level.
 - **Future scenario:** a mic dies on stage and the A2 runs a spare from FOH (14-16 are the spares).
+- **Routing confirmed:** mic N -> receiver slot N -> X32 input N; only the RF group/channel differs.
+  For the game, RF numbers may be seeded at random: about 6 groups x 6 channels, unique per mic, the
+  same on the mic and its receiver slot.
+- **UI direction:** the game should eventually be played on the photos themselves, with fewer extra
+  boxes. For now, functionality and gameplay come first and cosmetics come later.
 
 ---
 
