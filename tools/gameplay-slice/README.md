@@ -19,7 +19,7 @@ and principle 4.10), as small as it can be while still being real:
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
 - **a visible step list**: the owner's per-mic procedure (take the right mic, batteries in [not simulated yet], switch on, check at the X32, chair); reading the display is optional
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
-  and stops at the first mic whose display is blank or muted or whose X32 input is silent
+  and stops at the first mic whose X32 input is silent
 - **one hint ladder** per fault (concept, location, direct; the mute one is section 46 verbatim)
 - **one debrief:** what failed, whether NOTICE / TRACE / ACT / VERIFY each happened, and how much was
   done by hand vs by the skip (section 63)
@@ -38,9 +38,9 @@ and principle 4.10), as small as it can be while still being real:
 
 `harness.html` is a deliberately small, throwaway page for *feeling* the loop on the real photos
 (FOH, X32, wireless rack, mic cabinet). Tap into scenes and take a mic from the drawer: all 16 are
-drawn from the content, with windscreen and ring colours. Read its display, which shows the channel
-number, battery and mute state in a placeholder layout. Then talk into it at the X32 and put it on
-the chair left of FOH. After three by hand, use "Check the rest". It reuses the engine unchanged and
+drawn from the content, with windscreen and ring colours. Put batteries in from the charger, switch
+it on (reading its display, optional, shows RF group/channel, battery and mute in a placeholder
+layout), then talk into it at the X32 and put it on the chair left of FOH. After three by hand, use "Check the rest". It reuses the engine unchanged and
 the hotspots from `docs/scene-graph.json`; it is not a proposal for the real app's UI.
 
 ```bash
@@ -51,7 +51,7 @@ node tools/gameplay-slice/test/harness.e2e.mjs            # full playthrough on 
 
 Published as its own private Artifact (so the live scene-graph editor is untouched):
 https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R . A link ending in `#VJ-48217` replays that seed;
-the "Instructor view" at the bottom shows the seed and which mic is muted. To republish after a
+the "Instructor view" at the bottom shows the seed and which mic has the fault. To republish after a
 change: build, then publish `dist/index.html` to that URL with `engine.js` as a supporting file
 (the six `p/*.jpg` photos are already there and are kept).
 
@@ -62,12 +62,12 @@ by evidence (talking into it while its X32 input meter is in view) that is **new
 state change of any device on its path**. Unmuting alone never completes anything, and a mic
 verified earlier drops back to "re-check" if anything on its path changes.
 
-"Check the rest" is a macro of the same basic actions (take it, read the display, talk at the X32,
-put it on the chair), carrying two per trip, so it produces the same evidence and costs the same
+"Check the rest" is a macro of the same basic actions (take it, batteries in, switch on, talk at the
+X32, put it on the chair), carrying two per trip, so it produces the same evidence and costs the same
 game time as doing that by hand; it only saves the player's taps. It is offered after 3 mics have been verified **by hand** with empty hands. It
-stops on anything in `skip.stop_if` (`display-warning`, `no-signal-at-x32`) and leaves that mic in
-the player's hand at the X32. The debrief credits NOTICE to the skip when the skip found the fault,
-but not TRACE (the skip read the display, the player didn't).
+stops on anything in `skip.stop_if` (`no-signal-at-x32`) and leaves that mic in the player's hand at
+the X32. The debrief credits NOTICE to the skip when the skip found the fault, but TRACE only to the
+player's own checks (receiver, display, batteries).
 
 Tests cover these, plus: hands (two slots, two mics, naming the mic), the chair's reach, the step list,
 a skip stop on a mic other than 2/3 (via `start(seed, { faultChannel })`), a future battery fault
