@@ -1,0 +1,622 @@
+{
+ "about": "Where people appear in the photos, so the public site can replace them with generic figures (owner, 2026-09-28: the three character portraits may stay; other people in the room must not be identifiable, e.g. the director or ensemble members). Boxes are [x0, y0, x1, y1] in percent of the photo. kind: person (blur + a plain grey figure), group (blur + n figures side by side), bust (head and shoulders only), blur (a body part at the frame edge: blur only). whole_photo_blur: unlinked photos with people, blurred entirely. Placed by eye; re-check after any photo retake. Some photos show people without the graph's people flag (found by review, 2026-09-28): outside-entry, first-entry-look-right, foh-rear-wide-alt1, storage-live-sound-cart (a hand).",
+ "keep": [
+  "cary",
+  "morgan",
+  "magnolia"
+ ],
+ "whole_photo_blur": [
+  "foh-computer-alt1",
+  "center-wide-alt1",
+  "center-wide-alt2",
+  "center-to-stage-omitted",
+  "foh-rear-wide-alt1"
+ ],
+ "scenes": {
+  "foh-wide": [
+   {
+    "kind": "person",
+    "box": [
+     8.8,
+     14.5,
+     12.8,
+     26
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     23.5,
+     15.5,
+     28,
+     30.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     27.5,
+     16,
+     30.5,
+     29.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     30.3,
+     15,
+     33.8,
+     28.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     34.3,
+     16,
+     37.8,
+     28.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     38.3,
+     16.5,
+     41.3,
+     28.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     41.8,
+     16.5,
+     44.8,
+     28.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     44.8,
+     17.5,
+     47.3,
+     28
+    ]
+   },
+   {
+    "kind": "blur",
+    "box": [
+     24,
+     73,
+     52,
+     100
+    ]
+   },
+   {
+    "kind": "blur",
+    "box": [
+     55,
+     72,
+     100,
+     100
+    ]
+   }
+  ],
+  "foh-rear-wide": [
+   {
+    "kind": "bust",
+    "box": [
+     30.5,
+     28.5,
+     40,
+     38.5
+    ]
+   },
+   {
+    "kind": "blur",
+    "box": [
+     90.5,
+     43,
+     100,
+     93
+    ]
+   }
+  ],
+  "center-wide": [
+   {
+    "kind": "person",
+    "box": [
+     21.8,
+     42.5,
+     26.8,
+     53.5
+    ]
+   },
+   {
+    "kind": "group",
+    "n": 12,
+    "box": [
+     34.5,
+     42,
+     64.5,
+     54.5
+    ]
+   },
+   {
+    "kind": "blur",
+    "box": [
+     85,
+     84,
+     97.5,
+     100
+    ]
+   }
+  ],
+  "crossroads": [
+   {
+    "kind": "person",
+    "box": [
+     17,
+     27,
+     30,
+     63
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     26,
+     24.5,
+     33.5,
+     45.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     32.5,
+     26,
+     38,
+     43
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     37,
+     23,
+     42.5,
+     41
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     42.5,
+     23.5,
+     47,
+     38.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     47.5,
+     22.5,
+     52,
+     39
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     52.5,
+     23.5,
+     57.5,
+     39
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     58,
+     23.5,
+     62.5,
+     38.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     62.5,
+     23,
+     67.5,
+     39
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     69,
+     22,
+     74.5,
+     38.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     73.5,
+     23.5,
+     80,
+     40
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     79.5,
+     21.5,
+     90,
+     47.5
+    ]
+   }
+  ],
+  "crossroads-left": [
+   {
+    "kind": "person",
+    "box": [
+     60,
+     40,
+     70.5,
+     73.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     65,
+     40,
+     69,
+     62
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     68,
+     41,
+     73.5,
+     60
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     73,
+     39.5,
+     78.5,
+     58
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     77,
+     41.5,
+     82,
+     59
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     83,
+     42,
+     89.5,
+     61
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     90.5,
+     42.5,
+     99,
+     62
+    ]
+   },
+   {
+    "kind": "blur",
+    "box": [
+     96.5,
+     44,
+     100,
+     62
+    ]
+   }
+  ],
+  "crossroads-right": [
+   {
+    "kind": "blur",
+    "box": [
+     0,
+     39,
+     3.5,
+     59
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     3,
+     35.5,
+     11,
+     58.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     13,
+     37,
+     20,
+     56
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     23,
+     36.5,
+     28.5,
+     53
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     27.5,
+     37.5,
+     32,
+     55.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     32,
+     35.5,
+     37,
+     55.5
+    ]
+   }
+  ],
+  "first-entry": [
+   {
+    "kind": "group",
+    "n": 8,
+    "box": [
+     29.5,
+     44,
+     46.5,
+     63
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     53,
+     45,
+     58.5,
+     62
+    ]
+   }
+  ],
+  "musician-pov": [
+   {
+    "kind": "person",
+    "box": [
+     8,
+     0,
+     25.5,
+     65
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     32.5,
+     0,
+     49.5,
+     66
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     51.5,
+     2,
+     68,
+     65
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     70,
+     0,
+     80.5,
+     36
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     71,
+     0,
+     92,
+     66
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     90,
+     1,
+     100,
+     60
+    ]
+   }
+  ],
+  "upstage-back-wide": [
+   {
+    "kind": "group",
+    "n": 12,
+    "box": [
+     32,
+     46,
+     65,
+     67
+    ]
+   }
+  ],
+  "path-entry-to-center": [
+   {
+    "kind": "group",
+    "n": 6,
+    "box": [
+     2,
+     48,
+     23,
+     68
+    ]
+   },
+   {
+    "kind": "group",
+    "n": 3,
+    "box": [
+     22.5,
+     47.5,
+     32.5,
+     55
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     60,
+     44.5,
+     62.8,
+     51
+    ]
+   }
+  ],
+  "path-center-to-entry-step1": [
+   {
+    "kind": "person",
+    "box": [
+     65.5,
+     46,
+     70.5,
+     56
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     77.5,
+     45.5,
+     80.8,
+     58
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     80.5,
+     45.5,
+     84.3,
+     57.5
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     84.3,
+     44,
+     89.5,
+     57
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     90,
+     44.5,
+     97,
+     59
+    ]
+   }
+  ],
+  "foh-computer-rear": [
+   {
+    "kind": "bust",
+    "box": [
+     3,
+     0,
+     34,
+     34
+    ]
+   }
+  ],
+  "foh-iem-rack-rear": [
+   {
+    "kind": "blur",
+    "box": [
+     41,
+     0,
+     72,
+     25
+    ]
+   }
+  ],
+  "outside-entry": [
+   {
+    "kind": "group",
+    "n": 4,
+    "box": [
+     50.8,
+     40,
+     60,
+     51.5
+    ]
+   }
+  ],
+  "first-entry-look-right": [
+   {
+    "kind": "person",
+    "box": [
+     28.5,
+     40.5,
+     33.5,
+     48
+    ]
+   }
+  ],
+  "storage-live-sound-cart": [
+   {
+    "kind": "blur",
+    "box": [
+     0,
+     70,
+     18,
+     100
+    ]
+   }
+  ]
+ }
+}

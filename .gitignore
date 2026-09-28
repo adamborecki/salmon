@@ -3,3 +3,5 @@ photos-original/
 tools/scene-graph-editor/dist/
 __pycache__/
 tools/gameplay-slice/dist/
+tools/public-site/dist/
+tools/public-site/work/

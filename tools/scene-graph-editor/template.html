@@ -30,8 +30,8 @@ h1{font-size:14px;font-weight:600;margin:0;letter-spacing:.02em}
 .chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
 :is(.chip,button,select,input,textarea,a):focus-visible{outline:2px solid var(--sel);outline-offset:1px}
 .sp{flex:1}
-button.b{touch-action:manipulation;font:500 12px var(--sans);padding:4px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
-button.b:hover:not(:disabled){border-color:var(--ink)} button.b:disabled{opacity:.4;cursor:default}
+button.b,a.b{text-decoration:none;display:inline-block;line-height:normal;touch-action:manipulation;font:500 12px var(--sans);padding:4px 10px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
+button.b:hover:not(:disabled),a.b:hover{border-color:var(--ink)} button.b:disabled{opacity:.4;cursor:default}
 button.b.warn{background:var(--warn);border-color:var(--warn);color:#fff}
 #status{font:11px var(--mono);color:var(--muted)}
 main{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 300px;min-height:0}
@@ -172,11 +172,13 @@ kbd{font:500 11px var(--mono);border:1px solid var(--line);border-bottom-width:2
 
 <div id="app">
 <header>
+  <a class="b" id="home" href="../" hidden>&larr; Home</a>
   <h1>SALMON SCENE GRAPH</h1>
   <div class="tabs" role="group" aria-label="View"><button id="tMap" aria-pressed="true">Map</button><button id="tWalk" aria-pressed="false">Walk</button><button id="tPlan" aria-pressed="false">Plan</button></div>
   <div class="chips" id="chips" role="group" aria-label="Show node kinds"></div>
   <span class="sp"></span>
   <span id="status">loading</span>
+  <button class="b" id="export" hidden>Export JSON</button>
   <button class="b" id="undo" disabled>Undo</button>
   <button class="b" id="addEdge" aria-pressed="false">Link mode: off</button>
   <button class="b" id="zin" aria-label="Zoom in">+</button>
@@ -207,6 +209,7 @@ kbd{font:500 11px var(--mono);border:1px solid var(--line);border-bottom-width:2
 
 <script>
 const FALLBACK = __GRAPH__;
+const PUBLIC = __PUBLIC__;   // the public GitHub Pages copy: never saves; edits can be exported as a file
 const KINDS=['hub','waypoint','closeup','screen','character','alt','omitted'];
 const EDGE_KINDS=['walk','control','closeup'];
 let localDirty=false, G=null, sel=null, linkMode=false, pending=null, dbDoc=null, saveT=null, view={x:40,y:40,z:.6}, mode='map';
@@ -223,7 +226,7 @@ function setStatus(t){$('#status').textContent=t}
 function scheduleSave(){
   setStatus('unsaved'); localDirty=true; clearTimeout(saveT);
   saveT=setTimeout(async()=>{
-    if(!dbDoc){setStatus('local only (not saved)');return}
+    if(!dbDoc){setStatus(PUBLIC?'edited, not saved: Export JSON to keep it':'local only (not saved)');return}
     try{await dbDoc.set({json:ser(),updated:new Date().toISOString()});localDirty=false;setStatus('saved')}
     catch(e){setStatus('save failed: '+(e&&e.code||'error'))}
   },900);
@@ -1045,6 +1048,17 @@ async function boot(){
   G=JSON.parse(JSON.stringify(FALLBACK)); chips(); renderAll(); requestAnimationFrame(fit);
   try{const t=localStorage.getItem('salmon-theme');if(t&&THEMES.includes(t))setTheme(t)}catch(e){}
   setStatus('local only');
+  if(PUBLIC){
+    $('#home').hidden=false; $('#export').hidden=false; setStatus('public preview: edits are not saved');
+    $('#export').onclick=()=>{
+      const blob=new Blob([JSON.stringify(JSON.parse(ser()),null,1)+'\n'],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='salmon-scene-graph-'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    };
+    $('#tWalk').click();
+    return;
+  }
   try{
     const db=await claude.use('db'); if(!db)return;
     dbDoc=db.doc('graph/main');

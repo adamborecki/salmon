@@ -10,19 +10,25 @@ Builds the gameplay-slice harness into tools/gameplay-slice/dist/:
 Usage (from repo root):
   python3 tools/gameplay-slice/build.py
   cd tools/gameplay-slice/dist && python3 -m http.server 8124   # then open /local.html
+  python3 tools/gameplay-slice/build.py --photos-overlay DIR --out DIR     # e.g. the public site copy
 
 The hotspots come straight from docs/scene-graph.json, so redrawing one in the editor (and syncing)
 changes it here on the next build.
 """
-import json, os, shutil, sys
+import argparse, json, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-DIST = os.path.join(HERE, 'dist')
+DIST_DEFAULT = os.path.join(HERE, 'dist')
 SCENES = ['foh-wide', 'x32-top', 'foh-rack', 'foh-rack-closeup', 'foh-right-side', 'foh-mic-drawer']
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--photos-overlay', help='a folder laid out like photos-working/ whose files win (anonymized copies)')
+    ap.add_argument('--out', default=DIST_DEFAULT)
+    args = ap.parse_args()
+    out = args.out
     try:
         from PIL import Image
     except ImportError:
@@ -43,14 +49,17 @@ def main():
     tpl = open(os.path.join(HERE, 'harness.html')).read()
     dump = lambda o: json.dumps(o, separators=(',', ':'), ensure_ascii=False).replace('</', '<\\/')
     page = tpl.replace('__CONTENT__', dump(content)).replace('__GRAPH__', dump(sub))
-    os.makedirs(os.path.join(DIST, 'p'), exist_ok=True)
-    open(os.path.join(DIST, 'index.html'), 'w').write(page)
-    open(os.path.join(DIST, 'local.html'), 'w').write('<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body>\n' + page + '\n</body></html>')
-    shutil.copy(os.path.join(HERE, 'engine.js'), os.path.join(DIST, 'engine.js'))
+    os.makedirs(os.path.join(out, 'p'), exist_ok=True)
+    open(os.path.join(out, 'index.html'), 'w').write(page)
+    open(os.path.join(out, 'local.html'), 'w').write('<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body>\n' + page + '\n</body></html>')
+    shutil.copy(os.path.join(HERE, 'engine.js'), os.path.join(out, 'engine.js'))
     for k in SCENES:
-        im = Image.open(os.path.join(ROOT, 'photos-working', graph['nodes'][k]['file']))
-        im.thumbnail((1280, 960)); im.save(os.path.join(DIST, 'p', k + '.jpg'), quality=78)
-    print(f'Built {DIST}/index.html: {len(sub["edges"])} slice links, {len(SCENES)} scenes.')
+        src = os.path.join(ROOT, 'photos-working', graph['nodes'][k]['file'])
+        if args.photos_overlay and os.path.exists(os.path.join(args.photos_overlay, graph['nodes'][k]['file'])):
+            src = os.path.join(args.photos_overlay, graph['nodes'][k]['file'])
+        im = Image.open(src)
+        im.thumbnail((1280, 960)); im.save(os.path.join(out, 'p', k + '.jpg'), quality=78)
+    print(f'Built {out}/index.html: {len(sub["edges"])} slice links, {len(SCENES)} scenes.')
 
 
 if __name__ == '__main__':
