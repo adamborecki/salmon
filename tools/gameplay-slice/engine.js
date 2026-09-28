@@ -10,14 +10,14 @@
 //   eng.debrief(g)  -> what failed, what was noticed / traced / changed / verified, hints, time
 //
 // Actions: go {scene} · pick_up {device} · put {place: 'drawer'|'chair'} · press {how: 'tap'|'hold'}
-//          · inspect (read the held mic's display) · talk · hint · check_rest
+//          · inspect (read the held mic's display; optional, for troubleshooting) · talk · hint · check_rest
 //
 // Key rule (section 3, "fixed is not the same as verified"): a mic only counts as verified by evidence
 // seen at its X32 input while talking into it, and that evidence must be newer than the last state
 // change of any device on its path. Unmuting alone never completes anything.
 //
 // "Check the rest" (principle 4.10) is a macro of the same basic actions, so it produces the same
-// evidence, costs the same game time, and stops at the first mic that looks or sounds abnormal.
+// evidence, costs the same game time, and stops at the first mic that shows no signal at the X32.
 
 const clone = o => JSON.parse(JSON.stringify(o));
 
@@ -73,9 +73,8 @@ export function engine(content) {
   // what the handheld's small LCD shows (layout is a placeholder: content behaviour.lcd)
   function lcd(g, mic) {
     const s = g.devices[mic].state;
-    return s.power === 'on' ? { on: true, channel: D[mic].channel, muted: !!s.muted, battery: 'full' } : { on: false };
+    return s.power === 'on' ? { on: true, group: D[mic].rf.group, channel: D[mic].rf.channel, muted: !!s.muted, battery: 'full' } : { on: false };
   }
-  const displayWarning = (g, mic) => { const l = lcd(g, mic); return !l.on || l.muted; };
   const done = (g, mic) => validPositive(g, mic) && g.where[mic] === 'chair';
   const remaining = g => g.inPlay.filter(m => !done(g, m));
   const byHand = g => g.inPlay.filter(m => g.evidence.some(e => e.mic === m && e.via === 'hand' && e.point === x32Point(m) && e.signal));
@@ -203,10 +202,8 @@ export function engine(content) {
       for (const m of trip) step({ type: 'pick_up', device: m });
       if (from === 'drawer') step({ type: 'go', scene: x32Scene });
       for (const m of trip) {
-        step({ type: 'inspect', device: m }); step({ type: 'talk', device: m });
-        const blank = !lcd(g, m).on, warn = S.stop_if.includes('display-warning') && displayWarning(g, m);
-        const silent = S.stop_if.includes('no-signal-at-x32') && !validPositive(g, m);
-        if (warn || silent) { stoppedAt = m; why = [warn && (blank ? 'its display is blank' : 'its display shows it is muted'), silent && `no signal at X32 ch ${D[m].channel}`].filter(Boolean).join(', and '); break; }
+        step({ type: 'talk', device: m });
+        if (S.stop_if.includes('no-signal-at-x32') && !validPositive(g, m)) { stoppedAt = m; why = `no signal at X32 ch ${D[m].channel}`; break; }
         step({ type: 'put', place: 'chair', device: m }); checked.push(m);
       }
     }
@@ -247,13 +244,13 @@ export function engine(content) {
     const h = held(g), cur = h.find(m => !validPositive(g, m)) || h[0] || remaining(g)[0] || null;
     const tick = {
       take: m => g.where[m] === 'hand',
-      display: m => g.where[m] === 'hand' && !!g.read[m],
+      power: m => g.where[m] === 'hand' && g.devices[m].state.power === 'on',
       talk: m => validPositive(g, m),
       chair: m => g.where[m] === 'chair',
     };
     return {
       mic: cur, steps: content.procedure.steps.map(s => ({ id: s.id, text: s.text, simulated: s.simulated !== false,
-        done: s.simulated === false ? null : cur ? tick[s.id](cur) : true })),
+        done: s.simulated === false ? null : cur ? tick[s.id](cur) : true })), optional: content.procedure.optional,
       skip: { label: S.label, ...skipState(g) },
     };
   }

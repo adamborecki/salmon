@@ -209,7 +209,7 @@ function act(a) {
   for (const ev of r.events) {
     if (ev.type === 'meter') pulse(ev.point, ev.signal);
     if (ev.type === 'skip-stopped') pulse(eng.path(ev.mic).at(-1), false);
-    if (ev.type === 'inspect') { const l = ev.lcd; say(`${D[ev.device].label}: ${l.on ? `display shows CH ${two(l.channel)}${l.muted ? ' and MUTED' : ', not muted'}` : 'display is blank'}.`, l.on && !l.muted ? '' : 'bad'); }
+    if (ev.type === 'inspect') { const l = ev.lcd; say(`${D[ev.device].label}: ${l.on ? `display on${l.muted ? ', showing MUTED' : ', not muted'}, battery full` : 'display is blank'}.`, l.on && !l.muted ? '' : 'bad'); }
     else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['nothing', 'no-display', 'skip-stopped'].includes(ev.type) ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
@@ -248,10 +248,11 @@ function lcdSVG(l) {
   const glyph = content.behaviour.muted_indication.glyph.value;
   const mute = !l.muted ? '' : glyph === 'MUTE' ? `<text x="140" y="70" text-anchor="end" font-size="15" class="lk">MUTE</text>`
     : `<g transform="translate(112 50)" class="lk lks"><path d="M0 7h6l8-7v24l-8-7H0z" stroke="none"/><path d="M-2 24L22 -2" stroke-width="2.6"/></g>`;
-  return `<svg viewBox="0 0 160 88" role="img" aria-label="Display: channel ${l.channel}${l.muted ? ', muted' : ''}, battery full">
+  const num = n => n == null ? '--' : two(n);
+  return `<svg viewBox="0 0 160 88" role="img" aria-label="Display: group ${l.group ?? 'unknown'}, channel ${l.channel ?? 'unknown'}${l.muted ? ', muted' : ''}, battery full">
     <rect x="1" y="1" width="158" height="86" rx="8" class="bd"/><rect x="10" y="10" width="140" height="68" rx="4" class="lcdon"/>
-    <text x="20" y="32" font-size="12" class="lk">CH</text>
-    <text x="20" y="70" font-size="36" class="lk">${two(l.channel)}</text>
+    <text x="20" y="32" font-size="12" class="lk">GRP ${num(l.group)}</text>
+    <text x="20" y="70" font-size="12" class="lk">CH</text><text x="42" y="70" font-size="32" class="lk">${num(l.channel)}</text>
     <g transform="translate(112 20)"><rect x="0" y="0" width="26" height="12" rx="1.5" fill="none" class="lks" stroke-width="1.6"/><rect x="26" y="3.5" width="3" height="5" class="lk"/>
     <rect x="3" y="3" width="5.5" height="6" class="lk"/><rect x="10.3" y="3" width="5.5" height="6" class="lk"/><rect x="17.6" y="3" width="5.5" height="6" class="lk"/></g>${mute}</svg>`;
 }
@@ -293,6 +294,7 @@ function renderSteps(v) {
   $('#steps').innerHTML = `<h3>Battery-in check, for each mic</h3>
     <p class="now">${cur ? `${v.holding ? 'In hand' : 'Next'}: ${esc(cur.label)}` : 'Every mic is verified and on the chair.'}</p>
     <ol class="steps">${p.steps.map(st => `<li class="${st.done ? 'done' : ''}${st.simulated ? '' : ' off'}" data-step="${st.id}"><span>${esc(st.text)}${st.simulated ? '' : '<em>not simulated yet</em>'}</span></li>`).join('')}</ol>
+    ${p.optional ? `<p class="fine">${esc(p.optional)}</p>` : ''}
     <div class="skip"><button class="btn primary" id="skipBtn" ${s.available ? '' : 'disabled'}>${esc(s.label)}${s.left ? ` (${s.left})` : ''}</button>
     <p class="fine">${s.available ? `Does the same routine for the other ${s.left}, in colour order, and stops at the first mic that looks or sounds wrong.` : esc(s.reason) + (s.byHand < s.need ? ` By hand so far: ${s.byHand} of ${s.need}.` : '')}</p></div>`;
   $('#skipBtn').onclick = () => act({ type: 'check_rest' });

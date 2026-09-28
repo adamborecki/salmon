@@ -52,12 +52,12 @@ for (let ch = 1; ch <= 3; ch++) {
   if (ch === 1) await shot('2-drawer');
   await tap(`.slot[data-id="${id}"]`);
   ok((await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))).join() === id, `CH ${ch}: in the left hand, right hand empty`);
-  ok((await stepsDone()).join() === 'take', `CH ${ch}: step 1 ticked`);
+  ok((await stepsDone()).join() === 'take,power', `CH ${ch}: took it; it is on`);
   await tapBack(); await tapBack();
   await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
   await tap(inSlot(id, 'read'));
   const lcd = await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'));
-  ok(lcd.includes(`channel ${ch}`) && lcd.includes('muted') === (ch === faultCh), `CH ${ch}: display reads "${lcd}"`);
+  ok(lcd.includes('muted') === (ch === faultCh), `CH ${ch}: display reads "${lcd}"`);
   await tap(`.talkHere[data-id="${id}"]`);
   if (ch !== faultCh) {
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
@@ -76,7 +76,7 @@ for (let ch = 1; ch <= 3; ch++) {
     await tap(`.talkHere[data-id="${id}"]`);                                                                  // VERIFY
     ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32 again`);
   }
-  ok((await stepsDone()).join() === 'take,display,talk', `CH ${ch}: steps 1, 3, 4 ticked`);
+  ok((await stepsDone()).join() === 'take,power,talk', `CH ${ch}: steps 1, 3, 4 ticked`);
   await tap(inSlot(id, 'chair'));
   ok(await page.$(`#chair button[data-id="${id}"][data-s="verified"]`) !== null, `CH ${ch}: on the chair left of FOH, verified`);
   await tapBack(); ok((await where()) === 'FOH', `CH ${ch}: back at FOH`);

@@ -115,6 +115,10 @@
    "windscreen": "black",
    "ring": "red",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -129,6 +133,10 @@
    "windscreen": "black",
    "ring": "orange",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -143,6 +151,10 @@
    "windscreen": "black",
    "ring": "yellow",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -157,6 +169,10 @@
    "windscreen": "black",
    "ring": "green",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -171,6 +187,10 @@
    "windscreen": "black",
    "ring": "blue",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -185,6 +205,10 @@
    "windscreen": "black",
    "ring": "purple",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -199,6 +223,10 @@
    "windscreen": "black",
    "ring": "black",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -213,6 +241,10 @@
    "windscreen": "black",
    "ring": "grey",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -227,6 +259,10 @@
    "windscreen": "grey",
    "ring": "red",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -241,6 +277,10 @@
    "windscreen": "grey",
    "ring": "orange",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -255,6 +295,10 @@
    "windscreen": "grey",
    "ring": "yellow",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -269,6 +313,10 @@
    "windscreen": "grey",
    "ring": "green",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -283,6 +331,10 @@
    "windscreen": "grey",
    "ring": "blue",
    "role": "musician",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -297,6 +349,10 @@
    "windscreen": "grey",
    "ring": "purple",
    "role": "spare",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -311,6 +367,10 @@
    "windscreen": "grey",
    "ring": "black",
    "role": "spare",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -325,6 +385,10 @@
    "windscreen": "grey",
    "ring": "grey",
    "role": "spare",
+   "rf": {
+    "group": null,
+    "channel": null
+   },
    "home": "drawer",
    "state": {
     "power": "on",
@@ -333,7 +397,7 @@
    }
   }
  },
- "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127). State `battery`: \"ok\" is the only value used in v2; see future_faults.",
+ "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127). State `battery`: \"ok\" is the only value used in v2; see future_faults. RF group/channel (owner, 2026-09-27): mic N is NOT RF channel N. Each mic has its own group and channel number, which selects a frequency and is set by pairing with its receiver (a procedure of its own). Values not recorded yet (null = unknown). For now every mic is assumed paired; an unpaired mic, or any other problem, is simply a 'bad mic' that gets swapped for a spare. Pairing can be a later level.",
  "behaviour": {
   "handheld_button": {
    "value": {
@@ -359,8 +423,8 @@
    }
   },
   "lcd": {
-   "value": "channel number and a battery gauge; blank when the mic is off",
-   "status": "owner, 2026-09-27: small LCD above the button with group/channel number + battery. Exact layout and the group number: unknown; the harness draws a placeholder (CH + number, 3-bar battery)."
+   "value": "RF group and channel, a battery gauge, and a mute indicator; blank when the mic is off",
+   "status": "owner, 2026-09-27: small LCD above the button with group/channel number + battery; reading it is optional in the check and essential when troubleshooting. Layout is a placeholder; the numbers are unknown per mic."
   },
   "hands": {
    "value": {
@@ -551,7 +615,7 @@
    "medium": "xlr"
   }
  ],
- "connections_status": "Current fact (owner, 2026-09-27): handheld N -> receiver channel N -> X32 input N, over handheld -> PTU-6000 -> XLR -> X32 local analog input (PRODUCT_DESIGN section 37).",
+ "connections_status": "Current fact (owner, 2026-09-27): handheld N -> receiver channel N -> X32 input N, over handheld -> PTU-6000 -> XLR -> X32 local analog input (PRODUCT_DESIGN section 37). 'Receiver channel N' here means the Nth receiver slot (the owner's earlier answer), not the RF group/channel shown on the mic's display.",
  "displays": {
   "x32-top": {
    "device": "foh-x32",
@@ -609,16 +673,16 @@
   "steps": [
    {
     "id": "take",
-    "text": "Take the next mic from the drawer, in colour order."
+    "text": "Take the right mic from the drawer: windscreen colour, then ring colour."
    },
    {
     "id": "batteries",
-    "text": "Put its batteries in.",
+    "text": "Put two batteries in from the charger, the right way round.",
     "simulated": false
    },
    {
-    "id": "display",
-    "text": "Read its display: the right channel, not muted."
+    "id": "power",
+    "text": "Switch it on (press and hold)."
    },
    {
     "id": "talk",
@@ -629,17 +693,17 @@
     "text": "Put it on the chair left of FOH."
    }
   ],
-  "status": "owner-approved wording (2026-09-27); drafted by the agent from PRODUCT_DESIGN section 45"
+  "optional": "Reading the mic's display (group/channel, battery, mute) isn't needed when everything works; it's how you troubleshoot one that doesn't.",
+  "status": "owner, 2026-09-27: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion). Battery insertion arrives with the battery work."
  },
  "skip": {
   "label": "Check the rest",
   "after_by_hand": 3,
   "order": "channel",
   "stop_if": [
-   "display-warning",
    "no-signal-at-x32"
   ],
-  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, then at the X32 for each: read the display, talk into it, put it on the chair), costing the same game time; it stops at the first mic whose display is blank or muted or whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
+  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, then at the X32 for each: talk into it, put it on the chair), costing the same game time; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
   "status": "PRODUCT_DESIGN 4.10 (owner, 2026-09-27); 3 by hand is from the brief"
  },
  "hints": [

@@ -66,7 +66,7 @@ test('the muted mic shows no signal at the receiver or the X32 (NOTICE), and its
   assert.equal(status(g, f), 'no-signal-seen');
   assert.deepEqual(eng.view(g).lcd, {}, 'the display is not read until you look at it');
   ({ g, events } = run(g, { type: 'inspect' }));
-  assert.deepEqual(events.find(e => e.type === 'inspect').lcd, { on: true, channel: g0.devices[f] && content.devices[f].channel, muted: true, battery: 'full' });
+  assert.deepEqual(events.find(e => e.type === 'inspect').lcd, { on: true, group: null, channel: null, muted: true, battery: 'full' }, 'RF group/channel: not recorded yet (mic N is not RF channel N)');
   assert.equal(eng.view(g).lcd[f].muted, true);
 });
 
@@ -159,15 +159,19 @@ test('rejected actions change nothing', () => {
   }
 });
 
-test('step list: ticks for the mic in hand, then moves on to the next mic in colour order', () => {
+test('step list (owner procedure): ticks for the mic in hand, then moves on to the next mic in colour order', () => {
   let g = eng.start('VJ-1');
   let p = eng.view(g).procedure;
-  assert.deepEqual(p.steps.map(s => s.id), ['take', 'batteries', 'display', 'talk', 'chair']);
+  assert.deepEqual(p.steps.map(s => s.id), ['take', 'batteries', 'power', 'talk', 'chair']);
+  assert.match(p.optional, /display/, 'reading the display is optional');
   assert.equal(p.mic, mic(1));
   assert.deepEqual(p.steps.map(s => s.done), [false, null, false, false, false], 'batteries: not simulated yet');
-  const seen = [];
-  for (const a of checkAtX32(mic(1)).slice(0, -1)) { g = run(g, a).g; seen.push(eng.view(g).procedure.steps.map(s => s.done)); }
-  assert.deepEqual(seen.at(-1), [true, null, true, true, false]);
+  g = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: mic(1) }).g;
+  assert.deepEqual(eng.view(g).procedure.steps.map(s => s.done), [true, null, true, false, false], 'v2 mics start switched on');
+  g = run(g, { type: 'press', how: 'hold' }).g;
+  assert.equal(eng.view(g).procedure.steps[2].done, false, 'switched off: the power step un-ticks');
+  g = run(g, { type: 'press', how: 'hold' }, { type: 'go', scene: 'x32-top' }, { type: 'talk' }).g;
+  assert.deepEqual(eng.view(g).procedure.steps.map(s => s.done), [true, null, true, true, false]);
   g = run(g, { type: 'put', place: 'chair' }).g;
   p = eng.view(g).procedure;
   assert.equal(p.mic, mic(2), 'on to the next one');
@@ -193,8 +197,8 @@ test('Check the rest: only after 3 mics by hand and with empty hands; then it do
   assert.ok(v.objective.mics.every(m => m.where === 'chair'));
   assert.ok(events.some(e => e.type === 'skip-done' && e.checked.length === 13));
   assert.ok(events.some(e => e.type === 'objective-complete'));
-  // two mics per trip: 2 moves + 2 pick-ups, then read, talk, chair for each = per mic 1 move + 4 actions
-  assert.equal(g2.t - t0, 13 * (content.clock.move_s + 4 * content.clock.action_s) + content.clock.move_s, 'same game time as doing it by hand, two at a time (13 is odd: the last trip carries one)');
+  // two mics per trip: 2 moves + 2 pick-ups, then talk and chair for each = per mic 1 move + 3 actions
+  assert.equal(g2.t - t0, 13 * (content.clock.move_s + 3 * content.clock.action_s) + content.clock.move_s, 'same game time as doing it by hand, two at a time (13 is odd: the last trip carries one)');
   const d = eng.debrief(g2);
   assert.equal(d.byHand, 3); assert.equal(d.bySkip, 13); assert.deepEqual(d.skipStops, []);
   assert.deepEqual(d.loop, { notice: true, trace: true, act: true, verify: true });
@@ -208,7 +212,7 @@ test('Check the rest stops at the first abnormal mic, with it in hand at the X32
   let { g: g2, events } = run(g, { type: 'check_rest' });
   const stop = events.find(e => e.type === 'skip-stopped');
   assert.equal(stop.mic, mic(9));
-  assert.match(stop.text, /muted.*no signal at X32 ch 9/);
+  assert.match(stop.text, /stopped at Mic 9 \(grey \/ red\): no signal at X32 ch 9/);
   assert.deepEqual(stop.checked, [4, 5, 6, 7, 8].map(mic));
   assert.deepEqual(eng.view(g2).held, [mic(9)], 'mic 8 (its trip partner) was fine and went on the chair');
   assert.equal(g2.scene, 'x32-top');
@@ -218,7 +222,7 @@ test('Check the rest stops at the first abnormal mic, with it in hand at the X32
   assert.equal(eng.view(g2).objective.complete, true);
   const d = eng.debrief(g2);
   assert.equal(d.loop.notice, true, 'the skip surfaced it');
-  assert.equal(d.loop.trace, false, 'the skip read the display, not the player');
+  assert.equal(d.loop.trace, false, 'the skip only listens at the X32; the player traced nothing');
   assert.deepEqual(d.skipStops, [mic(9)]);
   assert.match(d.lines.join('\n'), /Check the rest stopped on Mic 9 \(grey \/ red\)/);
 });
@@ -233,7 +237,7 @@ test('future battery faults: a mic that will not switch on is caught by the skip
   const x = e2.act(g, { type: 'check_rest' }); g = x.game;
   const stop = x.events.find(e => e.type === 'skip-stopped');
   assert.equal(stop.mic, mic(12));
-  assert.match(stop.text, /display is blank.*with Mic 13 \(grey \/ blue\) \(not checked yet\)/);
+  assert.match(stop.text, /no signal at X32 ch 12.*with Mic 13 \(grey \/ blue\) \(not checked yet\)/);
   assert.deepEqual(e2.view(g).held, [mic(12), mic(13)], 'its trip partner is still in hand, unchecked');
   const y = e2.act(g, { type: 'press', how: 'hold', device: mic(12) });
   assert.ok(y.events.some(e => e.type === 'nothing' && /does not switch on/.test(e.text)));
@@ -296,5 +300,5 @@ test('content: every device named in a connection or display exists, and every m
   for (const d of Object.values(content.displays)) assert.ok(ids.has(d.device));
   const g = eng.start('x');
   for (const m of g.inPlay) assert.deepEqual(eng.path(m), [m, `ptu6000-rx:${content.devices[m].channel}`, `foh-x32:in:${content.devices[m].channel}`]);
-  for (const s of content.procedure.steps) assert.ok(s.simulated === false || ['take', 'display', 'talk', 'chair'].includes(s.id), s.id);
+  for (const s of content.procedure.steps) assert.ok(s.simulated === false || ['take', 'power', 'talk', 'chair'].includes(s.id), s.id);
 });
