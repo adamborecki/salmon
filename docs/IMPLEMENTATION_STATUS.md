@@ -12,10 +12,63 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    It is now the battery-in check: 16 mics drawn in the drawer, read each display, talk at the X32,
    put it on the chair; after 3 by hand, "Check the rest". "Instructor view" shows the seed and the
    muted mic. Still a throwaway harness, not a UI proposal.
-2. ~~Step list wording~~ approved (2026-09-27). ~~Mute glyph~~ the placeholder is fine for now; a
-   photo of a muted display is welcome but not needed.
-3. Everything from this session is merged to `main`.
+2. **Turn on GitHub Pages once** (Settings -> Pages -> Source: GitHub Actions) for the public site:
+   https://adamborecki.github.io/salmon/ (see "Session 2, part 3").
+3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
+
+## Session 2, part 3 (2026-09-28): public site, owner's procedure
+
+### What changed
+- **Owner correction:** the "sounds great" about the step list wording was a misunderstanding. The
+  owner then described the real procedure, which replaced my draft (content `procedure`):
+  take the right mic by colour; two batteries in from the charger (*not simulated yet*); switch it on;
+  talk at the X32, where the meter is the win criterion; put it on the chair. **Reading the display is
+  optional** (troubleshooting only), so "Check the rest" no longer reads it and stops only on no signal.
+- **Mic N is not RF channel N.** Each mic has a group/channel set by pairing; the values are unknown
+  (`rf: {group: null, channel: null}`), shown as `--` on the display placeholder. Routing (mic N ->
+  receiver slot N -> X32 input N) is unchanged, from the owner's earlier answer; see the question below.
+- **Graph synced from the live editor:** DB **v337** (owner edits: arrow positions and directions, four
+  hotspots, the `crossroads-left` arrow moved off the rack) pulled into `docs/scene-graph.json`.
+  No writes to the DB this session.
+- **Public site** (`tools/public-site/`, deployed by `.github/workflows/pages.yml` on push to `main`):
+  - an "under construction" landing page;
+  - `walk/`: the editor in public mode (no DB, opens in Walk, Home link, **Export JSON**, nothing saved);
+  - `battery-check/`: the harness.
+  People other than the three portraits are anonymized at build time (blur + a plain grey figure),
+  following `people.json`. I placed every box by eye and reviewed every output, which turned up
+  three photos with people but no `people` flag (`outside-entry`, `first-entry-look-right`,
+  `foh-rear-wide-alt1`). Originals and the live editor are untouched.
+- Editor template: `PUBLIC` flag (false in the live build, so the live editor behaves the same; the new
+  Home/Export controls are hidden there). The live editor was **not** republished: its page is version 27,
+  which differs from the template only by these inert public-mode additions.
+
+### Tested
+All CLAUDE.md checks pass (validate; walk-touch; hotspots, now with no arrow-coverage warnings;
+engine 21/21; harness e2e), plus `node tools/public-site/test/site.e2e.mjs`. At phone size, served
+under `/salmon/` like Pages, it checks:
+- every link and image works;
+- the export equals the repo graph;
+- the served photos are the anonymized copies;
+- there are no page errors and no sideways scroll.
+
+### Needs the owner
+- **Turn on Pages once:** GitHub repo -> Settings -> Pages -> Build and deployment -> Source:
+  **GitHub Actions**. Then the site is at https://adamborecki.github.io/salmon/ (re-run the "Public
+  site" workflow if the first run failed before this was set).
+- Look over the anonymized photos on the site; boxes are by eye.
+- The public **repo** still has the original photos with people (and git history). Removing them would
+  mean rewriting history, which is a separate decision.
+- Confirm routing: mic N -> receiver slot N -> X32 input N still holds (only the RF numbers differ)?
+
+### Next build session (owner-described, ask before starting)
+1. **Batteries from the charger:** with a mic in hand, tap the charger: two cells go in and the charger
+   count drops (charger location and count: ask; section 27 says 16 or 18). Mics start **off** after
+   that, so "switch it on" becomes real. An early mic (one of the first few) gets **reversed batteries**
+   as the fault; the mute fault then belongs to the on-stage line check (owner, 2026-09-27).
+2. **"Bad mic" -> swap for a spare** (unpaired or otherwise broken), which leads into the owner's
+   scenario: a mic dies on stage and the A2 runs a spare from FOH.
+3. Pairing (group/channel) as a later level.
 
 ## Session 2: harness v2 (the brief below, now done)
 
@@ -75,7 +128,7 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 **Not tested:** a real phone; the published page itself in the artifact viewer (the local build passes).
 
 ### Needs the owner
-- ~~Step list wording~~ approved. Whether the checked mic really goes on the chair ("probably": kept tentative).
+- ~~Step list wording~~ replaced by the owner's own procedure (2026-09-28). Whether the checked mic really goes on the chair ("probably": kept tentative).
 - ~~Which channels are the spares and the talkback~~ answered: 14-16 are interchangeable spares (any can be talkback or a replacement).
 - ~~Muted display photo~~ optional; the placeholder is fine with the owner.
 - ~~Hands~~ answered: allow two.
@@ -91,10 +144,10 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    FOH talkback once the transport facts are confirmed (session 1's step 3).
 
 ## Session 2 sync status
-- Live editor and live DB: **not touched** this session (no graph changes); still Artifact version 27
-  and DB v270 as recorded below.
+- Live editor page: **not republished**; still Artifact version 27. Live DB: owner edits up to **v337**,
+  pulled into the repo on 2026-09-28 (identical). No DB writes this session.
 - Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
-  **version 2**, then versions 3 and 4 after the owner follow-ups.
+  **version 2**, then versions 3-5 after the owner follow-ups.
 
 ## Artifact synchronization
 
@@ -300,6 +353,7 @@ node tools/gameplay-slice/test/harness.e2e.mjs
 ## Final state of session 2
 - Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`: engine/content, harness, docs, then the
   owner follow-up (faster, roles, two hands) and its docs. Working tree clean after the docs commit.
-- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 4 (label "Harness v2.2: spares, approved steps").
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 5 (the owner's procedure).
+- Public site: built from `main` by `.github/workflows/pages.yml` (needs the one-time Pages setting).
 - **Merged to `main`** (fast-forward, owner-approved 2026-09-27); `main` = the session branch.
 - Live editor / DB unchanged (version 27 / v270).

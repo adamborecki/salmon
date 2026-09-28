@@ -1605,6 +1605,18 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
   replace a dead one. **Carrying:** two mics in hand is fine. **Timing:** make each check faster for now;
   real timing gets adjusted later.
 
+**Owner answers, round 4 (2026-09-28):**
+
+- **The battery-in procedure, per mic:** grab the right mic (windscreen colour, then ring colour); put
+  two batteries in from the charger (the charger then holds fewer); switch it on; talk into it and watch
+  its meter at the X32, which is the win criterion; put it on the chair. Batteries are usually the right
+  way round, but one of the first few mics could have them reversed: a good early fault.
+- **Reading the mic's display is optional** when it works, and essential when troubleshooting.
+- **Mic N is not RF channel N.** Each mic has its own group and channel number (a frequency), set by
+  pairing with the receivers (a procedure of its own). For now every mic is assumed paired; an unpaired
+  mic, or any other problem, is a "bad mic" that gets swapped for a spare. Pairing can be a later level.
+- **Future scenario:** a mic dies on stage and the A2 runs a spare from FOH (14-16 are the spares).
+
 ---
 
 # 46. First Troubleshooting Fault
@@ -2720,6 +2732,11 @@ Therefore:
 - preserve people only intentionally,
 - avoid exposing unrelated personal data in screenshots/photos,
 - keep source originals local/gitignored unless there is a deliberate reason otherwise.
+
+**Public website (owner, 2026-09-28):** the three character portraits may be shown. Nobody else in the
+room (director, ensemble members, audience) may be identifiable on the public site: they are replaced
+with generic figures at build time (`tools/public-site/`). The repository itself still holds the
+original photos.
 
 ---
 

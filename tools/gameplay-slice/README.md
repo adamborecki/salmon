@@ -13,7 +13,7 @@ and principle 4.10), as small as it can be while still being real:
   3rd of the first 3"), picked by a reproducible seed. The owner notes this is really an on-stage
   fault (a freshly powered mic starts unmuted); it stays here until the line check is built.
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
-- **a visible step list** for the per-mic routine (wording approved by the owner)
+- **a visible step list**: the owner's per-mic procedure (take the right mic, batteries in [not simulated yet], switch on, check at the X32, chair); reading the display is optional
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
   and stops at the first mic whose display is blank or muted or whose X32 input is silent
 - **one hint ladder:** the three hints from section 46, verbatim
@@ -92,4 +92,4 @@ them yet. Putting batteries in is step 2 of the step list and marked "not simula
   frequencies, the FOH talkback routing, running a spare to the stage.
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
   slash, fine with the owner for now; `"MUTE"` is also drawable) and per-action game seconds. The
-  step list wording is owner-approved.
+  step list is the owner's own procedure (2026-09-28).
