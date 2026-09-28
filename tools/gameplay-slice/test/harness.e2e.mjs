@@ -41,7 +41,7 @@ ok(faultCh === 2 || faultCh === 3, `seed VJ-48217 from the link mutes ch ${fault
 ok((await page.$$eval('.chips .chip', c => c.length)) === 16, 'objective shows 16 channels');
 ok(/Next: Mic 1 \(black \/ red\)/.test(await page.textContent('#steps .now')), 'step list starts at Mic 1 (black / red)');
 ok(await page.$eval('#skipBtn', b => b.disabled), 'Check the rest is not offered yet');
-ok(/not simulated yet/.test(await page.textContent('#steps li[data-step="batteries"]')), 'battery step is listed as not simulated yet');
+ok(!/not simulated yet/.test(await page.textContent('#steps')), 'every step is simulated now (batteries included)');
 await shot('1-start');
 
 for (let ch = 1; ch <= 3; ch++) {
@@ -49,38 +49,40 @@ for (let ch = 1; ch <= 3; ch++) {
   await tapHot('Mic cabinet'); ok((await where()) === 'Mic cabinet', `CH ${ch}: hotspot to the mic cabinet`);
   await tapHot('Mic drawer'); ok((await where()) === 'Mic drawer', `CH ${ch}: hotspot into the mic drawer`);
   ok((await page.$$eval('.drawer .slot[data-id] svg.mic', s => s.length)) === 17 - ch, `CH ${ch}: ${17 - ch} mics drawn in the drawer`);
+  const cells = +(await page.textContent('#panel')).match(/(\d+) charged cells/)[1];
+  ok(cells === 32 - 2 * (ch - 1), `CH ${ch}: charger shows ${cells} cells`);
   if (ch === 1) await shot('2-drawer');
   await tap(`.slot[data-id="${id}"]`);
-  ok((await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))).join() === id, `CH ${ch}: in the left hand, right hand empty`);
-  ok((await stepsDone()).join() === 'take,power', `CH ${ch}: took it; it is on`);
-  await tapBack(); await tapBack();
-  await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
+  ok((await stepsDone()).join() === 'take', `CH ${ch}: took it`);
+  await tap(inSlot(id, 'batteries'));
+  ok((await stepsDone()).join() === 'take,batteries', `CH ${ch}: batteries in`);
+  await tap(inSlot(id, 'hold'));
+  if (ch === faultCh) {
+    ok(/does not switch on/.test(await page.textContent('#toast')), `CH ${ch}: it does not switch on (NOTICE)`);
+    ok((await stepsDone()).join() === 'take,batteries', `CH ${ch}: not on`);
+    await shot('3-fault');
+    await tap(inSlot(id, 'checkbat'));
+    ok(/wrong way round/.test(await page.textContent('#toast')), `CH ${ch}: the batteries are the wrong way round (TRACE)`);
+    await tap(inSlot(id, 'reseat')); await tap(inSlot(id, 'hold'));                             // ACT
+  }
+  ok((await stepsDone()).join() === 'take,batteries,power', `CH ${ch}: switched on`);
   await tap(inSlot(id, 'read'));
   const lcd = await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'));
-  ok(lcd.includes('muted') === (ch === faultCh), `CH ${ch}: display reads "${lcd}"`);
-  await tap(`.talkHere[data-id="${id}"]`);
-  if (ch !== faultCh) {
-    ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
-    ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"] i`, i => i.getAnimations().length > 0), `CH ${ch}: its X32 meter animates`);
-  } else {
-    await shot('3-muted-display');
-    ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: no signal (NOTICE)`);
-    ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"]`, s => s.classList.contains('dead')), `CH ${ch}: its X32 strip flags no signal`);
-    await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
-    await tap(`.talkHere[data-id="${id}"]`);
-    ok((await chip(ch)) === 'no-signal-seen', `CH ${ch}: dead at the receiver too (TRACE)`);
-    await tap(inSlot(id, 'tap'));                                                                     // ACT
-    ok((await chip(ch)) !== 'verified', `CH ${ch}: unmuting alone does not verify it`);
-    ok(!(await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'))).includes('muted'), `CH ${ch}: the display no longer shows mute`);
-    await tapBack(); await tapBack(); await tapHot('X32');
-    await tap(`.talkHere[data-id="${id}"]`);                                                                  // VERIFY
-    ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32 again`);
-  }
-  ok((await stepsDone()).join() === 'take,power,talk', `CH ${ch}: steps 1, 3, 4 ticked`);
+  ok(/group [1-6], channel [1-6]/.test(lcd) && !lcd.includes('muted'), `CH ${ch}: display reads "${lcd}"`);
+  await tapBack(); await tapBack();
+  await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
+  await tap(`.talkHere[data-id="${id}"]`);                                                    // VERIFY
+  ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
+  ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"] i`, i => i.getAnimations().length > 0), `CH ${ch}: its X32 meter animates`);
+  ok((await stepsDone()).join() === 'take,batteries,power,talk', `CH ${ch}: steps 1-4 ticked`);
   await tap(inSlot(id, 'chair'));
   ok(await page.$(`#chair button[data-id="${id}"][data-s="verified"]`) !== null, `CH ${ch}: on the chair left of FOH, verified`);
   await tapBack(); ok((await where()) === 'FOH', `CH ${ch}: back at FOH`);
 }
+// the receivers show each slot's RF group/channel
+await tapHot('Wireless rack'); await tapHot('Receivers');
+ok((await page.$$eval('.strip .rf', r => r.filter(x => /^[1-6]·[1-6]$/.test(x.textContent)).length)) === 16, 'receivers: 16 RF group·channel labels');
+await tapBack(); await tapBack();
 ok(/Next: Mic 4/.test(await page.textContent('#steps .now')), 'step list moves on to Mic 4');
 // two mics in hand (owner: allowed), then both back in the drawer
 await tapHot('Mic cabinet'); await tapHot('Mic drawer');
