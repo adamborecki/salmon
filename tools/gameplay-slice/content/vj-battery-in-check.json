@@ -1,7 +1,7 @@
 {
  "id": "vj-battery-in-check",
  "title": "Vocal Jazz: battery-in check of the wireless mics at FOH",
- "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), one fault (a handheld powered on but muted), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
+ "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), one fault (batteries in the wrong way round), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
  "clock": {
   "start": "16:50:00",
   "ready_by": "17:00:00",
@@ -29,7 +29,7 @@
    16
   ],
   "status": "owner, 2026-09-27: about 13 musicians, so 13 mics + 2 spares (in case one dies from bad batteries or frequencies) + 1 at FOH for the A1 to talk to the stage through the monitors = 16, on channels 1-16.",
-  "note": "X32 and receivers start powered on, and every handheld starts on with good batteries, so the transmitter mute is the only fault (one fault per section 94).",
+  "note": "X32 and receivers start powered on, so the one fault is at the transmitter (one fault per section 94).",
   "roles": {
    "value": "This slice is the battery-in check at FOH (A2 alone, next to the receivers and the X32), as soon as batteries go into each mic and before the mics go to the stage. The official line check is later, on stage: musicians make sound, the A1 confirms each channel at the X32.",
    "status": "current practice (owner, 2026-09-27); see PRODUCT_DESIGN section 45"
@@ -60,8 +60,8 @@
    "status": "owner, 2026-09-27: channels 1-13 are the musicians' mics. 14, 15 and 16 are three interchangeable spares kept at FOH: any of them can be the A1's talkback mic, or the emergency mic the A2 runs down to the stage to replace a dead one. Roles don't change the check yet."
   },
   "start_state": {
-   "value": "every handheld is already on, with batteries in; putting the batteries in is not simulated yet",
-   "status": "simplification for v2 (owner, 2026-09-27): battery insertion arrives with the battery faults"
+   "value": "every handheld is in the drawer, switched off, with no batteries; charged cells are in the charger on top of the mic cabinet",
+   "status": "owner, 2026-09-28: batteries go in from the charger, then you switch it on"
   }
  },
  "devices": {
@@ -115,15 +115,11 @@
    "windscreen": "black",
    "ring": "red",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-02": {
@@ -133,15 +129,11 @@
    "windscreen": "black",
    "ring": "orange",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-03": {
@@ -151,15 +143,11 @@
    "windscreen": "black",
    "ring": "yellow",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-04": {
@@ -169,15 +157,11 @@
    "windscreen": "black",
    "ring": "green",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-05": {
@@ -187,15 +171,11 @@
    "windscreen": "black",
    "ring": "blue",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-06": {
@@ -205,15 +185,11 @@
    "windscreen": "black",
    "ring": "purple",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-07": {
@@ -223,15 +199,11 @@
    "windscreen": "black",
    "ring": "black",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-08": {
@@ -241,15 +213,11 @@
    "windscreen": "black",
    "ring": "grey",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-09": {
@@ -259,15 +227,11 @@
    "windscreen": "grey",
    "ring": "red",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-10": {
@@ -277,15 +241,11 @@
    "windscreen": "grey",
    "ring": "orange",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-11": {
@@ -295,15 +255,11 @@
    "windscreen": "grey",
    "ring": "yellow",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-12": {
@@ -313,15 +269,11 @@
    "windscreen": "grey",
    "ring": "green",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-13": {
@@ -331,15 +283,11 @@
    "windscreen": "grey",
    "ring": "blue",
    "role": "musician",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-14": {
@@ -349,15 +297,11 @@
    "windscreen": "grey",
    "ring": "purple",
    "role": "spare",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-15": {
@@ -367,15 +311,11 @@
    "windscreen": "grey",
    "ring": "black",
    "role": "spare",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   },
   "handheld-16": {
@@ -385,19 +325,21 @@
    "windscreen": "grey",
    "ring": "grey",
    "role": "spare",
-   "rf": {
-    "group": null,
-    "channel": null
-   },
    "home": "drawer",
    "state": {
-    "power": "on",
+    "power": "off",
     "muted": false,
-    "battery": "ok"
+    "battery": "none"
    }
   }
  },
- "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127). State `battery`: \"ok\" is the only value used in v2; see future_faults. RF group/channel (owner, 2026-09-27): mic N is NOT RF channel N. Each mic has its own group and channel number, which selects a frequency and is set by pairing with its receiver (a procedure of its own). Values not recorded yet (null = unknown). For now every mic is assumed paired; an unpaired mic, or any other problem, is simply a 'bad mic' that gets swapped for a spare. Pairing can be a later level.",
+ "devices_status": "Owner, 2026-09-27: mics are named by windscreen colour then ring colour, and that is how people mostly refer to them (black red = 1, black orange = 2, black black = 7, black grey = 8, grey red = 9, grey orange = 10, grey black = 15, grey grey = 16). Ring order (owner-confirmed): red, orange, yellow, green, blue, purple, black, grey. Mics 17-24: treat as no windscreen for now (owner, 2026-09-27; may change). Handhelds live in the FOH mic drawer (manifest row IMG_4127). State `battery`: \"ok\" is the only value used in v2; see future_faults. RF group/channel (owner, 2026-09-27): mic N is NOT RF channel N. Each mic has its own group and channel number, which selects a frequency and is set by pairing with its receiver (a procedure of its own). Real values not recorded; the engine draws them from the seed (see rf). For now every mic is assumed paired; an unpaired mic, or any other problem, is simply a 'bad mic' that gets swapped for a spare. Pairing can be a later level.",
+ "rf": {
+  "groups": 6,
+  "channels_per_group": 6,
+  "assignment": "seeded, unique per mic; each receiver slot carries the same group/channel as its paired mic",
+  "status": "owner, 2026-09-28: 'maybe like 6 groups and 6 channels per group, random and unique' - a placeholder for the real pairing values"
+ },
  "behaviour": {
   "handheld_button": {
    "value": {
@@ -432,6 +374,12 @@
     "max_mics": 2
    },
    "status": "owner, 2026-09-27: allow two mics in hand ('why not'); one per hand slot."
+  },
+  "battery": {
+   "value": {
+    "cells_per_mic": 2
+   },
+   "status": "owner, 2026-09-28: two batteries per mic (rechargeable AA NiMH, PRODUCT_DESIGN section 27)"
   }
  },
  "places": {
@@ -451,6 +399,12 @@
     "foh-mic-drawer"
    ],
    "status": "tentative (owner, 2026-09-27: 'honestly probably a spare chair just next to FOH, off to the left'); not in any photo, so the harness shows it as a text box, not a place on the map"
+  },
+  "charger": {
+   "label": "Battery charger",
+   "scene": "foh-mic-drawer",
+   "cells": 32,
+   "status": "location: seen in photo IMG_4127 (a 16-slot CITYORK charger on top of the mic cabinet, above the drawer). 32 charged cells (enough for 16 mics) is a placeholder: where the cells beyond one charger come from (a second charger, the 'charged' drawer) is unknown; section 27 notes '16 or 18'."
   }
  },
  "connections": [
@@ -629,38 +583,97 @@
   }
  },
  "fault": {
-  "id": "tx-muted",
-  "label": "A wireless handheld is powered on but muted",
-  "target": "one handheld, chosen by the seed from placement.channels",
+  "id": "battery-reversed",
+  "label": "Batteries in the wrong way round",
+  "apply_on": "insert_batteries",
   "set": {
-   "muted": true
+   "battery": "reversed"
   },
-  "source": "PRODUCT_DESIGN section 46 (locked first fault)",
   "placement": {
    "channels": [
     2,
     3
    ],
-   "status": "owner, 2026-09-27: the muted mic should be the 2nd or 3rd of the first 3 checked by hand (the drawer and the step list go in colour order, i.e. channel order)"
+   "status": "owner, 2026-09-28: 'one of the first few microphones has a fault where you accidentally put in the batteries in the wrong orientation'; 2nd or 3rd per the owner's earlier answer"
   },
-  "note": "owner, 2026-09-27: on-but-muted is really an on-stage line-check fault (a freshly powered mic starts unmuted, since a power cycle clears the mute). It stays here for v2 and moves when the line check is built."
- },
- "future_faults": {
-  "status": "not built yet (brief, 2026-09-27). Listed so the step list and \"Check the rest\" already cope: a mic that will not switch on shows a blank display and no signal, and the skip stops on both.",
-  "battery-reversed": {
-   "label": "Batteries in the wrong way round",
-   "set": {
-    "battery": "reversed",
-    "power": "off"
+  "fix": "take the batteries out and put them back the right way round, then switch it on",
+  "debrief": {
+   "failed": "the batteries went into {mic} the wrong way round, so it could not switch on.",
+   "act": {
+    "reseat_batteries": "you put the batteries back into {mic} the right way round."
+   },
+   "still": "{mic}'s batteries are still the wrong way round.",
+   "concepts": "no power, no signal: check the batteries before anything downstream"
+  },
+  "hints": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "It won't switch on, so nothing can reach the receiver. What does a transmitter need before it can power up?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "Check the batteries in the handheld."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "The batteries are in the wrong way round. Put them back the right way, switch it on, and verify at the X32."
    }
+  ],
+  "hints_status": "tentative: written in the shape of the section 46 ladder (concept, location, direct); for the owner to correct",
+  "source": "owner, 2026-09-28"
+ },
+ "fault_library": {
+  "status": "other faults, defined as data; a scenario picks one as `fault`",
+  "tx-muted": {
+   "id": "tx-muted",
+   "label": "A wireless handheld is powered on but muted",
+   "apply_on": "start",
+   "set": {
+    "muted": true
+   },
+   "note": "owner, 2026-09-27: an on-stage line-check fault (a freshly powered mic starts unmuted); kept for the line check scenario",
+   "fix": "unmute it (tap), or switch it off and on",
+   "debrief": {
+    "failed": "{mic} was powered on but muted, so no audio left the transmitter.",
+    "act": {
+     "press:tap": "you unmuted {mic}.",
+     "press:hold": "you switched {mic} off and on, which cleared the mute. It works, though a tap would have unmuted it directly."
+    },
+    "still": "{mic} is still muted.",
+    "concepts": "a transmitter can be on but muted"
+   },
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "No signal is reaching the receiver. Where could the problem be upstream?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Inspect the handheld transmitter."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The transmitter is muted. Unmute it and verify signal."
+    }
+   ],
+   "hints_source": "PRODUCT_DESIGN section 46, verbatim",
+   "source": "PRODUCT_DESIGN section 46"
   },
   "battery-dead": {
    "label": "Dead cells",
    "set": {
-    "battery": "dead",
-    "power": "off"
+    "battery": "dead"
    },
-   "unknown": "whether a nearly flat cell powers on and dies later, and what the battery gauge shows first"
+   "unknown": "whether a nearly flat cell powers on and dies later, and what the battery gauge shows first",
+   "id": "battery-dead",
+   "apply_on": "insert_batteries",
+   "note": "not built into a scenario yet"
   }
  },
  "objective": {
@@ -677,8 +690,7 @@
    },
    {
     "id": "batteries",
-    "text": "Put two batteries in from the charger, the right way round.",
-    "simulated": false
+    "text": "Put two batteries in from the charger, the right way round."
    },
    {
     "id": "power",
@@ -694,7 +706,7 @@
    }
   ],
   "optional": "Reading the mic's display (group/channel, battery, mute) isn't needed when everything works; it's how you troubleshoot one that doesn't.",
-  "status": "owner, 2026-09-27: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion). Battery insertion arrives with the battery work."
+  "status": "owner, 2026-09-28: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion)."
  },
  "skip": {
   "label": "Check the rest",
@@ -703,25 +715,7 @@
   "stop_if": [
    "no-signal-at-x32"
   ],
-  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, then at the X32 for each: talk into it, put it on the chair), costing the same game time; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
+  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, batteries in, switch on, then at the X32 for each: talk into it, put it on the chair), costing the same game time; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
   "status": "PRODUCT_DESIGN 4.10 (owner, 2026-09-27); 3 by hand is from the brief"
- },
- "hints": [
-  {
-   "level": 1,
-   "kind": "concept",
-   "text": "No signal is reaching the receiver. Where could the problem be upstream?"
-  },
-  {
-   "level": 2,
-   "kind": "location",
-   "text": "Inspect the handheld transmitter."
-  },
-  {
-   "level": 3,
-   "kind": "direct",
-   "text": "The transmitter is muted. Unmute it and verify signal."
-  }
- ],
- "hints_source": "PRODUCT_DESIGN section 46, verbatim"
+ }
 }
