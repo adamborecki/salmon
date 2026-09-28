@@ -12,8 +12,8 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    It is now the battery-in check: 16 mics drawn in the drawer, read each display, talk at the X32,
    put it on the chair; after 3 by hand, "Check the rest". "Instructor view" shows the seed and the
    muted mic. Still a throwaway harness, not a UI proposal.
-2. **Turn on GitHub Pages once** (Settings -> Pages -> Source: GitHub Actions) for the public site:
-   https://adamborecki.github.io/salmon/ (see "Session 2, part 3").
+2. **The public site is live:** https://adamborecki.github.io/salmon/ (anonymized people, landing page,
+   walk-around with Export JSON, the battery-in check).
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
@@ -54,6 +54,14 @@ Engine 24/24. I broke 8 new rules on purpose and a test caught each one:
 
 The harness e2e plays the battery fault by hand, checks the RF labels, then runs Check the rest.
 All the other suites pass too.
+
+### Public site: live
+- The owner turned on GitHub Pages and added GitHub's starter `static.yml`, which deployed the **whole
+  repo** as the site (no landing page at the root, original photos exposed) and raced `pages.yml` on
+  every push. It was removed (commit `c1062b9`; `git revert` restores it). Since then only "Public site"
+  runs, and it succeeded: https://adamborecki.github.io/salmon/ serves the anonymized build. The sandbox
+  cannot open github.io, so the live pages were not viewed from here; the same build passes `site.e2e.mjs`.
+- The owner's README link (`README.md`) is kept.
 
 ### Open (owner)
 - The charger: is 32 charged cells right, and where do the cells beyond one 16-slot charger come from?
@@ -99,9 +107,7 @@ under `/salmon/` like Pages, it checks:
 - there are no page errors and no sideways scroll.
 
 ### Needs the owner
-- **Turn on Pages once:** GitHub repo -> Settings -> Pages -> Build and deployment -> Source:
-  **GitHub Actions**. Then the site is at https://adamborecki.github.io/salmon/ (re-run the "Public
-  site" workflow if the first run failed before this was set).
+- ~~Turn on Pages once~~ done by the owner (2026-09-28); the site is live (see part 4).
 - Look over the anonymized photos on the site; boxes are by eye.
 - The public **repo** still has the original photos with people (and git history). Removing them would
   mean rewriting history, which is a separate decision.
