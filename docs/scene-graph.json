@@ -715,7 +715,9 @@
    "turn_degrees": -141,
    "note": "",
    "dir_degrees": -125,
-   "distance_m": 1.6
+   "distance_m": 1.6,
+   "icon_x": 19.8,
+   "icon_y": 77.6
   },
   {
    "from": "center-wide",
@@ -724,7 +726,9 @@
    "turn_degrees": -33,
    "note": "",
    "dir_degrees": -75,
-   "distance_m": 5.3
+   "distance_m": 5.3,
+   "icon_x": 8.4,
+   "icon_y": 66
   },
   {
    "from": "path-center-to-entry-step1",
@@ -742,7 +746,9 @@
    "turn_degrees": 10,
    "note": "",
    "dir_degrees": 110,
-   "distance_m": 2.3
+   "distance_m": 2.3,
+   "icon_x": 68.4,
+   "icon_y": 75.7
   },
   {
    "from": "foh-wide",
@@ -761,8 +767,8 @@
    "note": "direct, no stop between",
    "dir_degrees": 0,
    "distance_m": 7.7,
-   "icon_x": 51.5,
-   "icon_y": 9.6
+   "icon_x": 46.7,
+   "icon_y": 59.8
   },
   {
    "from": "crossroads",
@@ -771,7 +777,9 @@
    "turn_degrees": 0,
    "note": "walk backward toward the house; both photos face the stage",
    "dir_degrees": -175,
-   "distance_m": 7.7
+   "distance_m": 7.7,
+   "icon_x": 48.3,
+   "icon_y": 80
   },
   {
    "from": "crossroads",
@@ -780,7 +788,9 @@
    "turn_degrees": 10,
    "note": "sideways step; strafes (turn unset)",
    "dir_degrees": -75,
-   "distance_m": 4
+   "distance_m": 4,
+   "icon_x": 26.8,
+   "icon_y": 56.6
   },
   {
    "from": "crossroads-left",
@@ -789,7 +799,9 @@
    "turn_degrees": 81,
    "note": "",
    "dir_degrees": -110,
-   "distance_m": 5
+   "distance_m": 5,
+   "icon_x": 8.6,
+   "icon_y": 71.6
   },
   {
    "from": "first-entry",
@@ -807,7 +819,9 @@
    "turn_degrees": -10,
    "note": "",
    "dir_degrees": 90,
-   "distance_m": 4
+   "distance_m": 4,
+   "icon_x": 81.1,
+   "icon_y": 83.2
   },
   {
    "from": "crossroads-left",
@@ -816,7 +830,9 @@
    "turn_degrees": -60,
    "note": "racks visible from here",
    "dir_degrees": -55,
-   "distance_m": 4.9
+   "distance_m": 4.9,
+   "icon_x": 22.4,
+   "icon_y": 51.4
   },
   {
    "from": "crossroads",
@@ -825,7 +841,9 @@
    "turn_degrees": 60,
    "note": "",
    "dir_degrees": 90,
-   "distance_m": 1.9
+   "distance_m": 1.9,
+   "icon_x": 79.1,
+   "icon_y": 65.6
   },
   {
    "from": "crossroads-right",
@@ -891,7 +909,9 @@
    "turn_degrees": 25,
    "note": "",
    "dir_degrees": 0,
-   "distance_m": 5.3
+   "distance_m": 5.3,
+   "icon_x": 44.1,
+   "icon_y": 69.3
   },
   {
    "from": "upstage-back-wide",
@@ -899,8 +919,10 @@
    "kind": "walk",
    "turn_degrees": 65,
    "note": "",
-   "dir_degrees": 90,
-   "distance_m": 6.4
+   "dir_degrees": 75,
+   "distance_m": 6.4,
+   "icon_x": 82.8,
+   "icon_y": 77.5
   },
   {
    "from": "racks-rear-wide",
@@ -908,10 +930,10 @@
    "kind": "walk",
    "turn_degrees": -65,
    "note": "",
-   "dir_degrees": -165,
+   "dir_degrees": -150,
    "distance_m": 6.4,
-   "icon_x": 47,
-   "icon_y": 77.7
+   "icon_x": 37.8,
+   "icon_y": 88.6
   },
   {
    "from": "musician-pov",
@@ -929,7 +951,9 @@
    "turn_degrees": -40,
    "note": "",
    "dir_degrees": -130,
-   "distance_m": 7
+   "distance_m": 7,
+   "icon_x": 10.9,
+   "icon_y": 76.2
   },
   {
    "from": "racks-front-wide",
@@ -963,20 +987,20 @@
    "note": "",
    "hotspot": [
     {
-     "x": 28.6,
-     "y": 41.4
+     "x": 25.7,
+     "y": 43.4
     },
     {
-     "x": 31.2,
-     "y": 75.2
-    },
-    {
-     "x": 46.1,
-     "y": 76.6
+     "x": 31.5,
+     "y": 76.1
     },
     {
      "x": 46.6,
-     "y": 41.5
+     "y": 75.8
+    },
+    {
+     "x": 45.7,
+     "y": 43.4
     }
    ]
   },
@@ -1013,20 +1037,20 @@
    "note": "",
    "hotspot": [
     {
-     "x": 20.1,
-     "y": 56.9
+     "x": 32.8,
+     "y": 51.9
     },
     {
-     "x": 32.7,
-     "y": 95.7
+     "x": 40.7,
+     "y": 76
     },
     {
-     "x": 66.6,
-     "y": 96.6
+     "x": 59.8,
+     "y": 76.2
     },
     {
-     "x": 81.4,
-     "y": 55.4
+     "x": 68.4,
+     "y": 51.8
     }
    ]
   },
@@ -1038,20 +1062,20 @@
    "note": "",
    "hotspot": [
     {
-     "x": 11.6,
-     "y": 32.9
+     "x": 28,
+     "y": 41.3
     },
     {
-     "x": 28.8,
-     "y": 5
+     "x": 38.2,
+     "y": 23.2
     },
     {
-     "x": 70.1,
-     "y": 5.4
+     "x": 62.2,
+     "y": 23.8
     },
     {
-     "x": 87.2,
-     "y": 32.4
+     "x": 72.9,
+     "y": 42
     }
    ]
   },
@@ -1445,12 +1469,12 @@
    "note": "",
    "hotspot": [
     {
-     "x": 34.8,
-     "y": 14.5
+     "x": 35.4,
+     "y": 25.2
     },
     {
-     "x": 54.8,
-     "y": 14.5
+     "x": 54,
+     "y": 25.1
     },
     {
      "x": 54.8,
@@ -1478,12 +1502,12 @@
      "y": 45.5
     },
     {
-     "x": 26.5,
-     "y": 66
+     "x": 25.7,
+     "y": 94
     },
     {
-     "x": 3.5,
-     "y": 72
+     "x": 6.8,
+     "y": 95.2
     }
    ]
   },
@@ -1608,22 +1632,22 @@
    "to": "first-entry",
    "kind": "walk",
    "turn_degrees": 141,
-   "dir_degrees": -120,
+   "dir_degrees": -130,
    "note": "auto reverse of first-entry -> racks-front-wide",
    "distance_m": 1.6,
-   "icon_x": 18.6,
-   "icon_y": 80.3
+   "icon_x": 13,
+   "icon_y": 75.8
   },
   {
    "from": "racks-front-wide",
    "to": "crossroads-left",
    "kind": "walk",
    "turn_degrees": 55,
-   "dir_degrees": 150,
+   "dir_degrees": 145,
    "note": "auto reverse of crossroads-left -> racks-front-wide",
    "distance_m": 4.9,
-   "icon_x": 59,
-   "icon_y": 71.9
+   "icon_x": 58.3,
+   "icon_y": 88.5
   },
   {
    "from": "crossroads-right",
@@ -1681,9 +1705,11 @@
    "to": "musician-pov",
    "kind": "walk",
    "turn_degrees": -105,
-   "dir_degrees": 115,
+   "dir_degrees": 120,
    "note": "auto reverse of musician-pov -> racks-front-wide",
-   "distance_m": 7.2
+   "distance_m": 7.2,
+   "icon_x": 82.7,
+   "icon_y": 68.6
   },
   {
    "from": "racks-rear-wide",
