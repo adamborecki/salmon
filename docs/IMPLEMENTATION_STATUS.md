@@ -17,6 +17,51 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 2, part 5 (2026-09-29): the bad mic (set aside, a spare covers it)
+
+The owner said "build the next thing"; this is the next item from the plan (owner, 2026-09-28: a mic
+that isn't paired, or has another unfixable problem, is "just a bad mic" that gets skipped).
+
+### What changed
+- **A second fault in the battery-in check: an unpaired mic**, one of the later musician mics (5-13,
+  tentative), so it is usually met when "Check the rest" stops on it. It switches on, the batteries are
+  fine, it isn't muted, but nothing reaches its receiver. Its display shows an RF group/channel that
+  its receiver slot doesn't listen on (receiver slots are now labelled with their own pair).
+- **"Set aside as bad"** (new place `bad`, a placeholder spot at FOH). The objective completes when
+  every mic is verified or set aside **and at least 13 are verified** (every musician has a mic, the
+  spares cover the rest; tentative). Setting aside a working or fixable mic is allowed and flagged
+  in the debrief ("uses up a spare").
+- Engine: `content.faults` is a list; each fault is resolved by a **fix** or by **replacement**. The
+  debrief has a NOTICE/TRACE/ACT/VERIFY block per fault; for a replaced mic, VERIFY means "a spare
+  covers it". A fault not reached yet reads "not yet".
+- **Hints aim at the problem in front of you:** a mic in hand that you've seen fail, then any mic
+  you've seen fail, then the next open problem. Holding a faulty mic you haven't noticed yet never
+  gives it away.
+- The unpaired hints are my wording in the section 46 shape (tentative).
+
+### Tested
+- Engine 30/30. I broke 8 new rules on purpose and a test caught each one:
+  - an unpaired mic reaches its receiver;
+  - its display matches its receiver slot;
+  - the objective ignores the musician count;
+  - set-aside mics block completion;
+  - hints ignore the mic in hand;
+  - the skip re-checks set-aside mics;
+  - mics can be set aside from anywhere.
+- The harness e2e plays both faults to the debrief:
+  - reversed batteries by hand;
+  - the skip stops on the unpaired mic;
+  - check its batteries, read its display, compare it with its receiver slot;
+  - set it aside, then the skip finishes;
+  - 15 verified plus 1 set aside, with both faults' four steps ticked.
+- All other suites pass.
+
+### Open (owner)
+- Is 13 the right minimum (every musician), or should the A1's talkback mic also be guaranteed (14)?
+- Where does a bad mic go in the room (a bin, a labelled spot, back in the drawer with tape)?
+- Should the unpaired mic appear in every run, or only sometimes (seeded)?
+- Hint wording for both battery and pairing faults.
+
 ## Session 2, part 4 (2026-09-28): batteries from the charger
 
 ### What changed
@@ -199,7 +244,7 @@ under `/salmon/` like Pages, it checks:
 - Live editor page: **not republished**; still Artifact version 27. Live DB: owner edits up to **v337**,
   pulled into the repo on 2026-09-28 (identical). No DB writes this session.
 - Harness artifact: version 1 (the original v1 page, no owner changes) was read and then replaced by
-  **version 2**, then versions 3-6 after the owner follow-ups.
+  **version 2**, then versions 3-7 after the owner follow-ups.
 
 ## Artifact synchronization
 
@@ -405,7 +450,7 @@ node tools/gameplay-slice/test/harness.e2e.mjs
 ## Final state of session 2
 - Branch `claude/charming-faraday-bhf0vx`, based on `66c7240`: engine/content, harness, docs, then the
   owner follow-up (faster, roles, two hands) and its docs. Working tree clean after the docs commit.
-- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 6 (batteries from the charger).
+- Harness: https://claude.ai/artifact/ALCrp7izY5q8rVima8tn1R version 7 (the bad mic).
 - Public site: built from `main` by `.github/workflows/pages.yml` (needs the one-time Pages setting).
 - **Merged to `main`** (fast-forward, owner-approved 2026-09-27); `main` = the session branch.
 - Live editor / DB unchanged (version 27 / v270).

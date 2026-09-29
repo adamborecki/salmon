@@ -11,11 +11,15 @@ and principle 4.10), as small as it can be while still being real:
   which can be the A1's talkback mic or a replacement run to the stage (owner, 2026-09-27)
 - **batteries:** mics start off and empty; at the charger on the mic cabinet, two cells go in (the
   charger counts down), then you switch the mic on
-- **one fault:** batteries in the wrong way round on channel 2 or 3 (owner), picked by a reproducible
+- **the first fault:** batteries in the wrong way round on channel 2 or 3 (owner), picked by a reproducible
   seed: it won't switch on, checking the batteries shows why, putting them back in fixes it. The
   section 46 mute fault lives in `content.fault_library` for the on-stage line check; the engine takes
   hints and debrief text from whichever fault the content picks
 - **RF group/channel:** seeded, unique per mic (6 x 6, placeholder), on the mic display and receivers
+- **a second fault, the bad mic:** an unpaired mic (ch 5-13) switches on but never reaches its
+  receiver; its display disagrees with its receiver slot's RF pair. It can't be fixed here: set it
+  aside, and a spare covers it (the objective needs every mic verified or set aside, and at least 13
+  verified)
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
 - **a visible step list**: the owner's per-mic procedure (take the right mic, batteries in [not simulated yet], switch on, check at the X32, chair); reading the display is optional
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
