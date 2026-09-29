@@ -4,19 +4,21 @@
 // (section 84 is still open).
 //
 //   const eng = engine(content);            // content: tools/gameplay-slice/content/*.json
-//   let g = eng.start('VJ-48217');          // seeded: the same seed always mutes the same mic
+//   let g = eng.start('VJ-48217');          // seeded: the same seed always puts the faults on the same mics
 //   ({ game: g, events, error } = eng.act(g, { type: 'go', scene: 'foh-mic-drawer' }));
 //   eng.view(g)     -> what the player can know (evidence only) plus a debug view (the truth)
-//   eng.debrief(g)  -> what failed, what was noticed / traced / changed / verified, hints, time
+//   eng.debrief(g)  -> per fault: what failed, what was noticed / traced / changed / verified; hints, time
 //
-// Actions: go {scene} · pick_up {device} · put {place: 'drawer'|'chair'} · insert_batteries (at the charger)
+// Actions: go {scene} · pick_up {device} · put {place: 'drawer'|'chair'|'bad'} · insert_batteries (at the charger)
 //          · check_batteries · reseat_batteries · press {how: 'tap'|'hold'}
 //          · inspect (read the held mic's display; optional, for troubleshooting) · talk · hint · check_rest
 // With two mics in hand, actions on a mic take {device}.
 //
-// The scenario's fault is data (content.fault): its `set` is applied to one mic chosen by the seed,
-// either at the start or when that mic's batteries go in (`apply_on`). Hints and debrief text come
-// with it, so the same engine runs the mute fault (content.fault_library) for the line check later.
+// Faults are data (content.faults): each one's `set` is applied to a mic chosen by the seed, either at
+// the start or when that mic's batteries go in (`apply_on`). A fault is resolved either by a fix
+// (`resolution: 'fix'`: its `set` no longer holds) or by setting the mic aside as bad
+// (`resolution: 'replace'`: a spare covers it). Hints and debrief text come with each fault, so the
+// same engine runs the mute fault (content.fault_library) for the line check later.
 //
 // Key rule (section 3, "fixed is not the same as verified"): a mic only counts as verified by evidence
 // seen at its X32 input while talking into it, and that evidence must be newer than the last state
@@ -39,12 +41,15 @@ export function clockText(sec) {
 
 export function engine(content) {
   const D = content.devices, B = content.behaviour, C = content.clock, P = content.places, S = content.skip;
+  const FS = content.faults, FBY = Object.fromEntries(FS.map(f => [f.id, f]));
   const handhelds = Object.keys(D).filter(id => D[id].type === 'wireless-handheld');
   const micFor = ch => handhelds.find(id => D[id].channel === ch);
   const inPlay = content.setup.mics_in_play.map(micFor);
   if (inPlay.some(x => !x)) throw new Error('mics_in_play names a channel with no handheld');
   inPlay.sort((a, b) => D[a].channel - D[b].channel);
-  const HANDS = B.hands.value, chairScenes = new Set(P.chair.reachable_from), F = content.fault, CELLS = B.battery.value.cells_per_mic;
+  const HANDS = B.hands.value, CELLS = B.battery.value.cells_per_mic;
+  const chairScenes = new Set(P.chair.reachable_from), badScenes = new Set((P.bad || P.chair).reachable_from);
+  const NEED = content.objective.need_verified ? content.objective.need_verified.value : inPlay.length;
   const x32Scene = Object.keys(content.displays).find(k => content.displays[k].device === 'foh-x32');
 
   // the signal path from a source, following connections: handheld-06 -> ptu6000-rx:6 -> foh-x32:in:6
@@ -63,7 +68,8 @@ export function engine(content) {
   // rules live here rather than in content until a second device of a type needs something different)
   function passes(g, point) {
     const d = g.devices[devOf(point)], s = d.state;
-    if (d.type === 'wireless-handheld') return s.power === 'on' && !s.muted;         // a bad battery never gets this far: it does not switch on
+    // a bad battery never gets this far (it does not switch on); an unpaired mic transmits, but not to its receiver
+    if (d.type === 'wireless-handheld') return s.power === 'on' && !s.muted && s.paired !== false;
     return s.power === 'on';
   }
   // talking into `mic`: which points on its path carry signal right now
@@ -81,39 +87,60 @@ export function engine(content) {
     const s = g.devices[mic].state;
     return s.power === 'on' ? { on: true, group: g.rf[mic].group, channel: g.rf[mic].channel, muted: !!s.muted, battery: 'full' } : { on: false };
   }
-  // is the scenario's fault present on its mic right now? (every field of fault.set still holds)
-  const faultActive = g => Object.entries(F.set).every(([k, v]) => g.devices[g.fault.device].state[k] === v);
-  const done = (g, mic) => validPositive(g, mic) && g.where[mic] === 'chair';
+  // is fault i present on its mic right now? (every field of its `set` still holds)
+  const faultActive = (g, i) => Object.entries(FBY[g.faults[i].id].set).every(([k, v]) => g.devices[g.faults[i].device].state[k] === v);
+  const resolved = (g, i) => FBY[g.faults[i].id].resolution === 'replace' ? g.where[g.faults[i].device] === 'bad' : g.faults[i].applied && !faultActive(g, i);
+  const setAside = g => g.inPlay.filter(m => g.where[m] === 'bad');
+  const verifiedCount = g => g.inPlay.filter(m => validPositive(g, m)).length;
+  const complete = g => g.inPlay.every(m => validPositive(g, m) || g.where[m] === 'bad') && verifiedCount(g) >= NEED;
+  const done = (g, mic) => (validPositive(g, mic) && g.where[mic] === 'chair') || g.where[mic] === 'bad';
   const remaining = g => g.inPlay.filter(m => !done(g, m));
   const byHand = g => g.inPlay.filter(m => g.evidence.some(e => e.mic === m && e.via === 'hand' && e.point === x32Point(m) && e.signal));
   function skipState(g) {
     const n = byHand(g).length, left = remaining(g);
     if (n < S.after_by_hand) return { available: false, byHand: n, need: S.after_by_hand, left: left.length, reason: `Check ${S.after_by_hand - n} more by hand first.` };
-    if (!left.length) return { available: false, byHand: n, need: S.after_by_hand, left: 0, reason: 'Every mic is verified and on the chair.' };
+    if (!left.length) return { available: false, byHand: n, need: S.after_by_hand, left: 0, reason: 'Every mic is verified and on the chair, or set aside.' };
     if (held(g).length) return { available: false, byHand: n, need: S.after_by_hand, left: left.length, reason: `Put the mic${held(g).length > 1 ? 's' : ''} in your hands down first.` };
     return { available: true, byHand: n, need: S.after_by_hand, left: left.length, reason: null };
   }
+  // which fault a hint is about: one you've seen go wrong and are holding, else any you've seen go wrong,
+  // else the next unresolved one (holding a faulty mic you haven't noticed yet must not give it away)
+  function hintTarget(g) {
+    const open = g.faults.map((f, i) => i).filter(i => !resolved(g, i));
+    const seenWrong = i => { const m = g.faults[i].device; return g.evidence.some(e => e.mic === m && !e.signal) || g.log.some(e => e.device === m && e.nothing); };
+    const i = open.find(i => g.hands.includes(g.faults[i].device) && seenWrong(i)) ?? open.find(seenWrong) ?? open[0];
+    return i == null ? null : g.faults[i].id;
+  }
 
   function start(seed = 'VJ-00001', opts = {}) {
-    const chans = opts.faultChannel != null ? [opts.faultChannel] : content.fault.placement.channels;
-    const pool = chans.map(micFor).filter(m => inPlay.includes(m));
-    if (!pool.length) throw new Error('fault placement names no mic in play');
-    const pick = pool[Math.floor(rng(seed)() * pool.length)];
-    const devices = {}, where = {}, rf = {};
+    const devices = {}, where = {}, rf = {}, rfRx = {}, taken = new Set(), faults = [];
     for (const [id, d] of Object.entries(D)) devices[id] = { type: d.type, state: clone(d.state) };
     for (const m of handhelds) where[m] = D[m].home;
-    if (F.apply_on === 'start') Object.assign(devices[pick].state, F.set);
-    // RF group/channel: seeded, unique per mic (placeholder values, content.rf); a mic and its receiver slot share them
+    FS.forEach((f, k) => {
+      if (opts.only && !opts.only.includes(f.id)) return;
+      const forced = (opts.faultChannels || {})[f.id] ?? (k === 0 ? opts.faultChannel : undefined);
+      const pool = (forced != null ? [forced] : f.placement.channels).map(micFor).filter(m => inPlay.includes(m) && !taken.has(m));
+      if (!pool.length) throw new Error(`fault ${f.id}: placement names no free mic in play`);
+      const pick = pool[Math.floor(rng(k === 0 ? seed : `${seed}:${f.id}`)() * pool.length)];
+      taken.add(pick);
+      if (f.apply_on === 'start') Object.assign(devices[pick].state, f.set);
+      faults.push({ id: f.id, device: pick, applied: f.apply_on === 'start' });
+    });
+    // RF group/channel: seeded, unique per mic (placeholder values, content.rf); a paired mic and its receiver
+    // slot share them; an unpaired mic shows a combination nobody else uses
     const r = rng(seed + ':rf'), combos = [];
     for (let gi = 1; gi <= content.rf.groups; gi++) for (let ci = 1; ci <= content.rf.channels_per_group; ci++) combos.push({ group: gi, channel: ci });
-    if (combos.length < handhelds.length) throw new Error('not enough RF group/channel combinations for every mic');
+    if (combos.length <= handhelds.length) throw new Error('not enough RF group/channel combinations for every mic');
     for (let i = combos.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [combos[i], combos[j]] = [combos[j], combos[i]]; }
-    handhelds.slice().sort((a, b) => D[a].channel - D[b].channel).forEach((m, i) => { rf[m] = combos[i]; });
+    let spare = handhelds.length;
+    handhelds.slice().sort((a, b) => D[a].channel - D[b].channel).forEach((m, i) => {
+      rfRx[m] = combos[i]; rf[m] = devices[m].state.paired === false ? combos[spare++] : combos[i];
+    });
     return {
-      v: 3, content: content.id, seed, seq: 0, t: 0, scene: 'foh-wide',
-      hands: Array(HANDS.slots).fill(null), where, read: {}, rf, cells: P.charger.cells,
-      devices, inPlay: [...inPlay], fault: { id: F.id, device: pick, applied: F.apply_on === 'start' },
-      changed: {}, evidence: [], hints: 0, log: [], completedAt: null,
+      v: 4, content: content.id, seed, seq: 0, t: 0, scene: 'foh-wide',
+      hands: Array(HANDS.slots).fill(null), where, read: {}, rf, rfRx, cells: P.charger.cells,
+      devices, inPlay: [...inPlay], faults,
+      changed: {}, evidence: [], hints: {}, log: [], completedAt: null,
     };
   }
 
@@ -123,7 +150,7 @@ export function engine(content) {
     const tick = s => { g.t += s; };
     const entry = { seq: g.seq + 1, t: null, type: a.type };
     if (via !== 'hand') entry.via = via;
-    const faultWas = faultActive(g);
+    const faultWas = g.faults.map((_, i) => faultActive(g, i));
     // the mic an action is about: the one named, or the only one held; [id, error]
     const inHand = empty => {
       const h = held(g);
@@ -131,6 +158,8 @@ export function engine(content) {
       if (!h.length) return [null, fail('empty-hands', empty)];
       return h.length === 1 ? [h[0], null] : [null, fail('which-mic', 'you have two mics in hand: say which one')];
     };
+    const reachable = { drawer: s => s === P.drawer.scene, chair: s => chairScenes.has(s), bad: s => badScenes.has(s) };
+    const placeName = { drawer: P.drawer.label.toLowerCase(), chair: P.chair.label.toLowerCase(), bad: 'set-aside spot' };
 
     switch (a.type) {
       case 'go': {
@@ -145,17 +174,15 @@ export function engine(content) {
         if (g.hands.includes(id)) return fail('already-held', `${d.label} is already in your hand`);
         if (held(g).length >= HANDS.max_mics) return fail('hands-full', HANDS.max_mics === 1 ? `Put ${D[held(g)[0]].label} down first: one mic at a time for now.` : 'Your hands are full: put a mic down first.');
         const from = g.where[id];
-        if (from === 'drawer' && g.scene !== P.drawer.scene) return fail('not-here', `${d.label} is in the ${P.drawer.label.toLowerCase()}`);
-        if (from === 'chair' && !chairScenes.has(g.scene)) return fail('not-here', `${d.label} is on the ${P.chair.label.toLowerCase()}`);
+        if (!reachable[from](g.scene)) return fail('not-here', `${d.label} is in the ${placeName[from]}`);
         g.hands[g.hands.indexOf(null)] = id; g.where[id] = 'hand'; tick(C.action_s);
         entry.device = id; entry.from = from;
         break;
       }
       case 'put': {
         const [id, err] = inHand('you are not holding a mic'); if (err) return err;
-        if (a.place === 'drawer' && g.scene !== P.drawer.scene) return fail('not-here', 'the mic drawer is not here');
-        if (a.place === 'chair' && !chairScenes.has(g.scene)) return fail('not-here', 'the chair is not here');
-        if (a.place !== 'drawer' && a.place !== 'chair') return fail('bad-action', "put needs place: 'drawer' or 'chair'");
+        if (!reachable[a.place]) return fail('bad-action', "put needs place: 'drawer', 'chair' or 'bad'");
+        if (!reachable[a.place](g.scene)) return fail('not-here', `the ${placeName[a.place]} is not here`);
         g.hands[g.hands.indexOf(id)] = null; g.where[id] = a.place; delete g.read[id]; tick(C.action_s);
         entry.device = id; entry.place = a.place;
         break;
@@ -184,7 +211,7 @@ export function engine(content) {
         if (s.battery !== 'none') return fail('batteries-in', `${D[id].label} already has batteries in it`);
         if (g.cells < CELLS) return fail('charger-empty', 'the charger has no charged batteries left');
         g.cells -= CELLS; s.battery = 'ok';
-        if (F.apply_on === 'insert_batteries' && id === g.fault.device && !g.fault.applied) { Object.assign(s, F.set); g.fault.applied = true; }
+        for (const f of g.faults) if (f.device === id && !f.applied && FBY[f.id].apply_on === 'insert_batteries') { Object.assign(s, FBY[f.id].set); f.applied = true; }
         g.changed[id] = g.seq + 1; tick(C.action_s); entry.device = id;
         events.push({ type: 'batteries-in', device: id, cellsLeft: g.cells });
         break;
@@ -225,14 +252,17 @@ export function engine(content) {
         break;
       }
       case 'hint': {
-        if (g.hints >= F.hints.length) return fail('no-more-hints', 'no more hints');
-        const h = F.hints[g.hints]; g.hints++; entry.level = h.level;
-        events.push({ type: 'hint', level: h.level, kind: h.kind, text: h.text });
+        const id = hintTarget(g);
+        if (!id) return fail('no-hint', 'Nothing needs a hint right now.');
+        const hs = FBY[id].hints, used = g.hints[id] || 0;
+        if (used >= hs.length) return fail('no-more-hints', 'no more hints for this problem');
+        const h = hs[used]; g.hints[id] = used + 1; entry.level = h.level; entry.fault = id;
+        events.push({ type: 'hint', level: h.level, kind: h.kind, fault: id, text: h.text });
         break;
       }
       default: return fail('bad-action', `unknown action ${a.type}`);
     }
-    if (faultWas && !faultActive(g)) entry.fixedFault = true;
+    g.faults.forEach((f, i) => { if (faultWas[i] && !faultActive(g, i)) entry.fixedFault = f.id; });
     g.seq = entry.seq; entry.t = g.t; g.log.push(entry);
     return null;
   }
@@ -278,15 +308,18 @@ export function engine(content) {
     // a mic that just became verified by hand gets the non-blocking toast of section 55
     if (a.type === 'talk') for (const m of g.inPlay) if (validPositive(g, m) && !validPositive(g0, m))
       events.push({ type: 'verified', mic: m, text: `Signal verified: receiver → X32 ch ${D[m].channel}.` });
-    if (g.completedAt == null && g.inPlay.every(m => validPositive(g, m))) {
+    if (a.type === 'put' && a.place === 'bad') events.push({ type: 'set-aside', device: g.log.at(-1).device, text: `${D[g.log.at(-1).device].label} set aside as a bad mic. A spare covers it.` });
+    if (g.completedAt == null && complete(g)) {
       g.completedAt = { seq: g.seq, t: g.t };
-      events.push({ type: 'objective-complete', text: `${content.objective.label}: all ${g.inPlay.length} verified.` });
+      const b = setAside(g).length;
+      events.push({ type: 'objective-complete', text: `${content.objective.label}: ${verifiedCount(g)} verified${b ? `, ${b} set aside` : ''}.` });
     }
     return { game: g, events, error: null };
   }
 
   // what the player can know, from their own evidence only; `debug` is the instructor view (section 80)
   function micStatus(g, mic) {
+    if (g.where[mic] === 'bad') return 'set-aside';
     if (validPositive(g, mic)) return 'verified';
     const mine = g.evidence.filter(e => e.mic === mic);
     if (!mine.length) return 'not-checked';
@@ -307,25 +340,27 @@ export function engine(content) {
     };
     return {
       mic: cur, steps: content.procedure.steps.map(s => ({ id: s.id, text: s.text, simulated: s.simulated !== false,
-        done: s.simulated === false ? null : cur ? tick[s.id](cur) : true })), optional: content.procedure.optional,
+        done: s.simulated === false ? null : cur ? tick[s.id](cur) : true })), optional: content.procedure.optional, badMic: content.procedure.bad_mic,
       skip: { label: S.label, ...skipState(g) },
     };
   }
   function view(g) {
     const mics = g.inPlay.map(m => ({ id: m, label: D[m].label, channel: D[m].channel, windscreen: D[m].windscreen, ring: D[m].ring, status: micStatus(g, m), where: g.where[m] }));
+    const target = hintTarget(g);
     return {
       clock: clockText(toSec(C.start) + g.t), readyBy: clockText(toSec(C.ready_by)),
       scene: g.scene, hands: [...g.hands], held: held(g), holding: held(g)[0] || null, display: content.displays[g.scene] || null,
       lcd: Object.fromEntries(held(g).filter(m => g.read[m]).map(m => [m, lcd(g, m)])),
-      canPut: { drawer: g.scene === P.drawer.scene, chair: chairScenes.has(g.scene) },
+      canPut: { drawer: g.scene === P.drawer.scene, chair: chairScenes.has(g.scene), bad: badScenes.has(g.scene) },
       charger: { label: P.charger.label, here: g.scene === P.charger.scene, cells: g.cells },
       batteriesIn: Object.fromEntries(held(g).map(m => [m, g.devices[m].state.battery !== 'none'])),   // what the player put in, not how
-      rf: Object.fromEntries(g.inPlay.map(m => [m, g.rf[m]])),
-      objective: { label: content.objective.label, goal: content.objective.goal, verified: mics.filter(m => m.status === 'verified').length, of: mics.length, complete: g.completedAt != null, mics },
+      rfRx: Object.fromEntries(g.inPlay.map(m => [m, g.rfRx[m]])),                                       // printed on each receiver slot
+      objective: { label: content.objective.label, goal: content.objective.goal, verified: verifiedCount(g), setAside: setAside(g).length, need: NEED,
+        of: mics.length, complete: g.completedAt != null, mics },
       procedure: procedure(g),
-      hintsLeft: F.hints.length - g.hints,
+      hintsLeft: target ? FBY[target].hints.length - (g.hints[target] || 0) : 0,
       debug: {
-        seed: g.seed, fault: g.fault,
+        seed: g.seed, faults: g.faults.map((f, i) => ({ ...f, label: FBY[f.id].label, active: faultActive(g, i), resolved: resolved(g, i) })),
         reach: Object.fromEntries(g.inPlay.map(m => [m, reach(g, m)])),
         state: Object.fromEntries(g.inPlay.map(m => [m, g.devices[m].state])),
         mechanicallySatisfied: g.inPlay.filter(m => reach(g, m).every(x => x.signal)),
@@ -334,54 +369,68 @@ export function engine(content) {
   }
 
   function debrief(g) {
-    const f = g.fault.device, ch = D[f].channel, L = g.log, T = F.debrief, lbl = D[f].label;
-    const say = t => t.replace(/\{mic\}/g, lbl);
-    const fixE = L.find(e => e.fixedFault);
-    const fixSeq = fixE ? fixE.seq : Infinity;
-    const noticeE = L.find(e => e.seq < fixSeq && ((e.type === 'talk' && e.mic === f && (e.observed || []).some(o => !o.signal)) ||
-      (e.type === 'press' && e.device === f && e.nothing && e.how === 'hold' && e.before.battery !== 'none')));
-    const traceE = L.find(e => e.seq < fixSeq && !e.via && ((e.type === 'talk' && e.mic === f && (e.observed || []).some(o => o.point === rxPoint(f) && !o.signal)) ||
-      (['inspect', 'check_batteries'].includes(e.type) && e.device === f)));
-    const verifyE = L.find(e => e.type === 'talk' && e.mic === f && e.seq > fixSeq && (e.observed || []).some(o => o.point === x32Point(f) && o.signal));
-    // changes beyond the routine (switching a mic on is part of it) and beyond the fix
-    const extra = L.filter(e => e.type === 'press' && e.changed && !e.fixedFault && !(e.how === 'hold' && e.before.power === 'off'));
-    const broke = extra.filter(e => e.passedBefore && !e.passedAfter);
-    const endBroken = g.inPlay.filter(m => !reach(g, m).every(x => x.signal));
-    const allVerified = g.inPlay.every(m => validPositive(g, m));
+    const L = g.log, at = e => clockText(toSec(C.start) + e.t);
+    const faultMics = new Set(g.faults.map(f => f.device));
+    const allDone = complete(g), aside = setAside(g);
     const skips = L.filter(e => e.type === 'check_rest');
     const viaSkip = g.inPlay.filter(m => validPositive(g, m) && !g.evidence.some(e => e.mic === m && e.via === 'hand' && e.signal && e.point === x32Point(m)));
-    const offChair = g.inPlay.filter(m => g.where[m] !== 'chair');
-    const at = e => clockText(toSec(C.start) + e.t);
-    const lines = [];
+    const offChair = g.inPlay.filter(m => g.where[m] !== 'chair' && g.where[m] !== 'bad');
+    // changes beyond the routine (switching a mic on is part of it) and beyond the fixes
+    const extra = L.filter(e => e.type === 'press' && e.changed && !e.fixedFault && !(e.how === 'hold' && e.before.power === 'off'));
+    const broke = extra.filter(e => e.passedBefore && !e.passedAfter);
+    const endBroken = g.inPlay.filter(m => g.where[m] !== 'bad' && !reach(g, m).every(x => x.signal));
+    const lines = [], loops = {};
 
-    lines.push(allVerified
-      ? `✅ Ready: all ${g.inPlay.length} mics verified at the X32 by ${clockText(toSec(C.start) + (g.completedAt ? g.completedAt.t : g.t))} (rehearsal at ${clockText(toSec(C.ready_by))}).`
-      : `✅ Not ready yet: ${g.inPlay.filter(m => !validPositive(g, m)).map(m => D[m].label).join(', ')} not verified.`);
-    lines.push(`🧠 What failed: ${say(T.failed)}`);
-    lines.push(noticeE ? `  NOTICE ✓ ${at(noticeE)}: ${noticeE.via === 'skip' ? `${S.label} stopped on ${lbl}: no signal at the X32`
-        : noticeE.type === 'press' ? `you tried to switch ${lbl} on and nothing happened`
-        : `you talked into ${lbl} and saw no signal at the ${noticeE.observed.some(o => o.point === rxPoint(f)) ? 'receiver' : 'X32'}`}.`
-      : `  NOTICE ✗ the problem was never observed before the fix${fixE ? ' (the fix came first)' : ''}.`);
-    lines.push(traceE ? `  TRACE ✓ ${at(traceE)}: ${traceE.type === 'check_batteries' ? `you checked ${lbl}'s batteries` : traceE.type === 'inspect' ? `you read ${lbl}'s display` : 'you checked the receiver, which put the problem upstream of it'}.`
-      : '  TRACE ✗ you did not look upstream of the X32 (receiver, transmitter, batteries) before changing anything.');
-    const actKey = fixE && (fixE.type === 'press' ? `press:${fixE.how}` : fixE.type);
-    lines.push(fixE ? `  ACT ✓ ${at(fixE)}: ${say(T.act[actKey] || 'you fixed {mic}.')}` : `  ACT ✗ ${faultActive(g) ? say(T.still) : 'not yet.'}`);
-    lines.push(verifyE ? `  VERIFY ✓ ${at(verifyE)}: you talked into it and saw signal at X32 ch ${ch}.`
-      : fixE ? `  VERIFY ✗ fixed but not verified: switch it on and talk into it while watching X32 ch ${ch}.` : '  VERIFY ✗ not yet.');
+    lines.push(allDone
+      ? `✅ Ready: ${verifiedCount(g)} mics verified at the X32${aside.length ? ` and ${aside.length} set aside` : ''} by ${clockText(toSec(C.start) + (g.completedAt ? g.completedAt.t : g.t))} (rehearsal at ${clockText(toSec(C.ready_by))}).`
+      : `✅ Not ready yet: ${g.inPlay.filter(m => !validPositive(g, m) && g.where[m] !== 'bad').map(m => D[m].label).join(', ') || 'no mic left to check'}${verifiedCount(g) < NEED ? `; ${verifiedCount(g)} verified, and every musician needs a mic (${NEED})` : ''}.`);
+
+    g.faults.forEach((gf, i) => {
+      const F = FBY[gf.id], T = F.debrief, f = gf.device, ch = D[f].channel, lbl = D[f].label, say = t => t.replace(/\{mic\}/g, lbl);
+      if (!gf.applied) { lines.push(`🧠 ${F.label}: it didn't come up this time (${lbl}'s batteries never went in).`); loops[gf.id] = null; return; }
+      const actE = F.resolution === 'replace' ? L.find(e => e.type === 'put' && e.place === 'bad' && e.device === f) : L.find(e => e.fixedFault === gf.id);
+      const actSeq = actE ? actE.seq : Infinity;
+      const noticeE = L.find(e => e.seq < actSeq && ((e.type === 'talk' && e.mic === f && (e.observed || []).some(o => !o.signal)) ||
+        (e.type === 'press' && e.device === f && e.nothing && e.how === 'hold' && e.before.battery !== 'none')));
+      const traceE = L.find(e => e.seq < actSeq && !e.via && ((e.type === 'talk' && e.mic === f && (e.observed || []).some(o => o.point === rxPoint(f) && !o.signal)) ||
+        (['inspect', 'check_batteries'].includes(e.type) && e.device === f)));
+      const verifyE = F.resolution === 'replace' ? null : L.find(e => e.type === 'talk' && e.mic === f && e.seq > actSeq && (e.observed || []).some(o => o.point === x32Point(f) && o.signal));
+      const covered = F.resolution === 'replace' && actE && g.where[f] === 'bad' && verifiedCount(g) >= NEED;
+      lines.push(`🧠 What failed: ${say(T.failed)}`);
+      lines.push(noticeE ? `  NOTICE ✓ ${at(noticeE)}: ${noticeE.via === 'skip' ? `${S.label} stopped on ${lbl}: no signal at the X32`
+          : noticeE.type === 'press' ? `you tried to switch ${lbl} on and nothing happened`
+          : `you talked into ${lbl} and saw no signal at the ${noticeE.observed.some(o => o.point === rxPoint(f)) ? 'receiver' : 'X32'}`}.`
+        : actE ? `  NOTICE ✗ the problem was never observed before ${F.resolution === 'replace' ? 'you set it aside' : 'the fix'} (that came first).` : '  NOTICE ✗ not yet.');
+      lines.push(traceE ? `  TRACE ✓ ${at(traceE)}: ${traceE.type === 'check_batteries' ? `you checked ${lbl}'s batteries` : traceE.type === 'inspect' ? `you read ${lbl}'s display` : 'you checked the receiver, which put the problem upstream of it'}.`
+        : actE ? '  TRACE ✗ you did not look upstream of the X32 (receiver, transmitter, batteries) before acting.' : '  TRACE ✗ not yet.');
+      const actKey = actE && (actE.type === 'press' ? `press:${actE.how}` : actE.type === 'put' ? 'put:bad' : actE.type);
+      lines.push(actE ? `  ACT ✓ ${at(actE)}: ${say(T.act[actKey] || 'you fixed {mic}.')}` : `  ACT ✗ ${F.resolution === 'replace' || faultActive(g, i) ? say(T.still) : 'not yet.'}`);
+      lines.push(F.resolution === 'replace'
+        ? (covered ? `  VERIFY ✓ a spare covers it: ${verifiedCount(g)} mics verified, enough for every musician (${NEED}).` : `  VERIFY ✗ ${actE ? `only ${verifiedCount(g)} mics verified so far; every musician needs one (${NEED}).` : 'not yet.'}`)
+        : verifyE ? `  VERIFY ✓ ${at(verifyE)}: you talked into it and saw signal at X32 ch ${ch}.`
+        : actE ? `  VERIFY ✗ fixed but not verified: switch it on and talk into it while watching X32 ch ${ch}.` : '  VERIFY ✗ not yet.');
+      loops[gf.id] = { notice: !!noticeE, trace: !!traceE, act: !!actE, verify: F.resolution === 'replace' ? !!covered : !!verifyE };
+    });
+
+    const wrongAside = aside.filter(m => !g.faults.some(f => f.device === m && FBY[f.id].resolution === 'replace'));
+    if (wrongAside.length) lines.push(`⚠️ Set aside but fixable or working: ${wrongAside.map(m => {
+      const f = g.faults.find(x => x.device === m); return D[m].label + (f ? ` (${FBY[f.id].fix})` : ' (it worked)'); }).join('; ')}. Each one uses up a spare.`);
     const nHand = byHand(g).length;
     lines.push(`🔁 Routine: ${nHand} mic${nHand === 1 ? '' : 's'} checked by hand` + (skips.length
       ? `, ${viaSkip.length} by ${S.label}${skips.some(e => e.stoppedAt) ? ` (it stopped at ${skips.filter(e => e.stoppedAt).map(e => D[e.stoppedAt].label).join(', ')})` : ''}.`
-      : '.') + (offChair.length ? ` Not on the chair yet: ${offChair.length}.` : ' All on the chair.'));
-    lines.push(`⏱️ ${L.length} actions, ${Math.round(g.t / 60 * 10) / 10} game minutes.` + (extra.length ? ` ${extra.length} change${extra.length > 1 ? 's' : ''} beyond the routine and the fix: ${extra.map(e => `${e.how} on ${D[e.device].label}`).join(', ')}.` : ' No changes beyond the routine and the fix.'));
-    if (broke.length) lines.push(`  ${broke.length} of those silenced a working mic${endBroken.length ? `; still silent: ${endBroken.map(m => D[m].label).join(', ')}` : ', and you put it right'}.`);
-    lines.push(`🆘 Hints used: ${g.hints ? F.hints.slice(0, g.hints).map(h => h.kind).join(' → ') : 'none'}.`);
-    lines.push(`📚 Concepts: handheld → receiver → X32 input; ${T.concepts}; fixed is not verified; a shortcut may skip repetition, never the checking.`);
+      : '.') + (offChair.length ? ` Not on the chair yet: ${offChair.length}.` : ' All on the chair or set aside.'));
+    lines.push(`⏱️ ${L.length} actions, ${Math.round(g.t / 60 * 10) / 10} game minutes.` + (extra.length ? ` ${extra.length} change${extra.length > 1 ? 's' : ''} beyond the routine and the fixes: ${extra.map(e => `${e.how} on ${D[e.device].label}`).join(', ')}.` : ' No changes beyond the routine and the fixes.'));
+    if (broke.length) lines.push(`  ${broke.length} of those silenced a working mic${endBroken.filter(m => !faultMics.has(m)).length ? `; still silent: ${endBroken.filter(m => !faultMics.has(m)).map(m => D[m].label).join(', ')}` : ', and you put it right'}.`);
+    const hintsUsed = Object.entries(g.hints).filter(([, n]) => n);
+    lines.push(`🆘 Hints used: ${hintsUsed.length ? hintsUsed.map(([id, n]) => `${FBY[id].label.toLowerCase()}: ${FBY[id].hints.slice(0, n).map(h => h.kind).join(' → ')}`).join('; ') : 'none'}.`);
+    lines.push(`📚 Concepts: handheld → receiver → X32 input; ${g.faults.map(f => FBY[f.id].debrief.concepts).join('; ')}; fixed is not verified; a shortcut may skip repetition, never the checking.`);
 
+    const first = g.faults[0];
     return {
-      ready: allVerified, fault: { device: f, id: F.id, label: F.label },
-      loop: { notice: !!noticeE, trace: !!traceE, act: !!fixE, verify: !!verifyE },
-      byHand: nHand, bySkip: viaSkip.length, skipStops: skips.filter(e => e.stoppedAt).map(e => e.stoppedAt), offChair,
-      changesOtherThanFix: extra.length, silencedWorkingMic: broke.length, stillBroken: endBroken, hints: g.hints,
+      ready: allDone, faults: g.faults.map(f => ({ id: f.id, device: f.device, label: FBY[f.id].label })),
+      loops, loop: first ? loops[first.id] : null,
+      byHand: nHand, bySkip: viaSkip.length, skipStops: skips.filter(e => e.stoppedAt).map(e => e.stoppedAt), offChair, setAside: aside, wrongAside,
+      changesOtherThanFix: extra.length, silencedWorkingMic: broke.length, stillBroken: endBroken, hints: Object.values(g.hints).reduce((a, b) => a + b, 0),
       actions: L.length, gameSeconds: g.t, lines,
     };
   }

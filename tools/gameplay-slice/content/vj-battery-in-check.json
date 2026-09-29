@@ -1,7 +1,7 @@
 {
  "id": "vj-battery-in-check",
  "title": "Vocal Jazz: battery-in check of the wireless mics at FOH",
- "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), one fault (batteries in the wrong way round), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
+ "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), two faults (batteries in the wrong way round on an early mic; an unpaired 'bad mic' later that gets set aside for a spare), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
  "clock": {
   "start": "16:50:00",
   "ready_by": "17:00:00",
@@ -405,6 +405,18 @@
    "scene": "foh-mic-drawer",
    "cells": 32,
    "status": "location: seen in photo IMG_4127 (a 16-slot CITYORK charger on top of the mic cabinet, above the drawer). 32 charged cells (enough for 16 mics) is a placeholder: where the cells beyond one charger come from (a second charger, the 'charged' drawer) is unknown; section 27 notes '16 or 18'."
+  },
+  "bad": {
+   "label": "Set aside (bad mics)",
+   "reachable_from": [
+    "foh-wide",
+    "x32-top",
+    "foh-rack",
+    "foh-rack-closeup",
+    "foh-right-side",
+    "foh-mic-drawer"
+   ],
+   "status": "unknown where bad mics go in the room (the owner: \"we'll skip it\"); a placeholder spot at FOH. A bad-battery bin does not exist yet (section 27)."
   }
  },
  "connections": [
@@ -582,49 +594,103 @@
    "points": "ptu6000-rx:{ch}"
   }
  },
- "fault": {
-  "id": "battery-reversed",
-  "label": "Batteries in the wrong way round",
-  "apply_on": "insert_batteries",
-  "set": {
-   "battery": "reversed"
-  },
-  "placement": {
-   "channels": [
-    2,
-    3
+ "faults": [
+  {
+   "id": "battery-reversed",
+   "label": "Batteries in the wrong way round",
+   "apply_on": "insert_batteries",
+   "set": {
+    "battery": "reversed"
+   },
+   "placement": {
+    "channels": [
+     2,
+     3
+    ],
+    "status": "owner, 2026-09-28: 'one of the first few microphones has a fault where you accidentally put in the batteries in the wrong orientation'; 2nd or 3rd per the owner's earlier answer"
+   },
+   "fix": "take the batteries out and put them back the right way round, then switch it on",
+   "debrief": {
+    "failed": "the batteries went into {mic} the wrong way round, so it could not switch on.",
+    "act": {
+     "reseat_batteries": "you put the batteries back into {mic} the right way round."
+    },
+    "still": "{mic}'s batteries are still the wrong way round.",
+    "concepts": "no power, no signal: check the batteries before anything downstream"
+   },
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "It won't switch on, so nothing can reach the receiver. What does a transmitter need before it can power up?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Check the batteries in the handheld."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The batteries are in the wrong way round. Put them back the right way, switch it on, and verify at the X32."
+    }
    ],
-   "status": "owner, 2026-09-28: 'one of the first few microphones has a fault where you accidentally put in the batteries in the wrong orientation'; 2nd or 3rd per the owner's earlier answer"
+   "hints_status": "tentative: written in the shape of the section 46 ladder (concept, location, direct); for the owner to correct",
+   "source": "owner, 2026-09-28",
+   "resolution": "fix"
   },
-  "fix": "take the batteries out and put them back the right way round, then switch it on",
-  "debrief": {
-   "failed": "the batteries went into {mic} the wrong way round, so it could not switch on.",
-   "act": {
-    "reseat_batteries": "you put the batteries back into {mic} the right way round."
+  {
+   "id": "unpaired",
+   "label": "A handheld that is not paired with its receiver",
+   "apply_on": "start",
+   "set": {
+    "paired": false
    },
-   "still": "{mic}'s batteries are still the wrong way round.",
-   "concepts": "no power, no signal: check the batteries before anything downstream"
-  },
-  "hints": [
-   {
-    "level": 1,
-    "kind": "concept",
-    "text": "It won't switch on, so nothing can reach the receiver. What does a transmitter need before it can power up?"
+   "resolution": "replace",
+   "placement": {
+    "channels": [
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13
+    ],
+    "status": "tentative: one of the later musician mics (5-13), so it is usually met through Check the rest; the owner's example of a 'bad mic' (2026-09-28): 'if it's not paired or some other problem then it's basically just a bad mic and we'll skip it'"
    },
-   {
-    "level": 2,
-    "kind": "location",
-    "text": "Check the batteries in the handheld."
+   "fix": "not fixable in this check (pairing is a later level): set it aside as a bad mic; a spare covers it",
+   "debrief": {
+    "failed": "{mic} was not paired with its receiver: it switched on, but its group/channel didn't match its receiver slot, so nothing arrived.",
+    "act": {
+     "put:bad": "you set {mic} aside as a bad mic."
+    },
+    "still": "{mic} is still in play, and it will never reach its receiver.",
+    "concepts": "a transmitter and its receiver must share a group/channel (pairing); an unfixable mic is set aside and a spare covers it"
    },
-   {
-    "level": 3,
-    "kind": "direct",
-    "text": "The batteries are in the wrong way round. Put them back the right way, switch it on, and verify at the X32."
-   }
-  ],
-  "hints_status": "tentative: written in the shape of the section 46 ladder (concept, location, direct); for the owner to correct",
-  "source": "owner, 2026-09-28"
- },
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "It's on and not muted, but its receiver hears nothing. What links a transmitter to its receiver?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Compare the group and channel on the mic's display with its receiver slot."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "It isn't paired with its receiver, and pairing isn't part of this check. Set it aside as a bad mic: a spare covers it."
+    }
+   ],
+   "hints_status": "tentative wording, section 46 ladder shape",
+   "source": "owner, 2026-09-28"
+  }
+ ],
  "fault_library": {
   "status": "other faults, defined as data; a scenario picks one as `fault`",
   "tx-muted": {
@@ -663,7 +729,8 @@
     }
    ],
    "hints_source": "PRODUCT_DESIGN section 46, verbatim",
-   "source": "PRODUCT_DESIGN section 46"
+   "source": "PRODUCT_DESIGN section 46",
+   "resolution": "fix"
   },
   "battery-dead": {
    "label": "Dead cells",
@@ -673,14 +740,19 @@
    "unknown": "whether a nearly flat cell powers on and dies later, and what the battery gauge shows first",
    "id": "battery-dead",
    "apply_on": "insert_batteries",
-   "note": "not built into a scenario yet"
+   "note": "not built into a scenario yet",
+   "resolution": "fix"
   }
  },
  "objective": {
   "id": "battery-in-check",
   "label": "Battery-in check: the wireless mics",
-  "goal": "Before the mics go to the stage, verify every one: talking into it shows signal at its X32 input.",
-  "source": "PRODUCT_DESIGN sections 45 (battery-in check; speak into each mic), 55 (goals, not recipes; complete only after verification)"
+  "goal": "Before the mics go to the stage, verify every one: talking into it shows signal at its X32 input. A mic that can't be fixed is set aside; a spare covers it.",
+  "source": "PRODUCT_DESIGN sections 45 (battery-in check; speak into each mic), 55 (goals, not recipes; complete only after verification)",
+  "need_verified": {
+   "value": 13,
+   "status": "tentative: every musician needs a working mic (13, setup.mic_roles); the spares 14-16 cover any that are set aside"
+  }
  },
  "procedure": {
   "steps": [
@@ -706,7 +778,8 @@
    }
   ],
   "optional": "Reading the mic's display (group/channel, battery, mute) isn't needed when everything works; it's how you troubleshoot one that doesn't.",
-  "status": "owner, 2026-09-28: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion)."
+  "status": "owner, 2026-09-28: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion).",
+  "bad_mic": "Can't make it work, and it isn't the batteries? Set it aside as a bad mic: a spare covers it."
  },
  "skip": {
   "label": "Check the rest",
@@ -715,7 +788,7 @@
   "stop_if": [
    "no-signal-at-x32"
   ],
-  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, batteries in, switch on, then at the X32 for each: talk into it, put it on the chair), costing the same game time; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
+  "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, batteries in, switch on, then at the X32 for each: talk into it, put it on the chair), costing the same game time; set-aside mics are skipped; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
   "status": "PRODUCT_DESIGN 4.10 (owner, 2026-09-27); 3 by hand is from the brief"
  }
 }
