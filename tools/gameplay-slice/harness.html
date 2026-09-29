@@ -47,6 +47,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);ou
 .chip{display:grid;gap:1px;justify-items:center;padding:4px 2px 3px;border-radius:4px;border:1px solid var(--line);background:var(--paper)}
 .chip b{font:600 12px var(--cond);letter-spacing:.04em;background:var(--tape);color:var(--tape-ink);padding:0 4px;border-radius:2px;font-variant-numeric:tabular-nums}
 .chip i{font:600 12px/1.2 var(--mono);font-style:normal;color:var(--muted)}
+.chip[data-s="set-aside"]{border-style:dashed;opacity:.75}
 .chip[data-s="verified"]{border-color:var(--sig)} .chip[data-s="verified"] i{color:var(--sig)}
 .chip[data-s="no-signal-seen"]{border-color:var(--bad)} .chip[data-s="no-signal-seen"] i{color:var(--bad)}
 .chip[data-s="recheck"],.chip[data-s="receiver-only"]{border-color:var(--warn)} .chip[data-s="recheck"] i,.chip[data-s="receiver-only"] i{color:var(--warn)}
@@ -185,7 +186,7 @@ const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.cha
 const ROLE = { musician: 'for a musician', spare: 'spare, kept at FOH' };
 // player-facing names for the places the slice uses (UI copy, not room data)
 const PLACE = { 'foh-wide': 'FOH', 'x32-top': 'X32', 'foh-rack': 'Wireless rack', 'foh-rack-closeup': 'Receivers', 'foh-right-side': 'Mic cabinet', 'foh-mic-drawer': 'Mic drawer' };
-const STATUS = { 'not-checked': ['–', 'not checked'], 'no-signal-seen': ['✕', 'no signal'], 'recheck': ['↻', 're-check'], 'receiver-only': ['◐', 'check X32'], 'verified': ['✓', 'verified'] };
+const STATUS = { 'not-checked': ['–', 'not checked'], 'no-signal-seen': ['✕', 'no signal'], 'recheck': ['↻', 're-check'], 'receiver-only': ['◐', 'check X32'], 'verified': ['✓', 'verified'], 'set-aside': ['⊘', 'set aside'] };
 // how the named colours are drawn (rendering only; which mic has which colour comes from content)
 const PAINT = { black: '#1c1e21', grey: '#8d949b', red: '#d8323c', orange: '#ef7b1d', yellow: '#f0c419', green: '#2f9e50', blue: '#2f6fd6', purple: '#7d4cc2' };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -212,7 +213,7 @@ function act(a) {
     if (ev.type === 'skip-stopped') pulse(eng.path(ev.mic).at(-1), false);
     if (ev.type === 'batteries-in') say(`Batteries in ${D[ev.device].label}. ${ev.cellsLeft} charged cells left in the charger.`);
     else if (ev.type === 'inspect') { const l = ev.lcd; say(`${D[ev.device].label}: ${l.on ? `display on${l.muted ? ', showing MUTED' : ', not muted'}, battery full` : 'display is blank'}.`, l.on && !l.muted ? '' : 'bad'); }
-    else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['nothing', 'no-display', 'skip-stopped'].includes(ev.type) || ev.reversed ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
+    else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done', 'set-aside'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['nothing', 'no-display', 'skip-stopped'].includes(ev.type) || ev.reversed ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
   return r;
@@ -225,7 +226,7 @@ function say(text, kind = '', ms = 3200) {
 }
 function logLine(e) {
   const n = D[e.device || e.mic], L = n && n.label; const li = document.createElement('li');
-  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${L}`, put: `put ${L} ${e.place === 'chair' ? 'on the chair' : 'back in the drawer'}`,
+  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${L}`, put: e.place === 'bad' ? `set ${L} aside as a bad mic` : `put ${L} ${e.place === 'chair' ? 'on the chair' : 'back in the drawer'}`,
     press: `${e.how === 'tap' ? 'tapped' : 'held'} the button on ${L}${e.nothing ? ': nothing happened' : ''}`, inspect: `read the display on ${L}`,
     insert_batteries: `put batteries in ${L}`, check_batteries: `checked the batteries in ${L}`, reseat_batteries: `took the batteries out of ${L} and put them back`,
     talk: `talked into ${L}${e.observed && e.observed.length ? e.observed.map(o => o.signal ? ': signal' : ': no signal').join('') : ' (no meter in view)'}`, hint: `took hint ${e.level}`,
@@ -265,12 +266,12 @@ function render(sceneChanged) {
   const clk = $('#clock'); clk.textContent = v.clock; $('#due').textContent = 'Rehearsal ' + v.readyBy;
   const mins = game.t / 60; clk.className = 'clock' + (mins >= 10 ? ' over' : mins >= 7 ? ' late' : '');
   $('#hintBtn').textContent = v.hintsLeft ? `Hint (${v.hintsLeft})` : 'No hints left'; $('#hintBtn').disabled = !v.hintsLeft;
-  $('#obj').innerHTML = `<h2>${esc(v.objective.label)} <span class="fine">${v.objective.verified} of ${v.objective.of} verified</span></h2><p>${esc(v.objective.goal)}</p><div class="chips">${v.objective.mics.map(m =>
+  $('#obj').innerHTML = `<h2>${esc(v.objective.label)} <span class="fine">${v.objective.verified} of ${v.objective.of} verified${v.objective.setAside ? ` · ${v.objective.setAside} set aside` : ''}</span></h2><p>${esc(v.objective.goal)}</p><div class="chips">${v.objective.mics.map(m =>
     `<div class="chip" data-s="${m.status}" data-ch="${m.channel}" title="CH ${two(m.channel)}: ${STATUS[m.status][1]}" aria-label="Channel ${m.channel}: ${STATUS[m.status][1]}"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></div>`).join('')}</div>
-    <div class="legend">✓ verified · ✕ no signal · ↻ re-check · ◐ check X32 · – not checked</div>`;
+    <div class="legend">✓ verified · ✕ no signal · ↻ re-check · ◐ check X32 · ⊘ set aside · – not checked</div>`;
   if (sceneChanged) renderStage();
   renderSteps(v); renderPanel(v); renderHand(v); renderChair(v);
-  $('#dbg').textContent = `seed ${v.debug.seed}\nfault: ${v.debug.fault.device} (${content.fault.label.toLowerCase()})\n` +
+  $('#dbg').textContent = `seed ${v.debug.seed}\n${v.debug.faults.map(f => `fault: ${f.device} (${f.label.toLowerCase()})${f.resolved ? ', resolved' : ''}`).join('\n')}\n` +
     Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
   try { window.claude?.hot?.snapshot?.(() => ({ game, trail })); } catch (e) {}
 }
@@ -297,7 +298,7 @@ function renderSteps(v) {
   $('#steps').innerHTML = `<h3>Battery-in check, for each mic</h3>
     <p class="now">${cur ? `${v.holding ? 'In hand' : 'Next'}: ${esc(cur.label)}` : 'Every mic is verified and on the chair.'}</p>
     <ol class="steps">${p.steps.map(st => `<li class="${st.done ? 'done' : ''}${st.simulated ? '' : ' off'}" data-step="${st.id}"><span>${esc(st.text)}${st.simulated ? '' : '<em>not simulated yet</em>'}</span></li>`).join('')}</ol>
-    ${p.optional ? `<p class="fine">${esc(p.optional)}</p>` : ''}
+    ${p.optional ? `<p class="fine">${esc(p.optional)}</p>` : ''}${p.badMic ? `<p class="fine">${esc(p.badMic)}</p>` : ''}
     <div class="skip"><button class="btn primary" id="skipBtn" ${s.available ? '' : 'disabled'}>${esc(s.label)}${s.left ? ` (${s.left})` : ''}</button>
     <p class="fine">${s.available ? `Does the same routine for the other ${s.left}, in colour order, and stops at the first mic that looks or sounds wrong.` : esc(s.reason) + (s.byHand < s.need ? ` By hand so far: ${s.byHand} of ${s.need}.` : '')}</p></div>`;
   $('#skipBtn').onclick = () => act({ type: 'check_rest' });
@@ -307,8 +308,8 @@ function renderPanel(v) {
   if (d) {
     const rx = d.device === 'ptu6000-rx';
     p.innerHTML = `<h3>${rx ? 'PTU-6000 receivers: audio' : 'X32 input meters'}</h3>
-      <div class="meters">${mics.map(m => `<div class="strip${v.held.includes(m.id) ? ' mine' : ''}" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${two(m.channel)}</b>${rx ? `<small class="rf">${v.rf[m.id].group}·${v.rf[m.id].channel}</small>` : ''}</div>`).join('')}</div>
-      ${rx ? '<p class="fine">Under each slot: its RF group·channel, the same as its paired mic (placeholder values).</p>' : ''}
+      <div class="meters">${mics.map(m => `<div class="strip${v.held.includes(m.id) ? ' mine' : ''}" data-point="${eng.path(m.id).find(x => x.startsWith(d.device + ':'))}"><div class="meter"><i></i></div><b>${two(m.channel)}</b>${rx ? `<small class="rf">${v.rfRx[m.id].group}·${v.rfRx[m.id].channel}</small>` : ''}</div>`).join('')}</div>
+      ${rx ? '<p class="fine">Under each slot: the RF group·channel it listens on. A paired mic shows the same numbers on its display (placeholder values).</p>' : ''}
       ${v.held.length ? `<div class="row">${v.held.map(id => `<button class="btn talk talkHere" data-id="${id}">Talk into ${esc(D[id].label)}</button>`).join('')}</div>` : ''}
       <p class="fine">${v.held.length ? `Watch channel ${v.held.map(id => D[id].channel).join(' or ')} while you talk.` : 'Nothing is making sound. Bring a mic here and talk into it.'} Simplified meters, not the device's own screen.</p>`;
     p.querySelectorAll('.talkHere').forEach(b => b.onclick = () => act({ type: 'talk', device: b.dataset.id }));
@@ -337,18 +338,21 @@ function renderHand(v) {
       <p class="fine">${v.batteriesIn[id] ? 'Batteries in.' : v.charger.here ? 'No batteries yet: the charger is right here.' : 'No batteries yet: the charger is on the mic cabinet.'}</p>
       <div class="row">${!v.batteriesIn[id] && v.charger.here ? '<button class="btn sm talk" data-act="batteries">Batteries in from the charger</button>' : ''}${v.batteriesIn[id] ? '<button class="btn sm" data-act="checkbat">Check the batteries</button><button class="btn sm" data-act="reseat">Put them back in</button>' : ''}</div>
       <div class="row"><button class="btn sm talk" data-act="talk">Talk into it</button><button class="btn sm" data-act="tap">Tap the button</button><button class="btn sm" data-act="hold">Hold the button</button>
-      ${v.canPut.chair ? '<button class="btn sm" data-act="chair">Put on the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn sm" data-act="drawer">Back in the drawer</button>' : ''}</div></div>`;
+      ${v.canPut.chair ? '<button class="btn sm" data-act="chair">Put on the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn sm" data-act="drawer">Back in the drawer</button>' : ''}${v.canPut.bad ? '<button class="btn sm" data-act="bad">Set aside as bad</button>' : ''}</div></div>`;
   }).join('');
   h.innerHTML = `<h3>In your hands</h3><div class="hands">${slots}</div>
     <p class="fine">${v.held.length ? 'One button: a tap mutes or unmutes, a press and hold switches it on or off. ' : 'The handhelds are in the mic drawer (Mic cabinet, right of the desk). '}You can carry two mics.</p>`;
-  const A = { batteries: { type: 'insert_batteries' }, checkbat: { type: 'check_batteries' }, reseat: { type: 'reseat_batteries' }, read: { type: 'inspect' }, talk: { type: 'talk' }, tap: { type: 'press', how: 'tap' }, hold: { type: 'press', how: 'hold' }, chair: { type: 'put', place: 'chair' }, drawer: { type: 'put', place: 'drawer' } };
+  const A = { batteries: { type: 'insert_batteries' }, checkbat: { type: 'check_batteries' }, reseat: { type: 'reseat_batteries' }, read: { type: 'inspect' }, talk: { type: 'talk' }, tap: { type: 'press', how: 'tap' }, hold: { type: 'press', how: 'hold' }, chair: { type: 'put', place: 'chair' }, drawer: { type: 'put', place: 'drawer' }, bad: { type: 'put', place: 'bad' } };
   h.querySelectorAll('.handslot[data-id] [data-act]').forEach(b => b.onclick = () => act({ ...A[b.dataset.act], device: b.closest('.handslot').dataset.id }));
 }
 function renderChair(v) {
-  const on = v.objective.mics.filter(m => m.where === 'chair');
+  const on = v.objective.mics.filter(m => m.where === 'chair'), bad = v.objective.mics.filter(m => m.where === 'bad');
+  const list = ms => `<div class="chair">${ms.map(m => `<button data-id="${m.id}" data-s="${m.status}" aria-label="Pick up ${esc(m.label)} (${STATUS[m.status][1]})"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></button>`).join('')}</div>`;
   $('#chair').innerHTML = `<h3>${esc(CHAIR)}</h3>
-    ${on.length ? `<div class="chair">${on.map(m => `<button data-id="${m.id}" data-s="${m.status}" aria-label="Pick up ${esc(m.label)} (${STATUS[m.status][1]})"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></button>`).join('')}</div>` : '<p class="fine">Nothing yet. Checked mics wait here for the stage.</p>'}
-    <p class="fine">${on.length} of ${v.objective.of} on the chair. A spare chair just left of FOH; it is not in the photos, so it is a box here (tentative).</p>`;
+    ${on.length ? list(on) : '<p class="fine">Nothing yet. Checked mics wait here for the stage.</p>'}
+    <p class="fine">${on.length} of ${v.objective.of} on the chair. A spare chair just left of FOH; it is not in the photos, so it is a box here (tentative).</p>
+    <h3>Set aside (bad mics)</h3>
+    ${bad.length ? `${list(bad)}<p class="fine">Spares 14-16 cover these: every musician needs a verified mic (${v.objective.need}).</p>` : '<p class="fine">None. A mic that can\'t be fixed goes here, and a spare covers it (placeholder spot).</p>'}`;
   $('#chair').querySelectorAll('button[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
 }
 function pulse(point, signal) {
@@ -372,6 +376,6 @@ $('#back').onclick = () => { if (trail.length) goTo(trail.pop(), true); };
 addEventListener('keydown', ev => { if (ev.key === 'Escape' && !$('#sheet').hidden) $('#sheet').hidden = true; });
 
 const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
-const start = data => { if (data && data.game && data.game.content === content.id && data.game.v === 3) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed()); };
+const start = data => { if (data && data.game && data.game.content === content.id && data.game.v === 4) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed()); };
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 </script>
