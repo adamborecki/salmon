@@ -79,6 +79,18 @@ test('RF group/channel: seeded, unique per mic, 6 groups x 6 channels (owner), s
   assert.deepEqual(eng.view(g).rfRx[m], a.rf[m], 'its receiver slot shows the same pair');
 });
 
+test('a mic in hand shows its display without an inspect action, and it costs no time (Cary, 2026-10-01)', () => {
+  const a = eng.start('VJ-7'), m = healthy(a)[0];
+  let { g } = run(a, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: m });
+  assert.deepEqual(eng.view(g).lcd[m], { on: false }, 'blank before batteries');
+  const t = g.t;
+  ({ g } = run(g, { type: 'insert_batteries' }, { type: 'press', how: 'hold' }));
+  assert.deepEqual(eng.view(g).lcd[m], { on: true, group: a.rf[m].group, channel: a.rf[m].channel, muted: false, battery: 'full' });
+  assert.equal(g.t - t, 2 * content.clock.action_s, 'only the two actions cost time');
+  ({ g } = run(g, { type: 'put', place: 'drawer' }));
+  assert.equal(eng.view(g).lcd[m], undefined, 'put down: not shown');
+});
+
 test('batteries: only at the charger, two cells each, once; no batteries means it will not switch on', () => {
   let g = eng.start('VJ-1'); const m = healthy(g)[0];
   g = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: m }).g;

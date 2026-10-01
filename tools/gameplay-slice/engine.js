@@ -11,7 +11,7 @@
 //
 // Actions: go {scene} · pick_up {device} · put {place: 'drawer'|'chair'|'bad'} · insert_batteries (at the charger)
 //          · check_batteries · reseat_batteries · press {how: 'tap'|'hold'}
-//          · inspect (read the held mic's display; optional, for troubleshooting) · talk · hint · check_rest
+//          · inspect (look closely at the held mic's display; the view shows it anyway) · talk · hint · check_rest
 // With two mics in hand, actions on a mic take {device}.
 //
 // Faults are data (content.faults): each one's `set` is applied to a mic chosen by the seed, either at
@@ -350,7 +350,7 @@ export function engine(content) {
     return {
       clock: clockText(toSec(C.start) + g.t), readyBy: clockText(toSec(C.ready_by)),
       scene: g.scene, hands: [...g.hands], held: held(g), holding: held(g)[0] || null, display: content.displays[g.scene] || null,
-      lcd: Object.fromEntries(held(g).filter(m => g.read[m]).map(m => [m, lcd(g, m)])),
+      lcd: Object.fromEntries(held(g).map(m => [m, lcd(g, m)])),                                     // a mic in hand shows its display (Cary, 2026-10-01)
       canPut: { drawer: g.scene === P.drawer.scene, chair: chairScenes.has(g.scene), bad: badScenes.has(g.scene) },
       charger: { label: P.charger.label, here: g.scene === P.charger.scene, cells: g.cells },
       batteriesIn: Object.fromEntries(held(g).map(m => [m, g.devices[m].state.battery !== 'none'])),   // what the player put in, not how
