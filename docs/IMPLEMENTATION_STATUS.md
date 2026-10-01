@@ -1,6 +1,8 @@
 # Implementation status
 
-Newest truth first. **Session 2** (2026-09-27, harness v2, owner reachable) is summarised just below;
+Newest truth first. **Session 3** (2026-10-01) is the first with **Cary** as a collaborator (Adam,
+"the owner" below, built sessions 1-2; Cary is also one of the three photographed characters).
+**Session 2** (2026-09-27, harness v2, owner reachable) follows it;
 everything from "Artifact synchronization" on is **session 1** (the overnight session of 2026-09-27,
 starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair with
 `docs/PRODUCT_DESIGN.md` (what and why; highest authority) and `docs/SESSION_HANDOFF.md`
@@ -16,6 +18,56 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    walk-around with Export JSON, the battery-in check).
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
+
+## Session 3 (2026-10-01, Cary): playtest fixes, phone layout, title card
+
+Cary played the battery-in check and asked for five things; all five are done.
+
+### What changed
+- **The display shows as soon as a mic is in hand.** There's no more "Read the display" button. The
+  engine's `view().lcd` now covers every held mic; the `inspect` action still exists (tests, later use)
+  but the harness doesn't offer it. Seeing the display costs no game time.
+- **Talking away from a meter walks you to the X32.** Cary tried to talk into a mic right after the
+  batteries, at the drawer, and was confused that it didn't count. Away from a meter the button now
+  reads "Talk at X32 →": it moves you to the X32 (one move of game time) and talks there. At the X32 or
+  the receivers it is "Talk into it" as before. (The engine rule is unchanged: evidence needs a meter.)
+- **Less scrolling on a phone.**
+  - The mic(s) in hand live in a dock fixed at the bottom of the screen, with a tab per mic when you
+    carry two.
+  - Buttons are shorter, on a 4-column grid.
+  - All 16 meters fit in one row, so at the X32 the photo, the meters and the mic all fit on an
+    iPhone 13 screen with no scrolling.
+  - The step list is now a compact 1-5 stepper (content `procedure.steps[].short`). The current step's
+    full text sits under it, and the rest moved into a "Tips" fold.
+  - The "which mic is which" text is folded too.
+- **A bigger clock.** A dark sticky bar holds a 30px clock, "9:46 to rehearsal" and a bar that drains
+  (amber at 30% left, red and pulsing when late). A "+2s" pops on each action, and "N/16 verified"
+  sits beside the Hint and Debrief buttons.
+- **A title card** (content `intro`, shown when the page first loads, not on "New scenario"). Page 1:
+  a blinking 4:50 PM and "OH NO! Usinger has only left you **10 minutes** to set up for Vocal Jazz!"
+  (the minutes come from the clock). Page 2: round portraits of Cary, Morgan and Magnolia, "Relax,
+  let's handle this!", three lines of how to play (my wording, tentative), then "Let's go".
+  - The portraits are head-and-shoulders crops made at build time (`build.py` `CHARACTERS`), tight
+    enough to leave out the people in the background.
+  - The public site serves the same crops; `people.json` already keeps these three.
+- PRODUCT_DESIGN section 22 records Cary's direction for the characters (only this line is decided).
+
+### Tested
+- Engine 31/31. The new test fails if the display goes back to needing an inspect action (I checked
+  by reverting the change).
+- The harness e2e (87 checks) plays the title card (headline, 10 minutes, the three photos load, the
+  bubble), the display on pickup (blank, then the RF pair), "Talk at X32 →" from the drawer for mic 1,
+  the two-mic tabs, both faults to the debrief, and that the page ends clear of the dock.
+- All other CLAUDE.md checks pass, plus `tools/public-site` build and `site.e2e.mjs`.
+- I looked at iPhone 13 viewport screenshots of each state.
+
+### Open (Cary / owner)
+- Spelling: "Usinger" (Cary wrote "USINGERS HAS"). One edit in `content.intro.line` if it's wrong.
+- Cary said they'd attach a photo of the three; I used the existing portraits. A group shot can
+  replace them (`intro.crew` and `CHARACTERS` in `build.py`).
+- Should the title card be skippable after the first time (remembered per browser)?
+- Not republished: the harness Artifact and the public site (Pages deploys from `main`) still show
+  the old layout until this branch is published or merged.
 
 ## Session 2, part 5 (2026-09-29): the bad mic (set aside, a spare covers it)
 

@@ -35,16 +35,22 @@ and principle 4.10), as small as it can be while still being real:
 | `engine.js` | Pure functions over plain JSON state. No DOM, no dependencies, no framework. |
 | `content/vj-battery-in-check.json` | Devices, connections, places, displays, fault, future faults, objective, step list, skip rule, hints. Every value that isn't current room fact is labelled `tentative` or `unknown` next to it. |
 | `test/engine.test.mjs` | `node --test tools/gameplay-slice/test/engine.test.mjs` (Node 18+). |
-| `harness.html`, `build.py` | The throwaway playable page (below). `dist/` is gitignored. |
+| `harness.html`, `build.py` | The throwaway playable page (below); the build also crops the three character portraits for the title card. `dist/` is gitignored. |
 | `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size. |
 
 ## Try it (throwaway harness)
 
 `harness.html` is a deliberately small, throwaway page for *feeling* the loop on the real photos
-(FOH, X32, wireless rack, mic cabinet). Tap into scenes and take a mic from the drawer: all 16 are
-drawn from the content, with windscreen and ring colours. Put batteries in from the charger, switch
-it on (reading its display, optional, shows RF group/channel, battery and mute in a placeholder
-layout), then talk into it at the X32 and put it on the chair left of FOH. After three by hand, use "Check the rest". It reuses the engine unchanged and
+(FOH, X32, wireless rack, mic cabinet). It opens on a title card (`content.intro`: "OH NO!", then
+Cary, Morgan and Magnolia: "Relax, let's handle this!"). Tap into scenes and take a mic from the
+drawer: all 16 are drawn from the content, with windscreen and ring colours. A mic in hand shows its
+display straight away (RF group/channel, battery, mute, in a placeholder layout). Put batteries in
+from the charger, switch it on, then talk into it: away from a meter, "Talk at X32 →" walks you to
+the X32 first. Put it on the chair left of FOH. After three by hand, use "Check the rest".
+
+Phone layout (Cary, 2026-10-01: less scrolling): a sticky clock bar (time to rehearsal, a draining
+bar, "+2s" per action, verified count), the photo with the meters or drawer right under it, and the
+mic(s) in hand in a dock at the bottom (a tab per mic when you carry two). It reuses the engine and
 the hotspots from `docs/scene-graph.json`; it is not a proposal for the real app's UI.
 
 ```bash
