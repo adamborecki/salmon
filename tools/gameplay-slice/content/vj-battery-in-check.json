@@ -4,7 +4,7 @@
  "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), two faults (batteries in the wrong way round on an early mic; an unpaired 'bad mic' later that gets set aside for a spare), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
  "intro": {
   "headline": "OH NO!",
-  "line": "Usinger has only left you {minutes} minutes to set up for Vocal Jazz!",
+  "line": "USingers has only left you {minutes} minutes to set up for Vocal Jazz!",
   "crew": [
    "cary",
    "morgan",
@@ -22,7 +22,7 @@
    "A mic that won't work? Find out why before you fix it. Can't fix it? Set it aside: a spare covers it."
   ],
   "go": "Let's go",
-  "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). 'Usinger' spelling from Cary's message ('USINGERS HAS'), to confirm. {minutes} comes from clock.start/ready_by, {mics} from the mic count."
+  "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). USingers is the university choir that rehearses in the hall right before Vocal Jazz (Cary, 2026-10-01). {minutes} comes from clock.start/ready_by, {mics} from the mic count."
  },
  "clock": {
   "start": "16:50:00",

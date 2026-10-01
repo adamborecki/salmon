@@ -44,7 +44,7 @@ Cary played the battery-in check and asked for five things; all five are done.
   (amber at 30% left, red and pulsing when late). A "+2s" pops on each action, and "N/16 verified"
   sits beside the Hint and Debrief buttons.
 - **A title card** (content `intro`, shown when the page first loads, not on "New scenario"). Page 1:
-  a blinking 4:50 PM and "OH NO! Usinger has only left you **10 minutes** to set up for Vocal Jazz!"
+  a blinking 4:50 PM and "OH NO! USingers has only left you **10 minutes** to set up for Vocal Jazz!"
   (the minutes come from the clock). Page 2: round portraits of Cary, Morgan and Magnolia, "Relax,
   let's handle this!", three lines of how to play (my wording, tentative), then "Let's go".
   - The portraits are head-and-shoulders crops made at build time (`build.py` `CHARACTERS`), tight
@@ -62,7 +62,8 @@ Cary played the battery-in check and asked for five things; all five are done.
 - I looked at iPhone 13 viewport screenshots of each state.
 
 ### Open (Cary / owner)
-- Spelling: "Usinger" (Cary wrote "USINGERS HAS"). One edit in `content.intro.line` if it's wrong.
+- ~~Spelling~~ answered (Cary, 2026-10-01): "USingers", the university choir that rehearses right
+  before Vocal Jazz.
 - Cary said they'd attach a photo of the three; I used the existing portraits. A group shot can
   replace them (`intro.crew` and `CHARACTERS` in `build.py`).
 - Should the title card be skippable after the first time (remembered per browser)?

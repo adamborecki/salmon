@@ -893,10 +893,10 @@ without owner direction.
 Faces are acceptable for the current MVP/reference phase per the existing asset notes, but character integration is a later design decision.
 
 **Direction (Cary, collaborator and one of the three, 2026-10-01):** the battery-in check opens on a
-title card where Cary, Morgan and Magnolia say "Relax, let's handle this!" after "OH NO! Usinger has
+title card where Cary, Morgan and Magnolia say "Relax, let's handle this!" after "OH NO! USingers has
 only left you 10 minutes to set up for Vocal Jazz!". That line is theirs to give; nothing else about
 the characters (personality, role, behaviour in play) is decided. Text lives in the slice content
-(`intro`).
+(`intro`). USingers is the university choir that rehearses in the hall right before Vocal Jazz.
 
 ---
 
