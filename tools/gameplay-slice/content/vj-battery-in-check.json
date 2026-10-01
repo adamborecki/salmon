@@ -2,6 +2,28 @@
  "id": "vj-battery-in-check",
  "title": "Vocal Jazz: battery-in check of the wireless mics at FOH",
  "about": "Gameplay slice v2 (PRODUCT_DESIGN.md sections 45, 46, 94 and principle 4.10): the battery-in check at FOH. One signal chain (handheld -> receiver -> X32 input), two faults (batteries in the wrong way round on an early mic; an unpaired 'bad mic' later that gets set aside for a spare), one objective that completes only on verified evidence, one hint ladder, a visible step list, 'Check the rest' after three mics by hand, and one debrief. Everything marked tentative or unknown below is a placeholder to field-calibrate, not room truth.",
+ "intro": {
+  "headline": "OH NO!",
+  "line": "Usinger has only left you {minutes} minutes to set up for Vocal Jazz!",
+  "crew": [
+   "cary",
+   "morgan",
+   "magnolia"
+  ],
+  "crew_names": {
+   "cary": "Cary",
+   "morgan": "Morgan",
+   "magnolia": "Magnolia"
+  },
+  "crew_says": "Relax, let's handle this!",
+  "brief": [
+   "{mics} wireless mics, one routine for each: take it from the drawer, batteries in from the charger, switch it on, talk into it at the X32 and watch its meter, then put it on the chair.",
+   "Do three by hand. After that, \"Check the rest\" runs the routine for you and stops on anything that sounds wrong.",
+   "A mic that won't work? Find out why before you fix it. Can't fix it? Set it aside: a spare covers it."
+  ],
+  "go": "Let's go",
+  "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). 'Usinger' spelling from Cary's message ('USINGERS HAS'), to confirm. {minutes} comes from clock.start/ready_by, {mics} from the mic count."
+ },
  "clock": {
   "start": "16:50:00",
   "ready_by": "17:00:00",
@@ -758,28 +780,34 @@
   "steps": [
    {
     "id": "take",
-    "text": "Take the right mic from the drawer: windscreen colour, then ring colour."
+    "text": "Take the right mic from the drawer: windscreen colour, then ring colour.",
+    "short": "Take"
    },
    {
     "id": "batteries",
-    "text": "Put two batteries in from the charger, the right way round."
+    "text": "Put two batteries in from the charger, the right way round.",
+    "short": "Batteries"
    },
    {
     "id": "power",
-    "text": "Switch it on (press and hold)."
+    "text": "Switch it on (press and hold).",
+    "short": "Switch on"
    },
    {
     "id": "talk",
-    "text": "At the X32, talk into it: its channel's meter must move."
+    "text": "At the X32, talk into it: its channel's meter must move.",
+    "short": "Talk at X32"
    },
    {
     "id": "chair",
-    "text": "Put it on the chair left of FOH."
+    "text": "Put it on the chair left of FOH.",
+    "short": "Chair"
    }
   ],
-  "optional": "Reading the mic's display (group/channel, battery, mute) isn't needed when everything works; it's how you troubleshoot one that doesn't.",
+  "optional": "The mic's display (group/channel, battery, mute) shows while it's in your hand. You don't need it when everything works; it's how you troubleshoot one that doesn't.",
   "status": "owner, 2026-09-28: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion).",
-  "bad_mic": "Can't make it work, and it isn't the batteries? Set it aside as a bad mic: a spare covers it."
+  "bad_mic": "Can't make it work, and it isn't the batteries? Set it aside as a bad mic: a spare covers it.",
+  "display_status": "Cary (collaborator), 2026-10-01: show the display as soon as the mic is in hand, instead of a separate 'read the display' action."
  },
  "skip": {
   "label": "Check the rest",

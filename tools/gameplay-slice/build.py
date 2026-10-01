@@ -5,7 +5,8 @@ Builds the gameplay-slice harness into tools/gameplay-slice/dist/:
                 (no <!doctype>/<head>: the Artifact publisher wraps it, like the scene-graph editor)
   - local.html  the same page with a doctype skeleton, for trying it locally / Playwright
   - engine.js   copied unchanged; the page imports it as a module
-  - p/*.jpg     1280x960 previews of the slice's scenes (same size as the editor's p/ files)
+  - p/*.jpg     1280x960 previews of the slice's scenes (same size as the editor's p/ files), plus
+                320px crops of the three character portraits for the title card
 
 Usage (from repo root):
   python3 tools/gameplay-slice/build.py
@@ -21,6 +22,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 DIST_DEFAULT = os.path.join(HERE, 'dist')
 SCENES = ['foh-wide', 'x32-top', 'foh-rack', 'foh-rack-closeup', 'foh-right-side', 'foh-mic-drawer']
+# the title card's portraits: head-and-shoulders crops of photos-working/characters/*.jpg, as
+# [x0, y0, x1, y1] in pixels of the 1800x2400 originals; tight enough to leave out the people
+# in the background (another person at the edge of cary.jpg, students on stage behind morgan.jpg)
+CHARACTERS = {'cary': (480, 220, 1440, 1180), 'morgan': (540, 564, 1308, 1332), 'magnolia': (444, 624, 1284, 1464)}
 
 
 def main():
@@ -59,6 +64,9 @@ def main():
             src = os.path.join(args.photos_overlay, graph['nodes'][k]['file'])
         im = Image.open(src)
         im.thumbnail((1280, 960)); im.save(os.path.join(out, 'p', k + '.jpg'), quality=78)
+    for name, box in CHARACTERS.items():
+        im = Image.open(os.path.join(ROOT, 'photos-working', 'characters', name + '.jpg')).convert('RGB').crop(box)
+        im.thumbnail((320, 320)); im.save(os.path.join(out, 'p', name + '.jpg'), quality=82)
     print(f'Built {out}/index.html: {len(sub["edges"])} slice links, {len(SCENES)} scenes.')
 
 

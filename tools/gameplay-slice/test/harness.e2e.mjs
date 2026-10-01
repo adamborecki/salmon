@@ -1,5 +1,6 @@
 // End-to-end: play the battery-in check on a phone-sized touch screen by tapping the photo and buttons
-// like a player would: three mics by hand (one of them the muted one), then "Check the rest".
+// like a player would: the title card, three mics by hand (one with reversed batteries), then "Check the rest",
+// which stops on the unpaired mic.
 // Run from the repo root after `python3 tools/gameplay-slice/build.py`:
 //   node tools/gameplay-slice/test/harness.e2e.mjs            (SHOTS=<dir> saves screenshots)
 // Needs Playwright with Chromium (local or global install). Serves dist/ itself.
@@ -34,7 +35,21 @@ const tap = async sel => { await page.tap(sel); await page.waitForTimeout(150); 
 const where = () => page.textContent('#where');
 const chip = ch => page.$eval(`.chips .chip[data-ch="${ch}"]`, c => c.dataset.s);
 const inSlot = (id, act) => `.handslot[data-id="${id}"] [data-act="${act}"]`;
+// with two mics in hand the dock shows one at a time: pick its tab first
+const tapIn = async (id, act) => { if (await page.$(`.htab[data-id="${id}"]`)) await tap(`.htab[data-id="${id}"]`); await tap(inSlot(id, act)); };
 const stepsDone = () => page.$$eval('#steps li', ls => ls.filter(l => l.classList.contains('done')).map(l => l.dataset.step));
+// the title card: the bad news, then Cary, Morgan and Magnolia
+ok(!(await page.$eval('#intro', e => e.hidden)), 'title card opens on arrival');
+ok(/OH NO!/.test(await page.textContent('#intro1')) && /10 minutes/.test(await page.textContent('#intro1 em')), 'title card: OH NO, 10 minutes');
+await shot('0-title');
+await tap('#introNext');
+await page.waitForFunction(() => [...document.querySelectorAll('.crew img')].every(i => i.complete && i.naturalWidth > 0));
+ok((await page.$$eval('.crew figcaption', f => f.map(x => x.textContent))).join() === 'Cary,Morgan,Magnolia', 'title card: the crew, with their photos');
+ok(/Relax, let's handle this!/.test(await page.textContent('.bubble')), `title card: "Relax, let's handle this!"`);
+await shot('0-crew');
+await tap('#introGo');
+ok(await page.$eval('#intro', e => e.hidden), `title card closes on "Let's go"`);
+ok(/^10:00 to rehearsal/.test(await page.textContent('#due')), 'clock bar: 10:00 to rehearsal');
 const fault = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-\d\d)/)[1]);
 const faultCh = +fault.slice(-2);
 const unp = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-\d\d) \(a handheld that is not paired/)[1]);
@@ -57,28 +72,34 @@ for (let ch = 1; ch <= 3; ch++) {
   if (ch === 1) await shot('2-drawer');
   await tap(`.slot[data-id="${id}"]`);
   ok((await stepsDone()).join() === 'take', `CH ${ch}: took it`);
-  await tap(inSlot(id, 'batteries'));
+  ok((await page.$eval(`.handslot[data-id="${id}"] .lcdbox svg`, s => s.getAttribute('aria-label'))) === 'Display: blank', `CH ${ch}: its display shows as soon as it is in hand (blank: no batteries)`);
+  await tapIn(id, 'batteries');
   ok((await stepsDone()).join() === 'take,batteries', `CH ${ch}: batteries in`);
-  await tap(inSlot(id, 'hold'));
+  await tapIn(id, 'hold');
   if (ch === faultCh) {
     ok(/does not switch on/.test(await page.textContent('#toast')), `CH ${ch}: it does not switch on (NOTICE)`);
     ok((await stepsDone()).join() === 'take,batteries', `CH ${ch}: not on`);
     await shot('3-fault');
-    await tap(inSlot(id, 'checkbat'));
+    await tapIn(id, 'checkbat');
     ok(/wrong way round/.test(await page.textContent('#toast')), `CH ${ch}: the batteries are the wrong way round (TRACE)`);
-    await tap(inSlot(id, 'reseat')); await tap(inSlot(id, 'hold'));                             // ACT
+    await tapIn(id, 'reseat'); await tapIn(id, 'hold');                             // ACT
   }
   ok((await stepsDone()).join() === 'take,batteries,power', `CH ${ch}: switched on`);
-  await tap(inSlot(id, 'read'));
-  const lcd = await page.$eval('.lcdbox svg', s => s.getAttribute('aria-label'));
-  ok(/group [1-6], channel [1-6]/.test(lcd) && !lcd.includes('muted'), `CH ${ch}: display reads "${lcd}"`);
-  await tapBack(); await tapBack();
-  await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
-  await tap(`.talkHere[data-id="${id}"]`);                                                    // VERIFY
+  const lcd = await page.$eval(`.handslot[data-id="${id}"] .lcdbox svg`, s => s.getAttribute('aria-label'));
+  ok(/group [1-6], channel [1-6]/.test(lcd) && !lcd.includes('muted'), `CH ${ch}: display reads "${lcd}" with no extra tap`);
+  if (ch === 1) {                                                                             // VERIFY from the drawer: it walks you to the X32
+    ok(/Talk at X32/.test(await page.textContent(inSlot(id, 'talk'))), `CH ${ch}: away from a meter, the talk button says it goes to the X32`);
+    await tapIn(id, 'talk'); await page.waitForTimeout(250);
+    ok((await where()) === 'X32', `CH ${ch}: talking from the drawer took the mic to the X32`);
+  } else {
+    await tapBack(); await tapBack();
+    await tapHot('X32'); ok((await where()) === 'X32', `CH ${ch}: at the X32 with the mic`);
+    await tapIn(id, 'talk');                                                            // VERIFY
+  }
   ok((await chip(ch)) === 'verified', `CH ${ch}: verified after talking at the X32`);
   ok(await page.$eval(`.strip[data-point="foh-x32:in:${ch}"] i`, i => i.getAnimations().length > 0), `CH ${ch}: its X32 meter animates`);
   ok((await stepsDone()).join() === 'take,batteries,power,talk', `CH ${ch}: steps 1-4 ticked`);
-  await tap(inSlot(id, 'chair'));
+  await tapIn(id, 'chair');
   ok(await page.$(`#chair button[data-id="${id}"][data-s="verified"]`) !== null, `CH ${ch}: on the chair left of FOH, verified`);
   await tapBack(); ok((await where()) === 'FOH', `CH ${ch}: back at FOH`);
 }
@@ -94,7 +115,7 @@ ok((await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))).join() =
 ok(await page.$eval('#skipBtn', b => b.disabled), 'Check the rest waits while your hands are full');
 await tap('.slot[data-id="handheld-06"]');
 ok(/hands are full/.test(await page.textContent('#toast')), 'a third mic is refused');
-await tap(inSlot('handheld-04', 'drawer')); await tap(inSlot('handheld-05', 'drawer'));
+await tapIn('handheld-04', 'drawer'); await tapIn('handheld-05', 'drawer');
 await tapBack(); await tapBack();
 ok(!(await page.$eval('#skipBtn', b => b.disabled)), 'Check the rest is offered after 3 by hand');
 await shot('4-skip-offered');
@@ -104,16 +125,15 @@ await page.waitForTimeout(600);
 ok(/stopped at Mic \d+/.test(await page.textContent('#toast')), 'Check the rest stops at the unpaired mic: ' + (await page.textContent('#toast')));
 ok((await where()) === 'X32' && (await chip(unpCh)) === 'no-signal-seen', `CH ${unpCh}: no signal at the X32, in hand`);
 await shot('5-skip-stopped');
-await tap(inSlot(unp, 'checkbat'));
+await tapIn(unp, 'checkbat');
 ok(/right way round/.test(await page.textContent('#toast')), `CH ${unpCh}: batteries are fine`);
-await tap(inSlot(unp, 'read'));
 const disp = (await page.$eval(`.handslot[data-id="${unp}"] .lcdbox svg`, s => s.getAttribute('aria-label'))).match(/group (\d), channel (\d)/).slice(1).join('·');
 await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
-await tap(`.talkHere[data-id="${unp}"]`);
+await tapIn(unp, 'talk');
 const slot = await page.$eval(`.strip[data-point="ptu6000-rx:${unpCh}"] .rf`, x => x.textContent);
 ok(disp !== slot, `CH ${unpCh}: its display says ${disp}, its receiver slot listens on ${slot} (TRACE)`);
 ok(await page.$eval(`.strip[data-point="ptu6000-rx:${unpCh}"]`, s => s.classList.contains('dead')), `CH ${unpCh}: dead at its receiver`);
-for (const id of await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))) await tap(inSlot(id, id === unp ? 'bad' : 'chair'));   // ACT (a trip partner goes on the chair unchecked)
+for (const id of await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))) await tapIn(id, id === unp ? 'bad' : 'chair');   // ACT (a trip partner goes on the chair unchecked)
 ok((await chip(unpCh)) === 'set-aside', `CH ${unpCh}: set aside as a bad mic`);
 ok(await page.$(`#chair button[data-id="${unp}"][data-s="set-aside"]`) !== null, `CH ${unpCh}: listed under Set aside`);
 await tapBack(); await tapBack();
@@ -128,6 +148,7 @@ for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(line
 ok(lines.some(l => /a spare covers it/.test(l)), 'debrief: a spare covers the bad mic');
 ok(lines.some(l => /3 mics checked by hand, 12 by Check the rest \(it stopped at Mic \d+/.test(l)), 'debrief: 3 by hand, 12 by Check the rest, one stop');
 await shot('6-debrief');
+ok(await page.evaluate(() => parseFloat(document.body.style.paddingBottom) >= document.querySelector('#dock').offsetHeight), 'the page ends clear of the hands dock');
 ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'no sideways scroll at phone width');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
 await browser.close(); server.close();
