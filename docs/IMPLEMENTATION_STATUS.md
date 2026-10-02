@@ -19,6 +19,72 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 3 (2026-10-02, Cary): the line check
+
+Built from Cary's answers (recorded in PRODUCT_DESIGN section 45 and `content/vj-line-check.json`).
+
+### What changed
+- **New: `line-engine.js` + `content/vj-line-check.json`**, the same style as the battery-in engine
+  (pure, seeded, data-driven faults, hints, debrief).
+  - The player is the A1 at the X32. They can't touch the mics, only ask the singer: press and hold,
+    tap, sing out, point it away, read the display, can you hear yourself?
+  - They also set each channel's **Bus 1 send** (the wedges).
+  - A singer counts as checked only when, newer than any change, the X32 meter is healthy with no
+    ring AND they say they hear themselves with no ring. A send change re-opens only the wedge
+    check; a mic change re-opens both.
+- **Faults (two per run, seeded, never the first singer; tentative):**
+  - switched off: no RF;
+  - muted: RF but no audio;
+  - too quiet: low meter;
+  - pointed at the wedge: rings once its send is at -10 dB or up.
+
+  Trace by the display (asked), the receivers' RF/audio, or pulling the send down. The muted hints
+  are section 46's ladder adapted to "ask the singer".
+- **Wrong instructions bite:** "press and hold" on a working mic switches it off. The debrief lists
+  such instructions and any sends left too low.
+- **"Go down the line"** after 3 by hand (principle 4.10), same game time, stops at the first problem.
+- **Harness:**
+  - The battery-in debrief offers "On to the line check →". The clock carries on, and a spare stands
+    in for each bad mic.
+  - Line check seed = `LC-` + the battery seed's digits. `#LC-12345` links start it directly;
+    "Jump to the line check" is in the instructor view.
+  - Line-check layout: the meters and a Bus 1 wedge strip (it flashes red on a ring) sit above the
+    photo, with a singer card in the dock (‹ › or tap a chip to pick a singer). The mentor greets you
+    and gives the hints.
+  - The public site build now copies `line-engine.js` too.
+- CLAUDE.md's check list includes `line.test.mjs`.
+
+### Tested
+- `line.test.mjs` 15/15, including a no-soft-lock property test (120 random 60-action runs recover).
+  I broke 6 rules on purpose and a test caught each one:
+  - hold never switches off;
+  - the send doesn't matter for feedback;
+  - the wedge check is skipped;
+  - a send change doesn't re-open the wedge check;
+  - the skip ignores a ring until later (the test was tightened to catch this);
+  - a power cycle keeps the mute.
+- Harness e2e 133 checks:
+  - after the battery-in check, the line check from the debrief: spare 14 stands in for bad mic 10,
+    the clock carries on, Morgan explains it;
+  - LC-48217 (too quiet, pointed at the wedge: the wedges flash; send down stops the ring);
+  - LC-20017 by direct link (muted met by hand, switched off met by the skip; the receivers show RF
+    on the muted mic and none on the switched-off one);
+  - both debriefs score 4/4 per fault; no sideways scroll.
+- Engine 31/31, the editor suites, the public site build + `site.e2e.mjs`. Phone screenshots reviewed.
+
+### Open (Cary / owner)
+- **Tentative values to confirm:**
+  - Bus 1 send steps (off, -20, -10, -5, 0) and the -10 dB start;
+  - "hears themselves from -10";
+  - "feeds back from -10 when pointed at a wedge";
+  - two faults per run;
+  - a direct link starting at 4:56.
+- Does the A1 run the line check alone, or does the A2 relay from the stage? (Now the A1 talks to
+  singers directly.)
+- Do the wedges get a separate check of their own (e.g. a talkback mic or playback through Bus 1,
+  section 43's "Monitor 1" step) before the singers arrive?
+- Should mains be part of the line check?
+
 ## Session 3, part 2 (2026-10-02, Cary): mentors, bad mics in the drawer, room answers
 
 ### Cary's answers (recorded in content)

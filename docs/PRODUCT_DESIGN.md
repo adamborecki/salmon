@@ -1613,6 +1613,18 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
   replace a dead one. **Carrying:** two mics in hand is fine. **Timing:** make each check faster for now;
   real timing gets adjusted later.
 
+**Line check, from Cary (collaborator, 2026-10-02):**
+
+- It happens after all the mics are ready. The singers talk into their own mics on the main Salmon
+  stage, out past the mixer; the A1 is behind the mixer (the X32).
+- It goes down the line one mic at a time, starting with black / red, making sure each mic works.
+- What usually goes wrong: someone on stage switches off a mic that was already on, mutes it, speaks
+  too quietly, or points it at the monitors and causes feedback.
+- The wedges are part of the line check: they are fed from X32 Bus 1, and each channel's send on
+  fader to Bus 1 sets how loud it is in the wedges.
+- Also (2026-10-02): bad mics go back in the drawer; 32 charged batteries is right; spare batteries
+  are in a bin near the FOH computer.
+
 **Owner answers, round 4 (2026-09-28):**
 
 - **The battery-in procedure, per mic:** grab the right mic (windscreen colour, then ring colour); put

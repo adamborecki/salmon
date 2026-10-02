@@ -36,7 +36,9 @@ and principle 4.10), as small as it can be while still being real:
 | `content/vj-battery-in-check.json` | Devices, connections, places, displays, fault, future faults, objective, step list, skip rule, hints. Every value that isn't current room fact is labelled `tentative` or `unknown` next to it. |
 | `test/engine.test.mjs` | `node --test tools/gameplay-slice/test/engine.test.mjs` (Node 18+). |
 | `harness.html`, `build.py` | The throwaway playable page (below); the build also crops the three character portraits for the title card. `dist/` is gitignored. |
-| `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size. |
+| `line-engine.js`, `content/vj-line-check.json` | Part 2, the line check (below): the same style of engine and content; the mics' labels and colours come from the battery-in content. |
+| `test/line.test.mjs` | `node --test tools/gameplay-slice/test/line.test.mjs`: the line check's rules. |
+| `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size: the title card, the battery-in check, then the line check (and a direct `#LC-` link). |
 
 ## Try it (throwaway harness)
 
@@ -57,6 +59,7 @@ the hotspots from `docs/scene-graph.json`; it is not a proposal for the real app
 ```bash
 python3 tools/gameplay-slice/build.py
 node --test tools/gameplay-slice/test/engine.test.mjs     # engine rules
+node --test tools/gameplay-slice/test/line.test.mjs       # line check rules
 node tools/gameplay-slice/test/harness.e2e.mjs            # full playthrough on a touch phone (Playwright)
 ```
 
@@ -109,3 +112,30 @@ scenario).
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
   slash, fine with the owner for now; `"MUTE"` is also drawable) and per-action game seconds. The
   step list is the owner's own procedure (2026-09-28).
+
+## Part 2: the line check (Cary, 2026-10-02)
+
+After the battery-in check, the debrief offers **"On to the line check →"** (or open a `#LC-12345`
+link, or "Jump to the line check" in the instructor view). The mics are now in the singers' hands on
+the stage past the mixer, and you are the A1 at the X32. You can't touch a mic; you can only ask the
+singer. Down the line, black / red first, for each singer:
+
+1. **Say something:** watch their channel on the X32 (a healthy meter, no ring).
+2. **Hear yourself?** They answer from the wedges, which are fed from **Bus 1**; each channel's
+   send on fader (the − / + in the dock) sets how loud they are in the wedges.
+
+The clock carries on from the battery-in check, and a spare (14-16) stands in for any mic set aside
+as bad. Two of Cary's four faults per run (seeded, never the first singer):
+
+| Fault | What you see | Trace | Fix (ask the singer) |
+|---|---|---|---|
+| switched off | no signal at the X32 | "Read display?" says blank; no RF at its receiver | press and hold the button |
+| muted | no signal at the X32 | the display shows mute; RF but no audio at its receiver | tap the button |
+| too quiet | the meter barely moves | the receiver is low too, or the display looks normal | sing out |
+| pointed at the wedge | a ring from the wedges (with its send up) | pull its Bus 1 send down: the ring stops | point it away, then send back up |
+
+The wrong instruction makes things worse: "press and hold" switches a working mic off. "Go down the
+line" (after 3 by hand) does the same routine and stops at the first wrong meter, ring, or singer
+who can't hear themselves. The debrief scores NOTICE / TRACE / ACT / VERIFY per fault, plus
+instructions that changed a mic that didn't need it and sends left too low. The send steps, the
+-10 dB start and when it feeds back are game simplifications, labelled tentative in the content.
