@@ -1,0 +1,284 @@
+{
+ "id": "vj-line-check",
+ "title": "Vocal Jazz: line check",
+ "about": "The official line check (PRODUCT_DESIGN sections 45 and 43's Monitor 1): after the battery-in check, the mics are in the singers' hands on the stage past the mixer. The A1, behind the X32, goes down the line one mic at a time, starting with black / red; each singer says something, the A1 watches that channel's meter, then checks the singer can hear themselves in the wedges (Bus 1). The mic devices (labels, colours, channels) come from vj-battery-in-check.json.",
+ "status": "Cary (collaborator), 2026-10-02: singers talk into their own mics on the main Salmon stage, out past the mixer; the A1 is behind the mixer; it goes down the line one at a time starting with black / red; what usually goes wrong: someone turns off a mic that was on, mutes it, speaks too quietly, or points it at the monitors and causes feedback; the wedges are part of the line check: they are fed from X32 Bus 1, and each channel's send on fader to Bus 1 sets how loud it is in the wedges.",
+ "mics_from": "vj-battery-in-check",
+ "clock": {
+  "start": "16:50:00",
+  "ready_by": "17:00:00",
+  "call_s": 3,
+  "ask_s": 3,
+  "send_s": 1,
+  "move_s": 2,
+  "default_offset_s": 360,
+  "status": "tentative: the same 4:50 -> 5:00 story as the battery-in check, continued; when you come from the battery-in check the clock carries on from there. A direct start (#LC- link) begins at 4:56 (default_offset_s, a placeholder). Per-action seconds are placeholders."
+ },
+ "setup": {
+  "singers": 13,
+  "order": "channel",
+  "status": "Cary, 2026-10-02: down the line in colour order, black / red first. 13 musicians (setup.mic_roles in the battery-in content); a spare stands in for any mic set aside as bad in the battery-in check."
+ },
+ "scenes": {
+  "x32": "x32-top",
+  "receivers": "foh-rack-closeup",
+  "stage_view": "foh-wide",
+  "status": "the A1 works from the X32; the receivers are in the wireless rack under the desk; the stage is seen from FOH"
+ },
+ "singer": {
+  "start": {
+   "power": "on",
+   "muted": false,
+   "level": "normal",
+   "aim": "away"
+  },
+  "mute_survives_power_cycle": false,
+  "status": "every mic arrives on stage switched on, unmuted (it passed the battery-in check); the singer's voice level and where the mic points are game state, not measurements"
+ },
+ "bus1": {
+  "label": "Bus 1 (Monitor 1: the wedges)",
+  "steps_db": [
+   null,
+   -20,
+   -10,
+   -5,
+   0
+  ],
+  "start_db": -10,
+  "hear_at_db": -10,
+  "feedback_at_db": -10,
+  "status": "Cary, 2026-10-02: wedges are fed from Bus 1; each channel's send on fader sets its level in the wedges. Step values and the -10 dB start are tentative (PRODUCT_DESIGN sections 47 and 89: sends roughly -5 to -10 dB); null is off (-inf). 'Hears themselves' from -10 dB and 'feeds back when the mic points at a wedge' from -10 dB are game simplifications, not measurements."
+ },
+ "instructions": {
+  "hold": {
+   "label": "Press and hold the button",
+   "say": "Press and hold the button on your mic.",
+   "short": "Hold button"
+  },
+  "tap": {
+   "label": "Tap the button",
+   "say": "Tap the button on your mic.",
+   "short": "Tap button"
+  },
+  "louder": {
+   "label": "Sing out",
+   "say": "Can you sing out, like you will in rehearsal?",
+   "short": "Sing out"
+  },
+  "aim": {
+   "label": "Point it away from the wedge",
+   "say": "Point your mic away from the wedge, toward your mouth.",
+   "short": "Point away"
+  },
+  "check": {
+   "label": "What does its display say?",
+   "say": "What does the display on your mic say?",
+   "short": "Read display?"
+  },
+  "hear": {
+   "label": "Hear yourself?",
+   "say": "Can you hear yourself in the monitor?",
+   "short": "Hear yourself?"
+  },
+  "status": "agent wording, tentative; one button on the handheld: a tap mutes or unmutes, a press and hold switches it on or off (same as the battery-in check)"
+ },
+ "faults_per_run": 2,
+ "fault_channels": [
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13
+ ],
+ "faults_status": "tentative: two of the four per run, on different singers, never the first in line (so the first one teaches the routine), chosen by seed",
+ "faults": [
+  {
+   "id": "switched-off",
+   "label": "A singer switched their mic off",
+   "set": {
+    "power": "off"
+   },
+   "fix": "ask them to press and hold the button to switch it back on",
+   "fix_by": "hold",
+   "trace_by": [
+    "check",
+    "rx"
+   ],
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "Nothing at the X32 for that mic. What has to be true at the transmitter before anything is sent at all?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Ask the singer what the mic's display shows, or look at its receiver: is any RF arriving?"
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "It's switched off. Ask them to press and hold the button, then check it again."
+    }
+   ],
+   "debrief": {
+    "failed": "{mic} had been switched off on stage, so nothing was transmitted.",
+    "act": "you asked the singer to press and hold the button: {mic} came back on.",
+    "still": "{mic} is still switched off.",
+    "concepts": "a switched-off transmitter sends no RF at all (its receiver shows nothing)"
+   }
+  },
+  {
+   "id": "muted",
+   "label": "A singer muted their mic",
+   "set": {
+    "muted": true
+   },
+   "fix": "ask them to tap the button to unmute it",
+   "fix_by": "tap",
+   "trace_by": [
+    "check",
+    "rx"
+   ],
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "No signal is reaching the receiver. Where could the problem be upstream?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Inspect the handheld transmitter: ask the singer what its display shows."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The transmitter is muted. Ask them to tap the button, then verify signal."
+    }
+   ],
+   "hints_status": "PRODUCT_DESIGN section 46's ladder, adapted: on stage the A1 can't touch the mic, so 'inspect' and 'unmute' go through the singer",
+   "debrief": {
+    "failed": "{mic} was on but muted: the receiver got RF but no audio.",
+    "act": "you asked the singer to tap the button: {mic} unmuted.",
+    "still": "{mic} is still muted.",
+    "concepts": "on is not the same as unmuted: a muted transmitter still sends RF, but no audio"
+   }
+  },
+  {
+   "id": "too-quiet",
+   "label": "A singer spoke too quietly",
+   "set": {
+    "level": "quiet"
+   },
+   "fix": "ask them to sing out at rehearsal level",
+   "fix_by": "louder",
+   "trace_by": [
+    "rx",
+    "check"
+   ],
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "The meter moves, but only a little. Is the problem in the system, or in what's going into the mic?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Look at its receiver while they talk, or ask about the display: if everything upstream looks normal, it's the source."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "They're barely speaking. Ask them to sing out like they will in rehearsal, then check the meter again."
+    }
+   ],
+   "debrief": {
+    "failed": "{mic}'s singer spoke too quietly, so the meter barely moved.",
+    "act": "you asked them to sing out at rehearsal level.",
+    "still": "{mic}'s singer is still too quiet to judge the channel.",
+    "concepts": "a line check is only as good as the sound going in: ask for rehearsal level"
+   }
+  },
+  {
+   "id": "aimed-at-wedge",
+   "label": "A singer pointed their mic at the wedge",
+   "set": {
+    "aim": "wedge"
+   },
+   "fix": "ask them to point the mic away from the wedge",
+   "fix_by": "aim",
+   "trace_by": [
+    "send-down"
+   ],
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "That ring is feedback: a wedge is feeding back into a mic. Which mic, and how is it getting into the wedges?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Pull that channel's Bus 1 send down: if the ring stops, it's that mic in the wedges."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "They're pointing the mic at the wedge. Ask them to point it away, bring the send back up, and check they can hear themselves."
+    }
+   ],
+   "debrief": {
+    "failed": "{mic} was pointed at a wedge, so with its Bus 1 send up it fed back.",
+    "act": "you asked the singer to point it away from the wedge.",
+    "still": "{mic} is still pointed at the wedge.",
+    "concepts": "feedback is a loop (mic -> Bus 1 -> wedge -> mic): break it at the mic's aim, not by leaving the singer without a monitor"
+   }
+  }
+ ],
+ "objective": {
+  "label": "Line check: every singer",
+  "goal": "Down the line, black / red first: each singer says something and their channel's X32 meter moves properly, then they can hear themselves in the wedges with no feedback.",
+  "status": "the meter at the X32 input is the input check; the singer hearing themselves (Bus 1 send up, no ring) is the Monitor 1 check"
+ },
+ "procedure": {
+  "steps": [
+   {
+    "id": "call",
+    "short": "Say something",
+    "text": "Ask the next singer in line to say something."
+   },
+   {
+    "id": "meter",
+    "short": "Meter",
+    "text": "Watch their channel on the X32: a healthy meter, no ring."
+   },
+   {
+    "id": "monitor",
+    "short": "Monitor",
+    "text": "Ask if they can hear themselves in the wedge (Bus 1)."
+   }
+  ],
+  "status": "Cary, 2026-10-02 (the order and the wedge check); step wording is the agent's"
+ },
+ "skip": {
+  "label": "Go down the line",
+  "after_by_hand": 3,
+  "stop_if": [
+   "no-signal",
+   "low",
+   "feedback",
+   "monitor"
+  ],
+  "does": "for the remaining singers in order, the same routine as by hand (say something at the X32, then 'can you hear yourself?'), costing the same game time; it stops at the first singer whose meter is wrong, rings, or who can't hear themselves",
+  "status": "PRODUCT_DESIGN 4.10, as in the battery-in check"
+ }
+}
