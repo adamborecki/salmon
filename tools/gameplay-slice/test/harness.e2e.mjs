@@ -47,8 +47,13 @@ await page.waitForFunction(() => [...document.querySelectorAll('.crew img')].eve
 ok((await page.$$eval('.crew figcaption', f => f.map(x => x.textContent))).join() === 'Cary,Morgan,Magnolia', 'title card: the crew, with their photos');
 ok(/Relax, let's handle this!/.test(await page.textContent('.bubble')), `title card: "Relax, let's handle this!"`);
 await shot('0-crew');
+ok(await page.$eval('#introGo', b => b.disabled), `"Let's go" waits for a mentor`);
+await tap('[data-mentor="morgan"]');
+ok((await page.$$eval('[data-mentor]', b => b.map(x => x.getAttribute('aria-pressed')))).join() === 'false,true,false', 'picked Morgan as mentor');
 await tap('#introGo');
 ok(await page.$eval('#intro', e => e.hidden), `title card closes on "Let's go"`);
+ok(/Morgan/.test(await page.textContent('#mentor')) && /Rehearsal at 5:00/.test(await page.textContent('#mentor')), 'Morgan greets you in a speech bubble');
+ok(/Ask 3/.test(await page.textContent('#hintBtn')) && (await page.$('#hintBtn img')) !== null, "the hint button is Morgan's face: Ask 3");
 ok(/^10:00 to rehearsal/.test(await page.textContent('#due')), 'clock bar: 10:00 to rehearsal');
 const fault = await page.evaluate(() => document.querySelector('#dbg').textContent.match(/fault: (handheld-\d\d)/)[1]);
 const faultCh = +fault.slice(-2);
@@ -125,6 +130,9 @@ await page.waitForTimeout(600);
 ok(/stopped at Mic \d+/.test(await page.textContent('#toast')), 'Check the rest stops at the unpaired mic: ' + (await page.textContent('#toast')));
 ok((await where()) === 'X32' && (await chip(unpCh)) === 'no-signal-seen', `CH ${unpCh}: no signal at the X32, in hand`);
 await shot('5-skip-stopped');
+await tap('#hintBtn');
+ok(!(await page.$eval('#mentor', m => m.hidden)) && /Morgan/.test(await page.textContent('#mentor')) && /transmitter to its receiver/.test(await page.textContent('#mentor')), 'a hint comes as a speech bubble from Morgan');
+await shot('5b-mentor-hint');
 await tapIn(unp, 'checkbat');
 ok(/right way round/.test(await page.textContent('#toast')), `CH ${unpCh}: batteries are fine`);
 const disp = (await page.$eval(`.handslot[data-id="${unp}"] .lcdbox svg`, s => s.getAttribute('aria-label'))).match(/group (\d), channel (\d)/).slice(1).join('·');
@@ -133,9 +141,13 @@ await tapIn(unp, 'talk');
 const slot = await page.$eval(`.strip[data-point="ptu6000-rx:${unpCh}"] .rf`, x => x.textContent);
 ok(disp !== slot, `CH ${unpCh}: its display says ${disp}, its receiver slot listens on ${slot} (TRACE)`);
 ok(await page.$eval(`.strip[data-point="ptu6000-rx:${unpCh}"]`, s => s.classList.contains('dead')), `CH ${unpCh}: dead at its receiver`);
-for (const id of await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))) await tapIn(id, id === unp ? 'bad' : 'chair');   // ACT (a trip partner goes on the chair unchecked)
-ok((await chip(unpCh)) === 'set-aside', `CH ${unpCh}: set aside as a bad mic`);
-ok(await page.$(`#chair button[data-id="${unp}"][data-s="set-aside"]`) !== null, `CH ${unpCh}: listed under Set aside`);
+for (const id of await page.$$eval('.handslot.full', s => s.map(x => x.dataset.id))) if (id !== unp) await tapIn(id, 'chair');   // a trip partner goes on the chair unchecked
+ok(await page.$(inSlot(unp, 'bad')) === null, `CH ${unpCh}: no "bad mic" button away from the drawer`);
+await tapBack(); await tapBack(); await tapHot('Mic cabinet'); await tapHot('Mic drawer');
+await tapIn(unp, 'bad');                                                                       // ACT: bad mics go back in the drawer (Cary)
+ok((await chip(unpCh)) === 'set-aside', `CH ${unpCh}: back in the drawer as a bad mic`);
+ok(await page.$(`.drawer .slot.bad[data-id="${unp}"]`) !== null, `CH ${unpCh}: shown in the drawer, marked bad`);
+ok(await page.$(`#chair button[data-id="${unp}"][data-s="set-aside"]`) !== null, `CH ${unpCh}: listed under bad mics`);
 await tapBack(); await tapBack();
 await tap('#skipBtn');
 await page.waitForTimeout(1600);

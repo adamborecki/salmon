@@ -56,7 +56,7 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);ou
 .score small{font:500 10px var(--mono);color:#aeb9c4;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
 .bar .btn{white-space:nowrap;background:transparent;border-color:rgba(255,255,255,.35);color:#fff;padding:6px 10px;min-height:34px}
 .bar .btn:hover:not(:disabled){border-color:#fff}
-@media (max-width:380px){.clock{font-size:26px}.bar-in{gap:8px}.bar .btn{padding:6px 8px}}
+@media (max-width:380px){.clock{font-size:26px}.bar-in{gap:8px}.bar .btn{padding:6px 8px}.score small{display:none}}
 
 /* the job: objective chips, the per-mic steps, the skip */
 .obj{display:grid;gap:6px}
@@ -122,6 +122,8 @@ details.tips p{margin:6px 0 0}
 .slot{display:grid;justify-items:center;gap:2px;padding:3px 0 3px;border:1px solid var(--line);border-radius:6px;background:var(--paper);cursor:pointer;min-height:96px}
 .slot svg{width:100%;max-width:26px;height:70px}
 .slot b{font:600 11px var(--cond);background:var(--tape);color:var(--tape-ink);padding:0 3px;border-radius:2px;font-variant-numeric:tabular-nums}
+.slot.bad{position:relative;border-style:dashed;border-color:var(--bad)} .slot.bad svg{opacity:.45}
+.badtag{position:absolute;top:30px;left:50%;transform:translateX(-50%) rotate(-12deg);font:600 10px var(--mono);text-transform:uppercase;letter-spacing:.04em;background:var(--bad);color:#fff;padding:1px 4px;border-radius:3px}
 .slot.gone{border-style:dashed;background:transparent;cursor:default}
 .slot.gone small{font:500 9.5px/1.2 var(--mono);color:var(--muted);text-align:center;align-self:center}
 
@@ -176,7 +178,22 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
 .iline{margin:0;font:600 clamp(20px,6vw,27px)/1.25 var(--sans);text-wrap:balance}
 .iline em{font-style:normal;color:var(--bad-hi);white-space:nowrap}
 .crew{display:flex;justify-content:center;gap:clamp(8px,3vw,16px)}
-.crew figure{margin:0;display:grid;gap:6px;justify-items:center}
+.crew figure{margin:0}
+.crew button{display:grid;gap:6px;justify-items:center;background:none;border:0;padding:0;cursor:pointer;color:inherit}
+.crew button[aria-pressed="true"] img{border-color:var(--sig-hi);box-shadow:0 0 0 4px rgba(52,210,123,.35),0 4px 16px rgba(0,0,0,.4)}
+.crew button[aria-pressed="true"] figcaption{color:var(--sig-hi)}
+.crew button[aria-pressed="false"] img{opacity:.55;filter:grayscale(.5)}
+.pickhint{margin:-6px 0 0;font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#aeb9c4}
+.btn.big:disabled{opacity:.5}
+/* the mentor's speech bubble: hints and the greeting, just above the hands dock */
+.mentor{position:fixed;left:12px;right:12px;bottom:calc(var(--dockh,0px) + 10px);z-index:13;max-width:620px;margin:0 auto;display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:end;cursor:pointer;animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}}
+.mentor img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+.mentor .say{position:relative;background:#fff;color:#141a20;border-radius:14px 14px 14px 4px;padding:9px 12px;box-shadow:0 6px 24px rgba(0,0,0,.3);font-size:14px;line-height:1.4}
+.mentor .say b{display:block;font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+.mentor .say small{display:block;font-size:11px;color:#6b7783;margin-top:4px}
+.hintbtn{display:inline-flex;align-items:center;gap:6px}
+.hintbtn img{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,.6)}
 .crew img{width:clamp(84px,26vw,112px);aspect-ratio:1;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 16px rgba(0,0,0,.4);background:#26313b}
 .crew figure:nth-child(2) img{transform:translateY(-8px)}
 .crew figcaption{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#d6dde3}
@@ -185,15 +202,14 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
 .ibrief{margin:0;padding:0;list-style:none;display:grid;gap:8px;text-align:left;font-size:14.5px;color:#d6dde3}
 .ibrief li{padding-left:16px;position:relative} .ibrief li::before{content:"▸";position:absolute;left:0;color:var(--sig-hi)}
 .btn.big{font-size:17px;font-weight:600;padding:10px 28px;min-height:48px;border-radius:24px;background:#fff;color:#141a20;border-color:#fff}
-@media (prefers-reduced-motion:reduce){#photo,.tbar i{transition:none}.oh,.clock.over,.iclock i,.delta.go{animation:none}}
+@media (prefers-reduced-motion:reduce){#photo,.tbar i{transition:none}.oh,.clock.over,.iclock i,.delta.go,.mentor{animation:none}}
 </style>
 
 <header class="bar"><div class="bar-in">
   <div class="clockbox"><div class="clock" id="clock" aria-live="off">4:50:00<small>PM</small></div><div class="left" id="due">Rehearsal 5:00:00 PM</div><div class="tbar" id="tbar"><i id="tfill"></i></div><span class="delta" id="delta"></span></div>
   <span class="sp"></span>
   <div class="score" aria-label="mics verified"><b id="score">0/16</b><small>verified</small></div>
-  <button class="btn" id="hintBtn">Hint</button>
-  <button class="btn" id="debriefBtn">Debrief</button>
+  <button class="btn hintbtn" id="hintBtn">Hint</button>
 </div></header>
 <div class="wrap">
   <div class="col">
@@ -209,7 +225,7 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
     <div class="card" id="panel"></div>
   </div>
   <div class="col">
-    <div class="card"><div class="obj" id="obj"></div><div id="steps"></div></div>
+    <div class="card"><div class="obj" id="obj"></div><div id="steps"></div><div class="row"><button class="btn sm" id="debriefBtn">Debrief so far</button></div></div>
     <div class="card" id="chair"></div>
     <div class="card">
       <details id="logBox"><summary>Activity</summary><ol class="log" id="log"></ol></details>
@@ -217,6 +233,7 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
     </div>
   </div>
 </div>
+<div class="mentor" id="mentor" role="status" hidden></div>
 <div class="dock" id="dock"><div class="dock-in" id="hand"></div></div>
 <div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, which channels are the spares, the chair, the display layout and mute glyph) are placeholders, not room facts.</p></div></div>
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introHead" hidden>
@@ -247,7 +264,10 @@ const WINDOW = toSec(content.clock.ready_by) - toSec(content.clock.start);   // 
 const X32 = Object.keys(content.displays).find(k => content.displays[k].device === 'foh-x32');
 const mmss = s => `${Math.floor(s / 60)}:${two(Math.floor(s % 60))}`;
 
-let game, trail = [], toastT = null, lastT = 0, activeHand = 0;
+let game, trail = [], toastT = null, lastT = 0, activeHand = 0, mentorT = null;
+// the player's mentor (one of content.intro.crew), remembered in this browser as a convenience
+let mentor = null; try { mentor = localStorage.getItem('salmon-mentor'); } catch (e) {}
+if (!content.intro.crew.includes(mentor)) mentor = null;
 const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
 function boot(seed, intro = false) {
   game = eng.start(seed); trail = []; lastT = 0; activeHand = 0;
@@ -255,7 +275,15 @@ function boot(seed, intro = false) {
   render(true);
   if (intro) showIntro(); else greet();
 }
-const greet = () => say('4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.', 'hint', 6500);
+const GREETING = '4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.';
+const greet = () => mentor ? mentorSays(GREETING, 'Tap me for a hint whenever you get stuck.') : say(GREETING, 'hint', 6500);
+// a speech bubble from the mentor, just above the hands; tap it to close
+function mentorSays(text, foot = '') {
+  const I = content.intro, m = $('#mentor');
+  m.innerHTML = `<img src="p/${mentor}.jpg" alt=""><div class="say"><b>${esc(I.crew_names[mentor])}</b>${esc(text)}${foot ? `<small>${esc(foot)}</small>` : ''}</div>`;
+  m.hidden = false; m.style.animation = 'none'; void m.offsetWidth; m.style.animation = '';
+  clearTimeout(mentorT); mentorT = setTimeout(() => { m.hidden = true; }, Math.max(6000, text.length * 70));
+}
 
 // the title card (content.intro): the bad news, then the crew
 function showIntro() {
@@ -264,18 +292,25 @@ function showIntro() {
   const line = fill(I.line).replace(new RegExp(`(${mins} minutes)`), '<em>$1</em>');
   const start = content.clock.start.split(':').map(Number), clk = `${start[0] % 12 || 12}<i>:</i>${two(start[1])} ${start[0] < 12 ? 'AM' : 'PM'}`;
   $('#intro1').innerHTML = `<div class="iclock">${clk}</div><h1 class="oh" id="introHead">${esc(I.headline)}</h1><p class="iline">${line}</p><button class="btn big" id="introNext">Next</button>`;
-  $('#intro2').innerHTML = `<div class="crew">${I.crew.map(c => `<figure><img src="p/${c}.jpg" alt="${esc(I.crew_names[c])}"><figcaption>${esc(I.crew_names[c])}</figcaption></figure>`).join('')}</div>
-    <div class="bubble">${esc(I.crew_says)}</div><ul class="ibrief">${I.brief.map(b => `<li>${fill(b)}</li>`).join('')}</ul><button class="btn big" id="introGo">${esc(I.go)}</button>`;
+  $('#intro2').innerHTML = `<div class="crew" role="group" aria-label="${esc(I.mentor_prompt)}">${I.crew.map(c => `<figure><button data-mentor="${c}" aria-pressed="${mentor ? c === mentor : 'mixed'}"><img src="p/${c}.jpg" alt=""><figcaption>${esc(I.crew_names[c])}</figcaption></button></figure>`).join('')}</div>
+    <p class="pickhint">${esc(I.mentor_prompt)}</p>
+    <div class="bubble">${esc(I.crew_says)}</div><ul class="ibrief">${I.brief.map(b => `<li>${fill(b)}</li>`).join('')}</ul><button class="btn big" id="introGo" ${mentor ? '' : 'disabled'}>${esc(I.go)}</button>`;
+  $('#intro2').querySelectorAll('[data-mentor]').forEach(b => b.onclick = () => {
+    mentor = b.dataset.mentor; try { localStorage.setItem('salmon-mentor', mentor); } catch (e) {}
+    $('#intro2').querySelectorAll('[data-mentor]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#introGo').disabled = false; renderHintBtn();
+  });
   $('#intro').style.setProperty('--introbg', 'url(p/foh-wide.jpg)');
   $('#intro1').hidden = false; $('#intro2').hidden = true; $('#intro').hidden = false;
   document.body.style.overflow = 'hidden';
   $('#introNext').onclick = () => { $('#intro1').hidden = true; $('#intro2').hidden = false; $('#introGo').focus(); };
-  $('#introGo').onclick = () => { $('#intro').hidden = true; document.body.style.overflow = ''; greet(); };
+  $('#introGo').onclick = () => { if (!mentor) return; $('#intro').hidden = true; document.body.style.overflow = ''; greet(); };
   $('#introNext').focus();
 }
 function act(a) {
   const r = eng.act(game, a);
   if (r.error) { say(r.error.message, 'bad'); return r; }
+  if (a.type !== 'hint') { clearTimeout(mentorT); $('#mentor').hidden = true; }   // read it, then on with the job
   const before = game.log.length, sceneBefore = game.scene;
   game = r.game;
   if (a.type === 'pick_up') activeHand = game.hands.indexOf(a.device);
@@ -287,6 +322,7 @@ function act(a) {
     if (ev.type === 'skip-stopped') pulse(eng.path(ev.mic).at(-1), false);
     if (ev.type === 'batteries-in') say(`Batteries in ${D[ev.device].label}. ${ev.cellsLeft} charged cells left in the charger.`);
     else if (ev.type === 'inspect') { const l = ev.lcd; say(`${D[ev.device].label}: ${l.on ? `display on${l.muted ? ', showing MUTED' : ', not muted'}, battery full` : 'display is blank'}.`, l.on && !l.muted ? '' : 'bad'); }
+    else if (ev.type === 'hint' && mentor) mentorSays(ev.text, `Hint ${ev.level} of ${content.faults.find(f => f.id === ev.fault)?.hints.length ?? 3}`);
     else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done', 'set-aside'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['nothing', 'no-display', 'skip-stopped'].includes(ev.type) || ev.reversed ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
@@ -305,7 +341,7 @@ function say(text, kind = '', ms = 3200) {
 }
 function logLine(e) {
   const n = D[e.device || e.mic], L = n && n.label; const li = document.createElement('li');
-  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${L}`, put: e.place === 'bad' ? `set ${L} aside as a bad mic` : `put ${L} ${e.place === 'chair' ? 'on the chair' : 'back in the drawer'}`,
+  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, pick_up: `picked up ${L}`, put: e.place === 'bad' ? `put ${L} back in the drawer as a bad mic` : `put ${L} ${e.place === 'chair' ? 'on the chair' : 'back in the drawer'}`,
     press: `${e.how === 'tap' ? 'tapped' : 'held'} the button on ${L}${e.nothing ? ': nothing happened' : ''}`, inspect: `read the display on ${L}`,
     insert_batteries: `put batteries in ${L}`, check_batteries: `checked the batteries in ${L}`, reseat_batteries: `took the batteries out of ${L} and put them back`,
     talk: `talked into ${L}${e.observed && e.observed.length ? e.observed.map(o => o.signal ? ': signal' : ': no signal').join('') : ' (no meter in view)'}`, hint: `took hint ${e.level}`,
@@ -349,7 +385,7 @@ function render(sceneChanged) {
   if (game.t > lastT) { const d = $('#delta'); d.textContent = `+${game.t - lastT}s`; d.classList.remove('go'); void d.offsetWidth; d.classList.add('go'); }
   lastT = game.t;
   $('#score').textContent = `${v.objective.verified}/${v.objective.of}`;
-  $('#hintBtn').textContent = v.hintsLeft ? `Hint ${v.hintsLeft}` : 'No hints'; $('#hintBtn').disabled = !v.hintsLeft;
+  renderHintBtn(v);
   $('#obj').innerHTML = `<h2>${esc(v.objective.label)} <span class="fine">${v.objective.verified} of ${v.objective.of} verified${v.objective.setAside ? ` · ${v.objective.setAside} set aside` : ''}</span></h2><p class="fine">${esc(v.objective.goal)}</p><div class="chips">${v.objective.mics.map(m =>
     `<div class="chip" data-s="${m.status}" data-ch="${m.channel}" title="CH ${two(m.channel)}: ${STATUS[m.status][1]}" aria-label="Channel ${m.channel}: ${STATUS[m.status][1]}"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></div>`).join('')}</div>
     <div class="legend">✓ verified · ✕ no signal · ↻ re-check · ◐ check X32 · ⊘ set aside · – not checked</div>`;
@@ -358,6 +394,11 @@ function render(sceneChanged) {
   $('#dbg').textContent = `seed ${v.debug.seed}\n${v.debug.faults.map(f => `fault: ${f.device} (${f.label.toLowerCase()})${f.resolved ? ', resolved' : ''}`).join('\n')}\n` +
     Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
   try { window.claude?.hot?.snapshot?.(() => ({ game, trail })); } catch (e) {}
+}
+function renderHintBtn(v = eng.view(game)) {
+  const b = $('#hintBtn'), face = mentor ? `<img src="p/${mentor}.jpg" alt="">` : '';
+  b.innerHTML = v.hintsLeft ? `${face}${mentor ? 'Ask' : 'Hint'} ${v.hintsLeft}` : `${face}No hints`; b.disabled = !v.hintsLeft;
+  b.setAttribute('aria-label', v.hintsLeft ? `${mentor ? `Ask ${content.intro.crew_names[mentor]} for a hint` : 'Hint'}: ${v.hintsLeft} left` : 'No hints left');
 }
 function renderStage() {
   const id = game.scene, img = $('#photo');
@@ -399,6 +440,7 @@ function renderPanel(v) {
   } else if (game.scene === content.places.drawer.scene) {
     p.innerHTML = `<h3>Mic drawer</h3><div class="drawer">${mics.map(m => { const dv = D[m.id];
       return m.where === 'drawer' ? `<button class="slot" data-id="${m.id}" aria-label="Pick up ${esc(dv.label)}">${micSVG(dv)}<b>${two(dv.channel)}</b></button>`
+        : m.where === 'bad' ? `<button class="slot bad" data-id="${m.id}" aria-label="Pick up ${esc(dv.label)} (bad mic)">${micSVG(dv)}<b>${two(dv.channel)}</b><span class="badtag">bad</span></button>`
         : `<div class="slot gone"><small>${m.where === 'hand' ? 'in hand' : 'on chair'}</small><b>${two(dv.channel)}</b></div>`; }).join('')}</div>
       <p class="fine"><b>Battery charger</b> on top of the cabinet: ${v.charger.cells} charged cells (2 per mic). Tap a mic to pick it up; you can carry two.</p>
       <details class="more"><summary>Which mic is which</summary><p class="fine">Named by windscreen, then ring: black / red is 1 … black / grey is 8; grey / red is 9 … grey / grey is 16. 1-13 go to the musicians; 14-16 are spares kept at FOH (any can be the A1's talkback or a replacement run to the stage).</p></details>`;
@@ -428,7 +470,7 @@ function renderHand(v) {
         <button class="btn sm" data-act="hold" title="Press and hold: switches it on or off">Hold button</button><button class="btn sm" data-act="tap" title="A tap: mutes or unmutes">Tap button</button>
         <button class="btn sm talk" data-act="talk">${meter ? 'Talk into it' : 'Talk at X32 →'}</button>
         ${bat ? '<button class="btn sm" data-act="checkbat">Check batteries</button><button class="btn sm" data-act="reseat">Put them back in</button>' : ''}
-        ${v.canPut.chair ? '<button class="btn sm" data-act="chair">On the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn sm" data-act="drawer">Back in drawer</button>' : ''}${v.canPut.bad ? '<button class="btn sm" data-act="bad">Set aside as bad</button>' : ''}</div></div>`;
+        ${v.canPut.chair ? '<button class="btn sm" data-act="chair">On the chair</button>' : ''}${v.canPut.drawer ? '<button class="btn sm" data-act="drawer">Back in drawer</button>' : ''}${v.canPut.bad ? '<button class="btn sm" data-act="bad">Bad mic: back in drawer</button>' : ''}</div></div>`;
   }).join('');
   h.innerHTML = tabs + slots;
   const A = { batteries: { type: 'insert_batteries' }, checkbat: { type: 'check_batteries' }, reseat: { type: 'reseat_batteries' }, tap: { type: 'press', how: 'tap' }, hold: { type: 'press', how: 'hold' }, chair: { type: 'put', place: 'chair' }, drawer: { type: 'put', place: 'drawer' }, bad: { type: 'put', place: 'bad' } };
@@ -440,15 +482,15 @@ function renderHand(v) {
   fitDock();
 }
 // keep the page's end clear of the dock, so nothing hides behind it
-function fitDock() { document.body.style.paddingBottom = $('#dock').offsetHeight + 'px'; }
+function fitDock() { const h = $('#dock').offsetHeight; document.body.style.paddingBottom = h + 'px'; document.documentElement.style.setProperty('--dockh', h + 'px'); }
 function renderChair(v) {
   const on = v.objective.mics.filter(m => m.where === 'chair'), bad = v.objective.mics.filter(m => m.where === 'bad');
   const list = ms => `<div class="chair">${ms.map(m => `<button data-id="${m.id}" data-s="${m.status}" aria-label="Pick up ${esc(m.label)} (${STATUS[m.status][1]})"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></button>`).join('')}</div>`;
   $('#chair').innerHTML = `<h3>${esc(CHAIR)}</h3>
     ${on.length ? list(on) : '<p class="fine">Nothing yet. Checked mics wait here for the stage.</p>'}
     <p class="fine">${on.length} of ${v.objective.of} on the chair. A spare chair just left of FOH; it is not in the photos, so it is a box here (tentative).</p>
-    <h3>Set aside (bad mics)</h3>
-    ${bad.length ? `${list(bad)}<p class="fine">Spares 14-16 cover these: every musician needs a verified mic (${v.objective.need}).</p>` : '<p class="fine">None. A mic that can\'t be fixed goes here, and a spare covers it (placeholder spot).</p>'}`;
+    <h3>${esc(content.places.bad.label)}</h3>
+    ${bad.length ? `${list(bad)}<p class="fine">Spares 14-16 cover these: every musician needs a verified mic (${v.objective.need}).</p>` : '<p class="fine">None. A mic that can\'t be fixed goes back in the mic drawer, and a spare covers it.</p>'}`;
   $('#chair').querySelectorAll('button[data-id]').forEach(b => b.onclick = () => act({ type: 'pick_up', device: b.dataset.id }));
 }
 function pulse(point, signal) {
@@ -471,6 +513,7 @@ $('#againBtn').onclick = () => boot(newSeed());
 $('#newBtn').onclick = () => boot(newSeed());
 $('#back').onclick = () => { if (trail.length) goTo(trail.pop(), true); };
 addEventListener('keydown', ev => { if (ev.key === 'Escape' && !$('#sheet').hidden) $('#sheet').hidden = true; });
+$('#mentor').onclick = () => { $('#mentor').hidden = true; };
 $('#intro').onclick = ev => { if (ev.target.closest('#intro1') && !ev.target.closest('button')) $('#introNext').click(); };
 
 const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
