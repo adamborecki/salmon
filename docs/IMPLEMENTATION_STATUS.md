@@ -19,6 +19,51 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 2 (2026-10-02, Cary): mentors, bad mics in the drawer, room answers
+
+### Cary's answers (recorded in content)
+- **Bad mics go back in the drawer.** The `bad` place is now the mic drawer (`places.bad`,
+  reachable only there). The game still tracks a bad mic as set aside (so a spare covers it). In the
+  drawer it shows dashed with a red "bad" tag, and you can pick it up again. The button reads "Bad mic:
+  back in drawer" and only appears at the drawer. Hints, the debrief and the goal say "back in the
+  drawer".
+- **32 charged batteries is right.** Spare batteries are in a bin near the FOH computer (recorded in
+  `places.charger.status`; not simulated).
+- **Line check (described, not built):** it happens after all the mics are ready, going down the line
+  one mic at a time, starting with black / red, to make sure each works. Cary asked whether that is the
+  same gameplay as the battery-in check; see the open questions below.
+
+### What changed
+- **Pick your mentor** (Cary's idea). On the title card's second page you tap Cary, Morgan or
+  Magnolia; "Let's go" waits for a pick, and the choice is remembered in the browser.
+  - The mentor greets you, and every hint is their speech bubble (face, name, "Hint 1 of 3"),
+    just above the hands dock. It closes when you tap it or do anything else.
+  - The Hint button is the mentor's face plus "Ask 3".
+  - Hint wording is the same for all three (section 22: no personalities are decided).
+- Debrief moved out of the clock bar to "Debrief so far" under the steps, to make room for the face.
+
+### Tested
+- Engine 31/31: the bad-mic tests now put it back at the drawer, and putting it aside anywhere else
+  is refused.
+- Harness e2e 94 checks:
+  - "Let's go" waits for a mentor; picking Morgan;
+  - Morgan's greeting and Morgan's speech-bubble hint;
+  - "Ask 3" with a face;
+  - no bad-mic button at the receivers; walking to the drawer and putting the unpaired mic back as bad;
+  - it shows in the drawer marked bad.
+- All other checks pass, plus the public site build and `site.e2e.mjs`. Phone screenshots reviewed.
+
+### Open (Cary / owner)
+- **Line check gameplay:** Cary asked whether it is the same as the battery-in check. Mechanically
+  close (talk, watch the meter), but things that would make it its own lesson need answers:
+  - Who talks into each mic: the singer, or the A2 walking the line?
+  - Where are the A1 and A2 during it?
+  - What goes wrong at that point: a singer's muted mic, two singers with swapped mics (signal on
+    the wrong channel), a dying battery?
+  - Are the monitors (wedges) checked at the same time?
+- 13 vs 14 minimum mics; whether the unpaired mic should appear every run; hint wording; title card
+  only on a first visit.
+
 ## Session 3 (2026-10-01, Cary): playtest fixes, phone layout, title card
 
 Cary played the battery-in check and asked for five things; all five are done.
@@ -64,6 +109,7 @@ Cary played the battery-in check and asked for five things; all five are done.
 ### Open (Cary / owner)
 - ~~Spelling~~ answered (Cary, 2026-10-01): "USingers", the university choir that rehearses right
   before Vocal Jazz.
+- ~~Charger / bad-mic spot~~ answered 2026-10-02 (part 2).
 - Cary said they'd attach a photo of the three; I used the existing portraits. A group shot can
   replace them (`intro.crew` and `CHARACTERS` in `build.py`).
 - Should the title card be skippable after the first time (remembered per browser)?

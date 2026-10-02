@@ -17,9 +17,9 @@ and principle 4.10), as small as it can be while still being real:
   hints and debrief text from whichever fault the content picks
 - **RF group/channel:** seeded, unique per mic (6 x 6, placeholder), on the mic display and receivers
 - **a second fault, the bad mic:** an unpaired mic (ch 5-13) switches on but never reaches its
-  receiver; its display disagrees with its receiver slot's RF pair. It can't be fixed here: set it
-  aside, and a spare covers it (the objective needs every mic verified or set aside, and at least 13
-  verified)
+  receiver; its display disagrees with its receiver slot's RF pair. It can't be fixed here: put it
+  back in the drawer as a bad mic (Cary, 2026-10-02), and a spare covers it (the objective needs every
+  mic verified or set aside as bad, and at least 13 verified)
 - **one objective:** a mic counts only when talking into it shows signal at its X32 input (section 55)
 - **a visible step list**: the owner's per-mic procedure (take the right mic, batteries in [not simulated yet], switch on, check at the X32, chair); reading the display is optional
 - **"Check the rest"** (principle 4.10): after 3 mics by hand, it runs the same routine for the others
@@ -42,7 +42,8 @@ and principle 4.10), as small as it can be while still being real:
 
 `harness.html` is a deliberately small, throwaway page for *feeling* the loop on the real photos
 (FOH, X32, wireless rack, mic cabinet). It opens on a title card (`content.intro`: "OH NO!", then
-Cary, Morgan and Magnolia: "Relax, let's handle this!"). Tap into scenes and take a mic from the
+Cary, Morgan and Magnolia: "Relax, let's handle this!"), where you pick one of them as your mentor.
+Hints then come as that mentor's speech bubbles, and the Hint button shows their face ("Ask 3"). Tap into scenes and take a mic from the
 drawer: all 16 are drawn from the content, with windscreen and ring colours. A mic in hand shows its
 display straight away (RF group/channel, battery, mute, in a placeholder layout). Put batteries in
 from the charger, switch it on, then talk into it: away from a meter, "Talk at X32 →" walks you to
