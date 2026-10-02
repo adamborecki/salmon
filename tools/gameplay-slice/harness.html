@@ -214,20 +214,27 @@ button.chip{font:inherit;color:inherit;cursor:pointer}
 .wedges{display:flex;align-items:center;gap:8px;background:var(--stage);color:#aeb9c4;border-radius:6px;padding:6px 10px;font:500 11px var(--mono)}
 .wedges .wg{width:30px;height:16px;background:#3a4652;clip-path:polygon(0 100%,18% 0,100% 0,100% 100%);border-radius:2px}
 .wedges.ring{color:#fff;animation:ringing .12s linear 12}
+.wedges.ok .wg{background:var(--sig)} .wedges.silent .wg{background:transparent;outline:1.5px dashed var(--bad-hi);outline-offset:-1.5px}
+.wedges.playing .wg{background:var(--sig-hi);box-shadow:0 0 10px var(--sig-hi);animation:thump .45s ease-in-out 5}
+@keyframes thump{50%{transform:scaleY(.82)}}
+.pb{display:flex;flex-wrap:wrap;gap:6px}
+.pb .btn{flex:1 1 140px}
+.wedgeline{margin:0;font-size:13px} .wedgeline b{color:var(--sig)} .wedgeline.todo b{color:var(--warn)}
 .wedges.ring .wg{background:var(--bad-hi);box-shadow:0 0 10px var(--bad-hi)}
 @keyframes ringing{50%{transform:translateX(2px)}}
 .singer{display:grid;gap:6px}
 .srow{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center}
 .srow svg.mic{width:11px;height:40px}
 .srow .hinfo{gap:0}
-.asks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.asks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
 .asks .btn.sm{padding:3px 2px;font-size:12px}
 /* in the line check the meters are the job: they go above the photo */
 body.linemode #panel{order:-1}
+body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px);left:12px;right:12px;max-width:620px;margin:0 auto;z-index:12;color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .btn.nav{min-width:38px;font-size:18px;font-weight:600}
 .sendctl{grid-column:span 2;display:grid;grid-template-columns:38px 1fr 38px;gap:4px;align-items:center;text-align:center;font:600 13px var(--mono);font-variant-numeric:tabular-nums}
 .sendctl small{display:block;font:500 9.5px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-@media (prefers-reduced-motion:reduce){.wedges.ring{animation:none}}
+@media (prefers-reduced-motion:reduce){.wedges.ring,.wedges.playing .wg{animation:none}}
 @media (prefers-reduced-motion:reduce){#photo,.tbar i{transition:none}.oh,.clock.over,.iclock i,.delta.go,.mentor{animation:none}}
 </style>
 
@@ -309,7 +316,7 @@ function boot(seed, intro = false) {
   if (intro) showIntro(); else greet();
 }
 const GREETING = '4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.';
-const LGREETING = 'The mics are on stage. Go down the line from black / red: each singer says something while you watch their meter, then ask if they can hear themselves in the wedge.';
+const LGREETING = 'The mics are on stage. First the wedges: play the Wii Shop theme through Bus 1. Then go down the line from black / red: each singer says something while you watch their meter, then ask if they can hear themselves in the wedge.';
 const greet = () => { const t = mode === 'line' ? LGREETING : GREETING; mentor ? mentorSays(t, 'Tap me for a hint whenever you get stuck.') : say(t, 'hint', 6500); };
 // a speech bubble from the mentor, just above the hands; tap it to close
 function mentorSays(text, foot = '') {
@@ -580,6 +587,8 @@ function lineAct(a) {
     if (ev.type === 'feedback') ring();
     if (ev.type === 'hint' && mentor) mentorSays(ev.text, `Hint ${ev.level} of ${ev.of}`);
     else if (ev.type === 'reply') say(ev.text, '', 3600);
+    else if (ev.type === 'playback') { say(ev.text, ev.ok ? 'good' : 'bad', 4200); if (ev.to === 'bus1' && ev.ok) wedgesPlay(); }
+    else if (ev.type === 'a2' || ev.type === 'mains') say(ev.text, ev.type === 'mains' && !ev.heard ? 'bad' : '', 4200);
     else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['no-display', 'skip-stopped', 'feedback'].includes(ev.type) ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
@@ -591,8 +600,10 @@ function lineCall(id) {
   lineAct({ type: 'call', device: id });
 }
 function lineLog(e) {
-  const L = e.device && D[e.device].label, I = LC.instructions, o = e.observed, li = document.createElement('li');
+  const L = e.device && D[e.device] ? D[e.device].label : '', I = LC.instructions, o = e.observed, li = document.createElement('li');
   const what = { go: `went to ${PLACE[e.scene] || e.scene}`, hint: `took hint ${e.level}`,
+    play: `played ${LC.playback.label} through ${e.to === 'bus1' ? `Bus 1: ${e.ok ? 'heard in the wedges' : 'nothing in the wedges'}` : 'the mains'}`,
+    mains: `put ${L} in the mains: ${e.heard ? 'heard' : 'nothing'}`, a2: `${LC.a2.label} went to ${e.amp ? 'the monitor amp' : L}: "${e.report}"`,
     call: `${L} said something${!o ? ' (no meter in view)' : o.at === 'x32' ? `: X32 ${o.level === 'none' ? 'no signal' : o.level}` : `: receiver RF ${o.rf ? 'yes' : 'no'}, audio ${o.af}`}${o && o.feedback ? ', and it rang' : ''}`,
     ask: e.type === 'ask' ? `to ${L}: "${I[e.what].say}" "${e.reply}"` : '', send: `${L}'s Bus 1 send: ${e.from ?? 'off'} → ${e.to ?? 'off'} dB`,
     line: e.type !== 'line' ? '' : e.stoppedAt ? `${LC.skip.label}: ${e.checked.length} checked, stopped at ${D[e.stoppedAt].label}` : `${LC.skip.label}: ${e.checked.length} checked` }[e.type];
@@ -609,12 +620,13 @@ function renderLine(sceneChanged) {
   $('#obj').querySelectorAll('.chip[data-id]').forEach(b => b.onclick = () => { sel = b.dataset.id; render(false); });
   if (sceneChanged) renderStage();
   const p = v.procedure, s = p.skip, nxt = p.mic && p.steps.find(st => !st.done);
-  $('#steps').innerHTML = `<p class="now">${p.mic ? `Next in line: ${esc(D[p.mic].label)}` : 'Every singer is checked.'}</p>
+  $('#steps').innerHTML = `<p class="wedgeline${v.wedge.ok ? '' : ' todo'}"><b>${v.wedge.ok ? '✓ Wedge check done' : `○ First: ${esc(LC.procedure.wedge.short.toLowerCase())}`}</b>${v.wedge.ok ? '' : `: ${esc(LC.procedure.wedge.text.replace(/^Before the singers: /, ''))}`}</p>
+    <p class="now">${p.mic ? `Next in line: ${esc(D[p.mic].label)}` : 'Every singer is checked.'}</p>
     <ol class="steps three" aria-label="Line check, for each singer">${p.steps.map(st => `<li class="${st.done ? 'done' : ''}${nxt && st.id === nxt.id ? ' cur' : ''}" data-step="${st.id}" title="${esc(st.text)}"><span>${esc(st.short)}</span></li>`).join('')}</ol>
     ${nxt ? `<p class="stepnow">${esc(nxt.text)}</p>` : ''}
     <div class="skip"><button class="btn primary" id="skipBtn" ${s.available ? '' : 'disabled'}>${esc(s.label)}${s.left ? ` (${s.left})` : ''}</button>
     <p class="fine">${s.available ? `Does the same for the other ${s.left}, in order, and stops at the first singer whose meter is wrong, who rings, or who can't hear themselves.` : esc(s.reason) + (s.byHand < s.need ? ` By hand so far: ${s.byHand} of ${s.need}.` : '')}</p></div>
-    <details class="tips"><summary>Tips</summary><p class="fine">You can't touch the mics on stage: everything goes through what you ask the singer. The mic's one button: a tap mutes or unmutes it, a press and hold switches it on or off.</p><p class="fine">${esc(LC.bus1.label)}: each channel's send sets how loud that singer is in the wedges.</p></details>`;
+    <details class="tips"><summary>Tips</summary><p class="fine">You can't touch the mics on stage: everything goes through what you ask the singer. The mic's one button: a tap mutes or unmutes it, a press and hold switches it on or off.</p><p class="fine">${esc(LC.bus1.label)}: each channel's send sets how loud that singer is in the wedges. Bus 1 goes on to the monitor amp, then the wedges.</p><p class="fine">The mains are a diagnostic: if something plays through the mains but not the wedges, the problem is after Bus 1. ${esc(LC.a2.label)} can walk out to a singer or the monitor amp while you stay at the X32 (${LC.clock.a2_s} s a trip).</p></details>`;
   $('#skipBtn').onclick = () => act({ type: 'line' });
   renderLinePanel(v); renderLineDock(v);
   $('#dbg').textContent = `seed ${v.debug.seed} (line check)\n` + v.debug.faults.map(f => `fault: ${f.device} (${f.label.toLowerCase()})${f.active ? '' : ', fixed'}`).join('\n') +
@@ -626,8 +638,12 @@ function renderLinePanel(v) {
   const strip = (ch, extra = '') => { const s = byCh.get(ch); return `<div class="strip${s && s.id === sel ? ' mine' : ''}${s ? '' : ' idle'}" data-ch="${ch}">${extra}<div class="meter"><i></i></div><b>${two(ch)}</b></div>`; };
   if (sc === LC.scenes.x32) {
     p.innerHTML = `<h3>X32 input meters</h3><div class="meters">${chans.map(ch => strip(ch)).join('')}</div>
-      <div class="wedges" id="wedges"><span>${esc(LC.bus1.label)}</span><span class="sp"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span></div>
-      <p class="fine">Have ${esc(D[sel].label)} say something and watch channel ${D[sel].channel}. Simplified meters, not the console's own screen.</p>`;
+      <div class="wedges${v.wedge.silent ? ' silent' : v.wedge.ok ? ' ok' : ''}" id="wedges"><span>${esc(LC.bus1.label)}</span><span class="sp"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span></div>
+      <div class="pb"><button class="btn sm talk" data-pb="bus1">▶ ${esc(LC.playback.label)} → Bus 1</button><button class="btn sm" data-pb="mains">▶ → Mains</button></div>
+      <div class="pb"><button class="btn sm" data-a2amp="check">${esc(LC.a2.label)}: check the monitor amp</button><button class="btn sm" data-a2amp="on">${esc(LC.a2.label)}: switch it on</button></div>
+      <p class="fine">Watch channel ${D[sel].channel} while ${esc(D[sel].label)} talks. Simplified meters, not the console's own screen.</p>`;
+    p.querySelectorAll('[data-pb]').forEach(b => b.onclick = () => act({ type: 'play', to: b.dataset.pb }));
+    p.querySelectorAll('[data-a2amp]').forEach(b => b.onclick = () => act({ type: 'a2', amp: b.dataset.a2amp }));
   } else if (sc === LC.scenes.receivers) {
     p.innerHTML = `<h3>PTU-6000 receivers: RF and audio</h3><div class="meters">${chans.map(ch => { const s = byCh.get(ch); return strip(ch, `<span class="rfdot${s && leng.sound(lgame, s.id).rf ? ' on' : ''}"></span>`); }).join('')}</div>
       <p class="fine">The dot is RF: that mic is on and reaching its receiver. The bar is audio, while they talk (placeholder indicators).</p>`;
@@ -644,12 +660,14 @@ function renderLineDock(v) {
       <button class="btn sm nav" data-nav="1" ${i < v.singers.length - 1 ? '' : 'disabled'} aria-label="Next singer">›</button></div>
     <div class="acts"><button class="btn sm talk" data-act="call">${meter ? 'Say something' : 'Say something (X32 →)'}</button><button class="btn sm talk" data-act="hear">${esc(I.hear.short)}</button>
       <div class="sendctl"><button class="btn sm" data-act="down" aria-label="Bus 1 send down">−</button><span><small>Bus 1 send</small>${s.sendDb == null ? 'off' : s.sendDb + ' dB'}</span><button class="btn sm" data-act="up" aria-label="Bus 1 send up">+</button></div></div>
-    <div class="asks" role="group" aria-label="Ask them to">${['hold', 'tap', 'louder', 'aim', 'check'].map(w => `<button class="btn sm" data-act="${w}" title="${esc(I[w].say)}" aria-label="${esc(I[w].label)}">${esc(I[w].short)}</button>`).join('')}</div></div>`;
+    <div class="asks" role="group" aria-label="Ask them to">${['hold', 'tap', 'louder', 'aim', 'check', 'mains', 'a2'].map(w => `<button class="btn sm" data-act="${w}" title="${esc(I[w].say)}" aria-label="${esc(I[w].label)}">${esc(I[w].short)}</button>`).join('')}</div></div>`;
   $('#hand').querySelectorAll('[data-nav]').forEach(b => b.onclick = () => { sel = v.singers[i + +b.dataset.nav].id; render(false); });
   $('#hand').querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
     const w = b.dataset.act;
     if (w === 'call') lineCall(sel);
     else if (w === 'up' || w === 'down') act({ type: 'send', device: sel, dir: w === 'up' ? 1 : -1 });
+    else if (w === 'mains') act({ type: 'mains', device: sel });
+    else if (w === 'a2') act({ type: 'a2', device: sel });
     else act({ type: 'ask', device: sel, what: w });
   });
   fitDock();
@@ -664,6 +682,7 @@ function linePulse(ev) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { bar.style.height = 70 * k + '%'; setTimeout(() => { bar.style.height = '0'; }, 1200); return; }
   bar.animate([{ height: '0%' }, { height: 72 * k + '%', offset: .12 }, { height: 58 * k + '%', offset: .3 }, { height: 80 * k + '%', offset: .45 }, { height: 62 * k + '%', offset: .62 }, { height: 75 * k + '%', offset: .75 }, { height: '0%' }], { duration: 1500, easing: 'ease-out' });
 }
+function wedgesPlay() { const w = $('#wedges'); if (!w) return; w.classList.add('playing'); setTimeout(() => w.classList.remove('playing'), 2400); }
 function ring() { const w = $('#wedges'); if (!w) return; w.classList.remove('ring'); void w.offsetWidth; w.classList.add('ring'); setTimeout(() => w.classList.remove('ring'), 1800); }
 $('#lineBtn').onclick = () => startLine(lineSeed(), { t: game.t, lineup: lineupFromBattery() });
 $('#lineJump').onclick = () => startLine(lineSeed());
@@ -684,7 +703,7 @@ const hashLine = /^#LC-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : 
 const start = data => {
   if (data && data.game && data.game.content === content.id && data.game.v === 4) {
     game = data.game; trail = data.trail || [];
-    if (data.mode === 'line' && data.lgame && data.lgame.v === 1) { mode = 'line'; lgame = data.lgame; sel = data.sel; $('#chair').hidden = true; document.body.classList.add('linemode'); }
+    if (data.mode === 'line' && data.lgame && data.lgame.v === 2) { mode = 'line'; lgame = data.lgame; sel = data.sel; $('#chair').hidden = true; document.body.classList.add('linemode'); }
     render(true);
   } else if (hashLine) { game = eng.start(newSeed()); startLine(hashLine, {}, !mentor); }
   else boot(hashSeed || newSeed(), true);
