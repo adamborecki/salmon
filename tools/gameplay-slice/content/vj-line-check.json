@@ -12,7 +12,10 @@
   "send_s": 1,
   "move_s": 2,
   "default_offset_s": 360,
-  "status": "tentative: the same 4:50 -> 5:00 story as the battery-in check, continued; when you come from the battery-in check the clock carries on from there. A direct start (#LC- link) begins at 4:56 (default_offset_s, a placeholder). Per-action seconds are placeholders."
+  "status": "tentative: the same 4:50 -> 5:00 story as the battery-in check, continued; when you come from the battery-in check the clock carries on from there. A direct start (#LC- link) begins at 4:56 (default_offset_s, a placeholder). Per-action seconds are placeholders. A2 trip 20 s, playback 5 s, mains test 3 s: placeholders.",
+  "a2_s": 20,
+  "play_s": 5,
+  "mains_s": 3
  },
  "setup": {
   "singers": 13,
@@ -49,6 +52,32 @@
   "feedback_at_db": -10,
   "status": "Cary, 2026-10-02: wedges are fed from Bus 1; each channel's send on fader sets its level in the wedges. Step values and the -10 dB start are tentative (PRODUCT_DESIGN sections 47 and 89: sends roughly -5 to -10 dB); null is off (-inf). 'Hears themselves' from -10 dB and 'feeds back when the mic points at a wedge' from -10 dB are game simplifications, not measurements."
  },
+ "monitor_amp": {
+  "id": "nx3000",
+  "label": "the monitor amp (NX3000)",
+  "start": {
+   "power": "on"
+  },
+  "status": "PRODUCT_DESIGN sections 30 and 42: the Behringer NX3000 in the Monitor Rack is the primary current amp for the Vocal Jazz wedges. Cary, 2026-10-02: when the monitors don't work, it's usually that the amp isn't on. Bus 1 -> the current transport -> this amp -> the wedges; the transport is not simulated (section 36)."
+ },
+ "playback": {
+  "label": "The Wii Shop theme",
+  "source": "the Mac mini",
+  "status": "Cary, 2026-10-02: the wedges are checked before the singers with known playback, often the Wii Shop theme (Cary's pick) or the Mii Channel theme. Text only: no audio in this public repo. Path: Mac mini -> SSL 2+ -> X32 aux in (section 37). The mains are assumed to work (no mains faults yet)."
+ },
+ "a2": {
+  "label": "The A2",
+  "mic_off": "{mic} is switched off.",
+  "mic_muted": "{mic} is on, but muted: the display shows the mute sign.",
+  "mic_aimed": "They're holding {mic} pointed at the wedge.",
+  "mic_quiet": "{mic} looks fine: on, unmuted. They're just singing really quietly.",
+  "mic_fine": "{mic} looks fine: on, unmuted, pointed at them.",
+  "amp_off": "The monitor amp is off.",
+  "amp_on": "The monitor amp is on.",
+  "amp_switched_on": "Switched the monitor amp on.",
+  "amp_already_on": "It was already on.",
+  "status": "Cary, 2026-10-02: the A2 often goes to the stage to help with a problem while the A1 stays at the mixer. A trip costs clock.a2_s; the A2 reports what they see; at the monitor amp they can switch it on. Wording is the agent's (tentative)."
+ },
  "instructions": {
   "hold": {
    "label": "Press and hold the button",
@@ -80,7 +109,17 @@
    "say": "Can you hear yourself in the monitor?",
    "short": "Hear yourself?"
   },
-  "status": "agent wording, tentative; one button on the handheld: a tap mutes or unmutes, a press and hold switches it on or off (same as the battery-in check)"
+  "status": "agent wording, tentative; one button on the handheld: a tap mutes or unmutes, a press and hold switches it on or off (same as the battery-in check)",
+  "mains": {
+   "label": "Through the mains",
+   "short": "Mains test",
+   "say": "Say something again: I've put you in the mains."
+  },
+  "a2": {
+   "label": "Send the A2 to look",
+   "short": "Send A2",
+   "say": "(the A2 walks over to look at their mic)"
+  }
  },
  "faults_per_run": 2,
  "fault_channels": [
@@ -97,7 +136,7 @@
   12,
   13
  ],
- "faults_status": "tentative: two of the four per run, on different singers, never the first in line (so the first one teaches the routine), chosen by seed",
+ "faults_status": "tentative: two of the five per run, chosen by seed; singer faults go on different singers, never the first in line (so the first one teaches the routine); the monitor amp fault is met at the wedge check",
  "faults": [
   {
    "id": "switched-off",
@@ -109,7 +148,8 @@
    "fix_by": "hold",
    "trace_by": [
     "check",
-    "rx"
+    "rx",
+    "a2"
    ],
    "hints": [
     {
@@ -133,7 +173,8 @@
     "act": "you asked the singer to press and hold the button: {mic} came back on.",
     "still": "{mic} is still switched off.",
     "concepts": "a switched-off transmitter sends no RF at all (its receiver shows nothing)"
-   }
+   },
+   "target": "singer"
   },
   {
    "id": "muted",
@@ -145,7 +186,8 @@
    "fix_by": "tap",
    "trace_by": [
     "check",
-    "rx"
+    "rx",
+    "a2"
    ],
    "hints": [
     {
@@ -170,7 +212,8 @@
     "act": "you asked the singer to tap the button: {mic} unmuted.",
     "still": "{mic} is still muted.",
     "concepts": "on is not the same as unmuted: a muted transmitter still sends RF, but no audio"
-   }
+   },
+   "target": "singer"
   },
   {
    "id": "too-quiet",
@@ -182,7 +225,8 @@
    "fix_by": "louder",
    "trace_by": [
     "rx",
-    "check"
+    "check",
+    "a2"
    ],
    "hints": [
     {
@@ -206,7 +250,8 @@
     "act": "you asked them to sing out at rehearsal level.",
     "still": "{mic}'s singer is still too quiet to judge the channel.",
     "concepts": "a line check is only as good as the sound going in: ask for rehearsal level"
-   }
+   },
+   "target": "singer"
   },
   {
    "id": "aimed-at-wedge",
@@ -217,7 +262,8 @@
    "fix": "ask them to point the mic away from the wedge",
    "fix_by": "aim",
    "trace_by": [
-    "send-down"
+    "send-down",
+    "a2"
    ],
    "hints": [
     {
@@ -241,12 +287,50 @@
     "act": "you asked the singer to point it away from the wedge.",
     "still": "{mic} is still pointed at the wedge.",
     "concepts": "feedback is a loop (mic -> Bus 1 -> wedge -> mic): break it at the mic's aim, not by leaving the singer without a monitor"
+   },
+   "target": "singer"
+  },
+  {
+   "id": "monitor-amp-off",
+   "label": "The monitor amp was off",
+   "target": "amp",
+   "set": {
+    "power": "off"
+   },
+   "fix": "send the A2 to switch the monitor amp on",
+   "trace_by": [
+    "mains",
+    "a2-amp"
+   ],
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "Nothing in the wedges, even with the send up. Is the problem the source, the console, or what comes after Bus 1?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Try it through the mains: if it plays there, the source and the X32 are fine, and the problem is in the monitor path (Bus 1 → amp → wedges)."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The monitor amp (the NX3000) is off. Send the A2 to switch it on, then play through Bus 1 again."
+    }
+   ],
+   "status": "Cary, 2026-10-02: 'usually the amp is not on'. Hints are agent wording (tentative).",
+   "debrief": {
+    "failed": "{mic} was off: Bus 1 left the X32, but nothing drove the wedges.",
+    "act": "the A2 switched {mic} on.",
+    "still": "{mic} is still off: nothing in the wedges.",
+    "concepts": "a send leaving the console is not sound in the wedges: the monitor path goes on through the amp, and the mains tell you which side of Bus 1 a problem is on"
    }
   }
  ],
  "objective": {
   "label": "Line check: every singer",
-  "goal": "Down the line, black / red first: each singer says something and their channel's X32 meter moves properly, then they can hear themselves in the wedges with no feedback.",
+  "goal": "First the wedges: play known playback through Bus 1. Then down the line, black / red first: each singer says something and their X32 meter moves properly, then they can hear themselves in the wedges with no feedback.",
   "status": "the meter at the X32 input is the input check; the singer hearing themselves (Bus 1 send up, no ring) is the Monitor 1 check"
  },
  "procedure": {
@@ -267,7 +351,11 @@
     "text": "Ask if they can hear themselves in the wedge (Bus 1)."
    }
   ],
-  "status": "Cary, 2026-10-02 (the order and the wedge check); step wording is the agent's"
+  "status": "Cary, 2026-10-02 (the order and the wedge check); step wording is the agent's",
+  "wedge": {
+   "short": "Wedge check",
+   "text": "Before the singers: play the Wii Shop theme through Bus 1 and listen to the wedges."
+  }
  },
  "skip": {
   "label": "Go down the line",
