@@ -19,6 +19,57 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 4 (2026-10-02, Cary): wedge check, monitor amp off, the A2
+
+Cary: "usually the amp is not on", then "get to work on all that". All three candidates are built.
+
+### What changed
+- **Wedge check before the singers.**
+  - In the X32 panel: "▶ The Wii Shop theme → Bus 1" and "▶ → Mains".
+  - The playback is text only; no audio goes in the repo.
+  - The wedge strip shows green when the wedges play, a red dashed outline when they're silent, and
+    flashes red on a ring.
+  - The line check now counts as done only with a wedge check newer than any amp change. The debrief
+    notes whether you did it before the singers.
+- **New fault: the monitor amp (NX3000) is off** (`target: amp`). Content `monitor_amp` cites
+  sections 30 and 42 and Cary.
+  - What you see: silent wedges, "Nothing in the monitor" at any send, and no feedback (no amp, no
+    ring).
+  - TRACE: it plays through the mains (or "Mains test" on a singer is heard), so the problem is after
+    Bus 1; or the A2 checks the amp.
+  - ACT: the A2 switches it on.
+  - VERIFY: Bus 1 plays in the wedges again.
+  - Switching the amp on re-opens the wedge check and every singer's monitor check.
+- **The A2** (content `a2`, 20 s a trip, tentative). From the dock: "Send A2" reports what a singer's
+  mic is doing (TRACE for any singer fault). From the panel: check the monitor amp, or switch it on.
+- **"Mains test"** per singer: is their channel heard through the mains?
+- Faults are now two per run out of five kinds, so seeds give different faults than before:
+  LC-48217 is now amp off + pointed at the wedge.
+
+### Tested
+- `line.test.mjs` 23/23 (8 new tests). I broke 7 new rules on purpose and a test caught each one:
+  - amp off still heard;
+  - feedback without the amp;
+  - no wedge check required;
+  - the mains test ignores a dead mic;
+  - an amp change doesn't re-open the monitor checks;
+  - playback ignores the amp;
+  - the A2 can't switch the amp on.
+- Harness e2e 136 checks:
+  - from the battery-in check into LC-48217: silent wedges, the mains plays, the A2 finds the amp off
+    and switches it on, the wedges play; then a ring on ch 9 is fixed;
+  - direct link LC-20164: the A2 traces the switched-off mic, the singer reads the muted display;
+  - 4/4 per fault in both debriefs.
+- All CLAUDE.md checks, plus the public site build and `site.e2e.mjs`. Phone screenshots reviewed: in
+  the line check, messages now float just above the dock so they're never hidden.
+
+### Open (Cary / owner)
+- Placeholder timings: an A2 trip 20 s, playback 5 s, a mains test 3 s.
+- Should the A2 also be able to fix a singer's mic (switch it on, unmute it), not just report? Right
+  now fixes go through the singer; the A2 only switches the amp on.
+- Other monitor-path failures besides the amp (the long speaker cable, the daisy-chain, the
+  transport)? Only "amp off" is modelled.
+
 ## Session 3, part 3 (2026-10-02, Cary): the line check
 
 Built from Cary's answers (recorded in PRODUCT_DESIGN section 45 and `content/vj-line-check.json`).

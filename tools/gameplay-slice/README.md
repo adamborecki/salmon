@@ -118,14 +118,20 @@ scenario).
 After the battery-in check, the debrief offers **"On to the line check →"** (or open a `#LC-12345`
 link, or "Jump to the line check" in the instructor view). The mics are now in the singers' hands on
 the stage past the mixer, and you are the A1 at the X32. You can't touch a mic; you can only ask the
-singer. Down the line, black / red first, for each singer:
+singer, or send **the A2** to walk out and look (a singer's mic, or the monitor amp) while you stay
+at the X32.
+
+**First, the wedge check:** play known playback (the Wii Shop theme, Cary's pick) through Bus 1 and
+listen to the wedges. Silent? Play it through the mains: if it plays there, the source and the X32
+are fine and the problem is after Bus 1 (the monitor amp). Then down the line, black / red first, for
+each singer:
 
 1. **Say something:** watch their channel on the X32 (a healthy meter, no ring).
 2. **Hear yourself?** They answer from the wedges, which are fed from **Bus 1**; each channel's
    send on fader (the − / + in the dock) sets how loud they are in the wedges.
 
 The clock carries on from the battery-in check, and a spare (14-16) stands in for any mic set aside
-as bad. Two of Cary's four faults per run (seeded, never the first singer):
+as bad. Two of the five faults per run (seeded; singer faults never on the first singer):
 
 | Fault | What you see | Trace | Fix (ask the singer) |
 |---|---|---|---|
@@ -133,6 +139,11 @@ as bad. Two of Cary's four faults per run (seeded, never the first singer):
 | muted | no signal at the X32 | the display shows mute; RF but no audio at its receiver | tap the button |
 | too quiet | the meter barely moves | the receiver is low too, or the display looks normal | sing out |
 | pointed at the wedge | a ring from the wedges (with its send up) | pull its Bus 1 send down: the ring stops | point it away, then send back up |
+| monitor amp off (NX3000) | silent wedges; singers hear nothing at any send; no ring | it plays through the mains (or the A2 checks the amp) | the A2 switches the amp on |
+
+A "Mains test" on a singer tells the same story for one channel; the A2 can trace any of the singer
+problems too (the trip costs time). The line check is done when the wedge check passed, newer than
+any amp change, and every singer is checked.
 
 The wrong instruction makes things worse: "press and hold" switches a working mic off. "Go down the
 line" (after 3 by hand) does the same routine and stops at the first wrong meter, ring, or singer
