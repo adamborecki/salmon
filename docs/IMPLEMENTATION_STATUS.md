@@ -72,18 +72,30 @@ Built from Cary's answers (recorded in PRODUCT_DESIGN section 45 and `content/vj
   - both debriefs score 4/4 per fault; no sideways scroll.
 - Engine 31/31, the editor suites, the public site build + `site.e2e.mjs`. Phone screenshots reviewed.
 
+### Cary's answers, round 2 (2026-10-02; in PRODUCT_DESIGN section 45 and the line-check content)
+- The A1 usually talks to the singers directly, but the A2 often goes to the stage to help with a
+  problem while the A1 stays at the mixer.
+- The wedges are checked before the singers with known playback: the Wii Shop theme (Cary's pick) or
+  the Mii Channel theme.
+- The mains aren't part of the line check. They're the diagnostic when a mic doesn't come through
+  the monitors: through the mains but not the monitors means the monitor path is the problem.
+
+**Next build candidates from these (none started):**
+1. A wedge check before the singers: play the Wii Shop theme through Bus 1 and confirm the wedges
+   (section 43's known source first). This is text only: no copyrighted audio in the repo.
+2. The dead-monitor-path fault (section 69): a singer can't hear themselves at any send. You
+   diagnose it by routing them to the mains (heard there, so it's the monitor path) and fix it
+   downstream of Bus 1.
+3. "Send the A2": the A1 stays at the X32 while the A2 walks to the singer to fix a problem.
+
 ### Open (Cary / owner)
+- ~~A1 alone or A2 relays; separate wedge check; mains in the line check~~ answered (round 2 above).
 - **Tentative values to confirm:**
   - Bus 1 send steps (off, -20, -10, -5, 0) and the -10 dB start;
   - "hears themselves from -10";
   - "feeds back from -10 when pointed at a wedge";
   - two faults per run;
   - a direct link starting at 4:56.
-- Does the A1 run the line check alone, or does the A2 relay from the stage? (Now the A1 talks to
-  singers directly.)
-- Do the wedges get a separate check of their own (e.g. a talkback mic or playback through Bus 1,
-  section 43's "Monitor 1" step) before the singers arrive?
-- Should mains be part of the line check?
 
 ## Session 3, part 2 (2026-10-02, Cary): mentors, bad mics in the drawer, room answers
 

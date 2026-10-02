@@ -1625,6 +1625,16 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
 - Also (2026-10-02): bad mics go back in the drawer; 32 charged batteries is right; spare batteries
   are in a bin near the FOH computer.
 
+**Line check, Cary's round 2 (2026-10-02):**
+
+- **Who talks to whom:** the A1 usually talks to the singers directly, but the A2 often goes to the
+  stage to help with a problem while the A1 stays at the mixer.
+- **The wedges get checked before the singers,** with known playback: often the Mii Channel theme or
+  the Wii Shop theme (Cary prefers the Wii Shop theme). This is section 43's "known source first".
+- **The mains are usually not part of the line check.** They are a diagnostic: if a mic isn't coming
+  through the monitors, putting it through the mains tells you whether the problem is the monitor
+  path or something else (it comes through the mains but not the monitors -> the monitor path).
+
 **Owner answers, round 4 (2026-09-28):**
 
 - **The battery-in procedure, per mic:** grab the right mic (windscreen colour, then ring colour); put
