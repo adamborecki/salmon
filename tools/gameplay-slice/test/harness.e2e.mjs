@@ -25,7 +25,7 @@ let failures = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 13'] });
-const page = await ctx.newPage(); const errs = [];
+let page = await ctx.newPage(); const errs = [];
 page.on('pageerror', e => errs.push(e.message)); page.on('console', m => { if (m.type() === 'error' && !/fonts\.(googleapis|gstatic)\.com/.test(m.location().url || '')) errs.push(m.text()); });
 await page.goto(BASE + '#VJ-48217', { waitUntil: 'networkidle' });
 const shot = async n => { if (SHOTS) await page.screenshot({ path: `${SHOTS}/slice-${n}.png`, fullPage: true }); };
@@ -160,6 +160,73 @@ for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(line
 ok(lines.some(l => /a spare covers it/.test(l)), 'debrief: a spare covers the bad mic');
 ok(lines.some(l => /3 mics checked by hand, 12 by Check the rest \(it stopped at Mic \d+/.test(l)), 'debrief: 3 by hand, 12 by Check the rest, one stop');
 await shot('6-debrief');
+
+// ---- the line check, straight on from the debrief (Cary, 2026-10-02) ----
+const clockAtEnd = await page.textContent('#clock');
+ok(!(await page.$eval('#lineBtn', b => b.hidden)), 'debrief offers the line check');
+await tap('#lineBtn'); await page.waitForTimeout(300);
+ok((await where()) === 'X32', 'line check: you start at the X32');
+const lineChs = await page.$$eval('.chips .chip', c => c.map(x => +x.dataset.ch));
+ok(lineChs.length === 13 && !lineChs.includes(unpCh) && lineChs.includes(14), `line check: 13 singers; spare 14 stands in for bad mic ${unpCh}`);
+ok((await page.textContent('#clock')) === clockAtEnd, 'line check: the clock carries on from the battery-in check');
+ok(/Morgan/.test(await page.textContent('#mentor')) && /down the line/.test(await page.textContent('#mentor')), 'Morgan explains the line check');
+const KIND = [['switched their mic off', 'off'], ['muted', 'muted'], ['too quietly', 'quiet'], ['pointed', 'aimed']];
+const lineFaults = async () => Object.fromEntries((await page.textContent('#dbg')).split('\n').map(l => l.match(/^fault: (handheld-\d\d) \((.*?)\)/)).filter(Boolean).map(m => [m[1], KIND.find(([t]) => m[2].includes(t))[1]]));
+const lchip = id => page.$eval(`.chips .chip[data-id="${id}"]`, c => c.dataset.s);
+const toast = () => page.textContent('#toast');
+const say = async act => { await tap(`#hand [data-act="${act}"]`); };
+// play the line check like a player: by hand, then Go down the line; each fault gets noticed, traced, fixed and verified
+async function playLine(name) {
+  const faults = await lineFaults(), fixed = new Set();
+  ok(Object.keys(faults).length === 2, `${name}: two faults (${Object.entries(faults).map(([d, k]) => `${k} on ${d}`).join(', ')})`);
+  for (let guard = 0; guard < 40 && (await page.$eval('#sheet', s => s.hidden)); guard++) {
+    const [done, of] = (await page.textContent('#score')).split('/'); if (done === of) break;
+    const id = await page.$eval('#hand .singer', s => s.dataset.id), kind = !fixed.has(id) && faults[id];
+    if (!kind && !(await page.$eval('#skipBtn', b => b.disabled))) { await tap('#skipBtn'); await page.waitForTimeout(250); continue; }
+    if (!kind) { await say('call'); await say('hear'); ok((await lchip(id)) === 'verified' || !(await page.$eval('#sheet', s => s.hidden)), `${name}: ${id} checked by hand`); continue; }
+    if (!(await lchip(id)).match(/no-signal-seen|low|ringing/)) await say('call');                                                    // NOTICE
+    if (kind === 'off' || kind === 'muted') {
+      ok((await lchip(id)) === 'no-signal-seen', `${name}: ${id} (${kind}): no signal at the X32`);
+      await say('check'); ok((kind === 'off' ? /display is blank/ : /line through it/).test(await toast()), `${name}: ${id}: the singer reads the display (TRACE)`);
+      await say(kind === 'off' ? 'hold' : 'tap');                                                                                       // ACT
+    } else if (kind === 'quiet') {
+      ok((await lchip(id)) === 'low', `${name}: ${id} (quiet): the meter barely moves`);
+      await say('check'); await say('louder');
+    } else {
+      ok((await lchip(id)) === 'ringing' && await page.$eval('#wedges', w => w.classList.contains('ring')), `${name}: ${id} (aimed at the wedge): it rings, the wedges flash`);
+      await say('down'); await say('call');
+      ok((await lchip(id)) === 'monitor', `${name}: ${id}: send down, the ring stops (TRACE)`);
+      await say('aim'); await say('up');
+    }
+    await say('call'); await say('hear');                                                                                               // VERIFY
+    ok((await lchip(id)) === 'verified', `${name}: ${id} fixed and checked`);
+    fixed.add(id);
+  }
+  await page.waitForTimeout(1600);
+  ok(!(await page.$eval('#sheet', s => s.hidden)) && /line check/i.test(await page.textContent('#dbTitle')), `${name}: the line check debrief opens`);
+  const dl = await page.$$eval('#dbList li', ls => ls.map(l => l.textContent));
+  ok(/Line check done: all 13 singers checked/.test(dl[0]), `${name}: ${dl[0]}`);
+  for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(dl.filter(l => l.startsWith(step)).length === 2, `${name}: ${step} for both faults`);
+}
+await page.tap('#closeBtn').catch(() => {});
+await shot('7-line-start');
+await playLine('line check (VJ-48217 → LC-48217)');
+await shot('8-line-debrief');
+ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'line check: no sideways scroll');
+
+// a direct link to the line check, with the other two faults (switched off, muted); the mentor is remembered
+const p2 = await ctx.newPage(); p2.on('pageerror', e => errs.push(e.message));
+await p2.goto(BASE + '#LC-20017', { waitUntil: 'networkidle' });
+const page0 = page; page = p2;
+ok(await page.$eval('#intro', e => e.hidden), 'direct line check link: no title card once a mentor is picked');
+ok((await page.$$eval('.chips .chip', c => c.length)) === 13, 'direct line check link: 13 singers');
+// the receivers tell switched off from muted: RF or not
+await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
+const rf = async ch => page.$eval(`#panel .strip[data-ch="${ch}"] .rfdot`, d => d.classList.contains('on'));
+ok((await rf(3)) === true && (await rf(6)) === false && (await rf(1)) === true, 'receivers: the muted mic (3) has RF, the switched-off one (6) has none');
+await tapBack(); await tapBack(); await tapHot('X32');
+await playLine('line check (LC-20017)');
+page = page0;
 ok(await page.evaluate(() => parseFloat(document.body.style.paddingBottom) >= document.querySelector('#dock').offsetHeight), 'the page ends clear of the hands dock');
 ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'no sideways scroll at phone width');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));

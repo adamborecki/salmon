@@ -202,6 +202,32 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
 .ibrief{margin:0;padding:0;list-style:none;display:grid;gap:8px;text-align:left;font-size:14.5px;color:#d6dde3}
 .ibrief li{padding-left:16px;position:relative} .ibrief li::before{content:"▸";position:absolute;left:0;color:var(--sig-hi)}
 .btn.big{font-size:17px;font-weight:600;padding:10px 28px;min-height:48px;border-radius:24px;background:#fff;color:#141a20;border-color:#fff}
+/* the line check: singers as chips you can pick, the wedges on Bus 1, and the singer card in the dock */
+button.chip{font:inherit;color:inherit;cursor:pointer}
+.chip.sel{outline:2px solid var(--accent);outline-offset:1px}
+.chip[data-s="low"],.chip[data-s="monitor"]{border-color:var(--warn)} .chip[data-s="low"] i,.chip[data-s="monitor"] i{color:var(--warn)}
+.chip[data-s="ringing"]{border-color:var(--bad)} .chip[data-s="ringing"] i{color:var(--bad)}
+.steps.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.strip.idle{opacity:.35}
+.rfdot{width:8px;height:8px;border-radius:50%;background:#26313b;box-shadow:inset 0 0 0 1px #3a4652}
+.rfdot.on{background:var(--sig-hi);box-shadow:0 0 6px var(--sig-hi)}
+.wedges{display:flex;align-items:center;gap:8px;background:var(--stage);color:#aeb9c4;border-radius:6px;padding:6px 10px;font:500 11px var(--mono)}
+.wedges .wg{width:30px;height:16px;background:#3a4652;clip-path:polygon(0 100%,18% 0,100% 0,100% 100%);border-radius:2px}
+.wedges.ring{color:#fff;animation:ringing .12s linear 12}
+.wedges.ring .wg{background:var(--bad-hi);box-shadow:0 0 10px var(--bad-hi)}
+@keyframes ringing{50%{transform:translateX(2px)}}
+.singer{display:grid;gap:6px}
+.srow{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.srow svg.mic{width:11px;height:40px}
+.srow .hinfo{gap:0}
+.asks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.asks .btn.sm{padding:3px 2px;font-size:12px}
+/* in the line check the meters are the job: they go above the photo */
+body.linemode #panel{order:-1}
+.btn.nav{min-width:38px;font-size:18px;font-weight:600}
+.sendctl{grid-column:span 2;display:grid;grid-template-columns:38px 1fr 38px;gap:4px;align-items:center;text-align:center;font:600 13px var(--mono);font-variant-numeric:tabular-nums}
+.sendctl small{display:block;font:500 9.5px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+@media (prefers-reduced-motion:reduce){.wedges.ring{animation:none}}
 @media (prefers-reduced-motion:reduce){#photo,.tbar i{transition:none}.oh,.clock.over,.iclock i,.delta.go,.mentor{animation:none}}
 </style>
 
@@ -229,13 +255,13 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
     <div class="card" id="chair"></div>
     <div class="card">
       <details id="logBox"><summary>Activity</summary><ol class="log" id="log"></ol></details>
-      <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button></div></details>
+      <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button><button class="btn" id="lineJump">Jump to the line check</button></div></details>
     </div>
   </div>
 </div>
 <div class="mentor" id="mentor" role="status" hidden></div>
 <div class="dock" id="dock"><div class="dock-in" id="hand"></div></div>
-<div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, which channels are the spares, the chair, the display layout and mute glyph) are placeholders, not room facts.</p></div></div>
+<div class="sheet" id="sheet" hidden><div class="card" role="dialog" aria-labelledby="dbTitle"><h2 id="dbTitle">Debrief</h2><ul class="dl" id="dbList"></ul><div class="row"><button class="btn primary" id="lineBtn" hidden>On to the line check →</button><button class="btn primary" id="againBtn">New scenario</button><button class="btn" id="closeBtn">Keep playing</button></div><p class="fine">Prototype of the first gameplay loop. Values marked tentative in the content (game seconds, which channels are the spares, the chair, the display layout and mute glyph) are placeholders, not room facts.</p></div></div>
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introHead" hidden>
   <div class="ipage" id="intro1"></div>
   <div class="ipage" id="intro2" hidden></div>
@@ -243,11 +269,15 @@ pre.dbg{white-space:pre-wrap;word-break:break-word;font:11px/1.5 var(--mono);mar
 
 <script type="application/json" id="contentData">__CONTENT__</script>
 <script type="application/json" id="graphData">__GRAPH__</script>
+<script type="application/json" id="lineData">__LINE__</script>
 <script type="module">
 import { engine } from './engine.js';
+import { lineEngine } from './line-engine.js';
 const content = JSON.parse(document.getElementById('contentData').textContent);
 const G = JSON.parse(document.getElementById('graphData').textContent);
 const eng = engine(content);
+const LC = JSON.parse(document.getElementById('lineData').textContent);
+const leng = lineEngine(LC, content.devices);
 const $ = s => document.querySelector(s);
 const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.chair.label;
 const ROLE = { musician: 'for a musician', spare: 'spare, kept at FOH' };
@@ -265,18 +295,22 @@ const X32 = Object.keys(content.displays).find(k => content.displays[k].device =
 const mmss = s => `${Math.floor(s / 60)}:${two(Math.floor(s % 60))}`;
 
 let game, trail = [], toastT = null, lastT = 0, activeHand = 0, mentorT = null;
+let mode = 'battery', lgame = null, sel = null;   // the line check: its game and the singer the dock is on
+const curScene = () => mode === 'line' ? lgame.scene : game.scene;
+const curView = () => mode === 'line' ? leng.view(lgame) : eng.view(game);
 // the player's mentor (one of content.intro.crew), remembered in this browser as a convenience
 let mentor = null; try { mentor = localStorage.getItem('salmon-mentor'); } catch (e) {}
 if (!content.intro.crew.includes(mentor)) mentor = null;
 const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
 function boot(seed, intro = false) {
-  game = eng.start(seed); trail = []; lastT = 0; activeHand = 0;
-  $('#log').innerHTML = ''; $('#sheet').hidden = true;
+  game = eng.start(seed); trail = []; lastT = 0; activeHand = 0; mode = 'battery'; lgame = null; document.body.classList.remove('linemode');
+  $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = false;
   render(true);
   if (intro) showIntro(); else greet();
 }
 const GREETING = '4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.';
-const greet = () => mentor ? mentorSays(GREETING, 'Tap me for a hint whenever you get stuck.') : say(GREETING, 'hint', 6500);
+const LGREETING = 'The mics are on stage. Go down the line from black / red: each singer says something while you watch their meter, then ask if they can hear themselves in the wedge.';
+const greet = () => { const t = mode === 'line' ? LGREETING : GREETING; mentor ? mentorSays(t, 'Tap me for a hint whenever you get stuck.') : say(t, 'hint', 6500); };
 // a speech bubble from the mentor, just above the hands; tap it to close
 function mentorSays(text, foot = '') {
   const I = content.intro, m = $('#mentor');
@@ -308,6 +342,7 @@ function showIntro() {
   $('#introNext').focus();
 }
 function act(a) {
+  if (mode === 'line') return lineAct(a);
   const r = eng.act(game, a);
   if (r.error) { say(r.error.message, 'bad'); return r; }
   if (a.type !== 'hint') { clearTimeout(mentorT); $('#mentor').hidden = true; }   // read it, then on with the job
@@ -328,7 +363,7 @@ function act(a) {
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
   return r;
 }
-function goTo(scene, back) { if (!back) trail.push(game.scene); act({ type: 'go', scene }); }
+function goTo(scene, back) { if (!back) trail.push(curScene()); act({ type: 'go', scene }); }
 // talking needs a meter in view: away from one, walk to the X32 first (it is a few steps from anywhere at FOH)
 function talk(id) {
   if (!content.displays[game.scene]) { trail = ['foh-wide']; act({ type: 'go', scene: X32 }); }
@@ -376,15 +411,20 @@ function lcdSVG(l) {
     <rect x="3" y="3" width="5.5" height="6" class="lk"/><rect x="10.3" y="3" width="5.5" height="6" class="lk"/><rect x="17.6" y="3" width="5.5" height="6" class="lk"/></g>${mute}</svg>`;
 }
 
-function render(sceneChanged) {
-  const v = eng.view(game);
-  const left = WINDOW - game.t, tone = left <= 0 ? ' over' : left <= WINDOW * .3 ? ' late' : '';
-  const clk = $('#clock'), [hms, ampm] = v.clock.split(' '); clk.innerHTML = `${esc(hms)}<small>${esc(ampm || '')}</small>`; clk.className = 'clock' + tone; clk.title = 'Rehearsal ' + v.readyBy;
+// the clock bar: game time against the rehearsal, the "+2s" per action, the count done
+function renderBar(clock, readyBy, t, done, of) {
+  const left = WINDOW - t, tone = left <= 0 ? ' over' : left <= WINDOW * .3 ? ' late' : '';
+  const clk = $('#clock'), [hms, ampm] = clock.split(' '); clk.innerHTML = `${esc(hms)}<small>${esc(ampm || '')}</small>`; clk.className = 'clock' + tone; clk.title = 'Rehearsal ' + readyBy;
   $('#due').innerHTML = left > 0 ? `<b>${mmss(left)}</b> to rehearsal` : `<b>${mmss(-left)}</b> late for rehearsal`;
   $('#tbar').className = 'tbar' + tone; $('#tfill').style.transform = `scaleX(${Math.max(0, left) / WINDOW})`;
-  if (game.t > lastT) { const d = $('#delta'); d.textContent = `+${game.t - lastT}s`; d.classList.remove('go'); void d.offsetWidth; d.classList.add('go'); }
-  lastT = game.t;
-  $('#score').textContent = `${v.objective.verified}/${v.objective.of}`;
+  if (t > lastT) { const d = $('#delta'); d.textContent = `+${t - lastT}s`; d.classList.remove('go'); void d.offsetWidth; d.classList.add('go'); }
+  lastT = t;
+  $('#score').textContent = `${done}/${of}`;
+}
+function render(sceneChanged) {
+  if (mode === 'line') return renderLine(sceneChanged);
+  const v = eng.view(game);
+  renderBar(v.clock, v.readyBy, game.t, v.objective.verified, v.objective.of);
   renderHintBtn(v);
   $('#obj').innerHTML = `<h2>${esc(v.objective.label)} <span class="fine">${v.objective.verified} of ${v.objective.of} verified${v.objective.setAside ? ` · ${v.objective.setAside} set aside` : ''}</span></h2><p class="fine">${esc(v.objective.goal)}</p><div class="chips">${v.objective.mics.map(m =>
     `<div class="chip" data-s="${m.status}" data-ch="${m.channel}" title="CH ${two(m.channel)}: ${STATUS[m.status][1]}" aria-label="Channel ${m.channel}: ${STATUS[m.status][1]}"><b>${two(m.channel)}</b><i>${STATUS[m.status][0]}</i></div>`).join('')}</div>
@@ -393,15 +433,16 @@ function render(sceneChanged) {
   renderSteps(v); renderPanel(v); renderHand(v); renderChair(v);
   $('#dbg').textContent = `seed ${v.debug.seed}\n${v.debug.faults.map(f => `fault: ${f.device} (${f.label.toLowerCase()})${f.resolved ? ', resolved' : ''}`).join('\n')}\n` +
     Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
-  try { window.claude?.hot?.snapshot?.(() => ({ game, trail })); } catch (e) {}
+  snapshot();
 }
-function renderHintBtn(v = eng.view(game)) {
+function snapshot() { try { window.claude?.hot?.snapshot?.(() => ({ game, trail, mode, lgame, sel })); } catch (e) {} }
+function renderHintBtn(v = curView()) {
   const b = $('#hintBtn'), face = mentor ? `<img src="p/${mentor}.jpg" alt="">` : '';
   b.innerHTML = v.hintsLeft ? `${face}${mentor ? 'Ask' : 'Hint'} ${v.hintsLeft}` : `${face}No hints`; b.disabled = !v.hintsLeft;
   b.setAttribute('aria-label', v.hintsLeft ? `${mentor ? `Ask ${content.intro.crew_names[mentor]} for a hint` : 'Hint'}: ${v.hintsLeft} left` : 'No hints left');
 }
 function renderStage() {
-  const id = game.scene, img = $('#photo');
+  const id = curScene(), img = $('#photo');
   $('#where').textContent = PLACE[id] || id;
   img.classList.add('fading');
   const next = new Image(); next.src = `p/${id}.jpg`;
@@ -501,10 +542,132 @@ function pulse(point, signal) {
   bar.animate([{ height: '0%' }, { height: '72%', offset: .12 }, { height: '58%', offset: .3 }, { height: '80%', offset: .45 }, { height: '62%', offset: .62 }, { height: '75%', offset: .75 }, { height: '0%' }], { duration: 1500, easing: 'ease-out' });
 }
 function showDebrief() {
-  const d = eng.debrief(game);
+  const d = mode === 'line' ? leng.debrief(lgame) : eng.debrief(game);
+  $('#dbTitle').textContent = mode === 'line' ? 'Debrief: line check' : 'Debrief: battery-in check';
   $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${esc(l.trim())}</li>`).join('');
-  $('#sheet').hidden = false; $('#againBtn').focus();
+  $('#lineBtn').hidden = !(mode === 'battery' && game.completedAt);
+  $('#sheet').hidden = false; ($('#lineBtn').hidden ? $('#againBtn') : $('#lineBtn')).focus();
 }
+// ---- the line check (line-engine.js, content/vj-line-check.json): the A1 at the X32, the singers on stage ----
+const LSTATUS = { 'not-checked': ['–', 'not checked yet'], 'no-signal-seen': ['✕', 'no signal'], low: ['▁', 'too quiet'], ringing: ['≋', 'feedback'], monitor: ['◐', 'meter fine: ask about the wedge'], recheck: ['↻', 're-check'], verified: ['✓', 'checked'] };
+const lineSeed = () => game && /^VJ-\d+$/.test(game.seed) ? 'LC-' + game.seed.slice(3) : 'LC-' + String(Math.floor(10000 + Math.random() * 89999));
+// who sings into what: the musicians' mics, with a spare (14-16) standing in for each one set aside as bad
+function lineupFromBattery() {
+  const hs = Object.keys(D).filter(id => D[id].type === 'wireless-handheld').sort((a, b) => D[a].channel - D[b].channel), ok = id => game.where[id] !== 'bad';
+  const spares = hs.filter(id => D[id].role === 'spare' && ok(id));
+  return hs.filter(id => D[id].role === 'musician').map(id => ok(id) ? id : spares.shift()).filter(Boolean);
+}
+function startLine(seed, opts = {}, intro = false) {
+  mode = 'line'; document.body.classList.add('linemode'); lgame = leng.start(seed, opts); sel = leng.view(lgame).next; trail = ['foh-wide']; lastT = lgame.t;
+  $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
+  render(true);
+  if (intro) showIntro(); else greet();
+}
+function lineAct(a) {
+  const r = leng.act(lgame, a);
+  if (r.error) { say(r.error.message, 'bad'); return r; }
+  if (a.type !== 'hint') { clearTimeout(mentorT); $('#mentor').hidden = true; }
+  const before = lgame.log.length, sceneBefore = lgame.scene;
+  lgame = r.game;
+  for (const e of lgame.log.slice(before)) lineLog(e);
+  if (a.type === 'line') trail = lgame.scene === 'foh-wide' ? [] : ['foh-wide'];
+  const stop = r.events.find(ev => ev.type === 'skip-stopped');
+  if (stop) sel = stop.mic;
+  else if (a.type === 'line' || r.events.some(ev => ev.type === 'verified' && ev.mic === sel)) sel = leng.view(lgame).next || sel;   // on to the next in line
+  render(lgame.scene !== sceneBefore);
+  for (const ev of r.events) {
+    if (ev.type === 'meter') linePulse(ev);
+    if (ev.type === 'feedback') ring();
+    if (ev.type === 'hint' && mentor) mentorSays(ev.text, `Hint ${ev.level} of ${ev.of}`);
+    else if (ev.type === 'reply') say(ev.text, '', 3600);
+    else if (ev.text) say(ev.text, ['verified', 'objective-complete', 'skip-done'].includes(ev.type) ? 'good' : ev.type === 'hint' ? 'hint' : ['no-display', 'skip-stopped', 'feedback'].includes(ev.type) ? 'bad' : '', ev.type === 'skip-stopped' ? 6000 : 3200);
+  }
+  if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1300);
+  return r;
+}
+// "say something" needs a meter in view: away from one, go to the X32 first
+function lineCall(id) {
+  if (![LC.scenes.x32, LC.scenes.receivers].includes(lgame.scene)) { trail = ['foh-wide']; lineAct({ type: 'go', scene: LC.scenes.x32 }); }
+  lineAct({ type: 'call', device: id });
+}
+function lineLog(e) {
+  const L = e.device && D[e.device].label, I = LC.instructions, o = e.observed, li = document.createElement('li');
+  const what = { go: `went to ${PLACE[e.scene] || e.scene}`, hint: `took hint ${e.level}`,
+    call: `${L} said something${!o ? ' (no meter in view)' : o.at === 'x32' ? `: X32 ${o.level === 'none' ? 'no signal' : o.level}` : `: receiver RF ${o.rf ? 'yes' : 'no'}, audio ${o.af}`}${o && o.feedback ? ', and it rang' : ''}`,
+    ask: e.type === 'ask' ? `to ${L}: "${I[e.what].say}" "${e.reply}"` : '', send: `${L}'s Bus 1 send: ${e.from ?? 'off'} → ${e.to ?? 'off'} dB`,
+    line: e.type !== 'line' ? '' : e.stoppedAt ? `${LC.skip.label}: ${e.checked.length} checked, stopped at ${D[e.stoppedAt].label}` : `${LC.skip.label}: ${e.checked.length} checked` }[e.type];
+  li.textContent = (e.via === 'skip' ? '↳ ' : '') + what; $('#log').prepend(li);
+}
+function renderLine(sceneChanged) {
+  const v = leng.view(lgame);
+  if (!sel || !lgame.singer[sel]) sel = v.next || lgame.lineup[0];
+  renderBar(v.clock, v.readyBy, lgame.t, v.verified, v.of);
+  renderHintBtn(v);
+  $('#obj').innerHTML = `<h2>${esc(LC.objective.label)} <span class="fine">${v.verified} of ${v.of} checked</span></h2><p class="fine">${esc(LC.objective.goal)}</p>
+    <div class="chips">${v.singers.map(s => `<button class="chip${s.id === sel ? ' sel' : ''}" data-s="${s.status}" data-ch="${s.channel}" data-id="${s.id}" aria-label="${esc(s.label)}: ${LSTATUS[s.status][1]}"><b>${two(s.channel)}</b><i>${LSTATUS[s.status][0]}</i></button>`).join('')}</div>
+    <div class="legend">✓ checked · ◐ wedge next · ▁ too quiet · ≋ feedback · ✕ no signal · ↻ re-check · – not yet. Tap one to talk to that singer.</div>`;
+  $('#obj').querySelectorAll('.chip[data-id]').forEach(b => b.onclick = () => { sel = b.dataset.id; render(false); });
+  if (sceneChanged) renderStage();
+  const p = v.procedure, s = p.skip, nxt = p.mic && p.steps.find(st => !st.done);
+  $('#steps').innerHTML = `<p class="now">${p.mic ? `Next in line: ${esc(D[p.mic].label)}` : 'Every singer is checked.'}</p>
+    <ol class="steps three" aria-label="Line check, for each singer">${p.steps.map(st => `<li class="${st.done ? 'done' : ''}${nxt && st.id === nxt.id ? ' cur' : ''}" data-step="${st.id}" title="${esc(st.text)}"><span>${esc(st.short)}</span></li>`).join('')}</ol>
+    ${nxt ? `<p class="stepnow">${esc(nxt.text)}</p>` : ''}
+    <div class="skip"><button class="btn primary" id="skipBtn" ${s.available ? '' : 'disabled'}>${esc(s.label)}${s.left ? ` (${s.left})` : ''}</button>
+    <p class="fine">${s.available ? `Does the same for the other ${s.left}, in order, and stops at the first singer whose meter is wrong, who rings, or who can't hear themselves.` : esc(s.reason) + (s.byHand < s.need ? ` By hand so far: ${s.byHand} of ${s.need}.` : '')}</p></div>
+    <details class="tips"><summary>Tips</summary><p class="fine">You can't touch the mics on stage: everything goes through what you ask the singer. The mic's one button: a tap mutes or unmutes it, a press and hold switches it on or off.</p><p class="fine">${esc(LC.bus1.label)}: each channel's send sets how loud that singer is in the wedges.</p></details>`;
+  $('#skipBtn').onclick = () => act({ type: 'line' });
+  renderLinePanel(v); renderLineDock(v);
+  $('#dbg').textContent = `seed ${v.debug.seed} (line check)\n` + v.debug.faults.map(f => `fault: ${f.device} (${f.label.toLowerCase()})${f.active ? '' : ', fixed'}`).join('\n') +
+    '\n' + lgame.lineup.map(m => `${m}: ${JSON.stringify(v.debug.singer[m])} send ${v.singers.find(x => x.id === m).sendDb ?? 'off'}`).join('\n');
+  snapshot();
+}
+function renderLinePanel(v) {
+  const p = $('#panel'), sc = lgame.scene, byCh = new Map(v.singers.map(s => [s.channel, s])), chans = Array.from({ length: 16 }, (_, i) => i + 1);
+  const strip = (ch, extra = '') => { const s = byCh.get(ch); return `<div class="strip${s && s.id === sel ? ' mine' : ''}${s ? '' : ' idle'}" data-ch="${ch}">${extra}<div class="meter"><i></i></div><b>${two(ch)}</b></div>`; };
+  if (sc === LC.scenes.x32) {
+    p.innerHTML = `<h3>X32 input meters</h3><div class="meters">${chans.map(ch => strip(ch)).join('')}</div>
+      <div class="wedges" id="wedges"><span>${esc(LC.bus1.label)}</span><span class="sp"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span></div>
+      <p class="fine">Have ${esc(D[sel].label)} say something and watch channel ${D[sel].channel}. Simplified meters, not the console's own screen.</p>`;
+  } else if (sc === LC.scenes.receivers) {
+    p.innerHTML = `<h3>PTU-6000 receivers: RF and audio</h3><div class="meters">${chans.map(ch => { const s = byCh.get(ch); return strip(ch, `<span class="rfdot${s && leng.sound(lgame, s.id).rf ? ' on' : ''}"></span>`); }).join('')}</div>
+      <p class="fine">The dot is RF: that mic is on and reaching its receiver. The bar is audio, while they talk (placeholder indicators).</p>`;
+  } else if (sc === LC.scenes.stage_view) {
+    p.innerHTML = `<h3>The stage</h3><p>The singers stand in a line on the stage, out past the mixer, black / red first. You're the A1: the line check runs from the X32 (tap it on the photo).</p>`;
+  } else p.innerHTML = `<h3>${PLACE[sc] || sc}</h3><p class="fine">The line check runs from the X32; the receivers are in the wireless rack.</p>`;
+}
+function renderLineDock(v) {
+  const s = v.singers.find(x => x.id === sel), i = v.singers.indexOf(s), dv = D[sel], I = LC.instructions;
+  const meter = [LC.scenes.x32, LC.scenes.receivers].includes(lgame.scene);
+  $('#hand').innerHTML = `<div class="singer" data-id="${sel}">
+    <div class="srow"><button class="btn sm nav" data-nav="-1" ${i ? '' : 'disabled'} aria-label="Previous singer">‹</button>${micSVG(dv)}
+      <div class="hinfo"><b>${esc(dv.label)}</b><span class="role">${LSTATUS[s.status][1]}</span></div>
+      <button class="btn sm nav" data-nav="1" ${i < v.singers.length - 1 ? '' : 'disabled'} aria-label="Next singer">›</button></div>
+    <div class="acts"><button class="btn sm talk" data-act="call">${meter ? 'Say something' : 'Say something (X32 →)'}</button><button class="btn sm talk" data-act="hear">${esc(I.hear.short)}</button>
+      <div class="sendctl"><button class="btn sm" data-act="down" aria-label="Bus 1 send down">−</button><span><small>Bus 1 send</small>${s.sendDb == null ? 'off' : s.sendDb + ' dB'}</span><button class="btn sm" data-act="up" aria-label="Bus 1 send up">+</button></div></div>
+    <div class="asks" role="group" aria-label="Ask them to">${['hold', 'tap', 'louder', 'aim', 'check'].map(w => `<button class="btn sm" data-act="${w}" title="${esc(I[w].say)}" aria-label="${esc(I[w].label)}">${esc(I[w].short)}</button>`).join('')}</div></div>`;
+  $('#hand').querySelectorAll('[data-nav]').forEach(b => b.onclick = () => { sel = v.singers[i + +b.dataset.nav].id; render(false); });
+  $('#hand').querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+    const w = b.dataset.act;
+    if (w === 'call') lineCall(sel);
+    else if (w === 'up' || w === 'down') act({ type: 'send', device: sel, dir: w === 'up' ? 1 : -1 });
+    else act({ type: 'ask', device: sel, what: w });
+  });
+  fitDock();
+}
+// a meter moving on the X32 or a receiver: a healthy level, a little, or nothing
+function linePulse(ev) {
+  const sc = lgame.scene; if ((ev.at === 'x32') !== (sc === LC.scenes.x32)) return;
+  const st = document.querySelector(`#panel .strip[data-ch="${D[ev.mic].channel}"]`); if (!st) return;
+  const level = ev.at === 'x32' ? ev.level : ev.af, bar = st.querySelector('i');
+  if (level === 'none') { st.classList.add('dead'); setTimeout(() => st.classList.remove('dead'), 1400); return; }
+  const k = level === 'quiet' ? .2 : 1;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { bar.style.height = 70 * k + '%'; setTimeout(() => { bar.style.height = '0'; }, 1200); return; }
+  bar.animate([{ height: '0%' }, { height: 72 * k + '%', offset: .12 }, { height: 58 * k + '%', offset: .3 }, { height: 80 * k + '%', offset: .45 }, { height: 62 * k + '%', offset: .62 }, { height: 75 * k + '%', offset: .75 }, { height: '0%' }], { duration: 1500, easing: 'ease-out' });
+}
+function ring() { const w = $('#wedges'); if (!w) return; w.classList.remove('ring'); void w.offsetWidth; w.classList.add('ring'); setTimeout(() => w.classList.remove('ring'), 1800); }
+$('#lineBtn').onclick = () => startLine(lineSeed(), { t: game.t, lineup: lineupFromBattery() });
+$('#lineJump').onclick = () => startLine(lineSeed());
+
 $('#hintBtn').onclick = () => act({ type: 'hint' });
 $('#debriefBtn').onclick = showDebrief;
 addEventListener('resize', fitDock);
@@ -517,6 +680,14 @@ $('#mentor').onclick = () => { $('#mentor').hidden = true; };
 $('#intro').onclick = ev => { if (ev.target.closest('#intro1') && !ev.target.closest('button')) $('#introNext').click(); };
 
 const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
-const start = data => { if (data && data.game && data.game.content === content.id && data.game.v === 4) { game = data.game; trail = data.trail || []; render(true); } else boot(hashSeed || newSeed(), true); };
+const hashLine = /^#LC-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;   // straight to the line check
+const start = data => {
+  if (data && data.game && data.game.content === content.id && data.game.v === 4) {
+    game = data.game; trail = data.trail || [];
+    if (data.mode === 'line' && data.lgame && data.lgame.v === 1) { mode = 'line'; lgame = data.lgame; sel = data.sel; $('#chair').hidden = true; document.body.classList.add('linemode'); }
+    render(true);
+  } else if (hashLine) { game = eng.start(newSeed()); startLine(hashLine, {}, !mentor); }
+  else boot(hashSeed || newSeed(), true);
+};
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
 </script>
