@@ -358,9 +358,9 @@ test('no soft-locks: after any random sequence of actions, the same recovery alw
     g = run(g, { type: 'go', scene: 'x32-top' }).g;
     for (const m of eng.view(g).held) g = run(g, { type: 'put', place: 'chair', device: m }).g;
     for (const m of g.inPlay) {
-      g = run(g, { type: 'go', scene: g.where[m] === 'drawer' ? 'foh-mic-drawer' : 'x32-top' }, { type: 'pick_up', device: m }).g;
+      g = run(g, { type: 'go', scene: ['drawer', 'bad'].includes(g.where[m]) ? 'foh-mic-drawer' : 'x32-top' }, { type: 'pick_up', device: m }).g;
       const s = () => g.devices[m].state;
-      if (s().paired === false) { g = run(g, { type: 'go', scene: 'x32-top' }, { type: 'put', place: 'bad' }).g; continue; }
+      if (s().paired === false) { g = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'put', place: 'bad' }).g; continue; }
       if (s().battery === 'none') g = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'insert_batteries' }).g;
       if (s().battery === 'reversed') g = run(g, { type: 'reseat_batteries' }).g;
       if (s().power === 'off') g = run(g, { type: 'press', how: 'hold' }).g;
@@ -410,11 +410,12 @@ test('unpaired mic: switches on fine, batteries fine, but nothing reaches its re
   const r = eng.act(g, { type: 'hint' });
   assert.equal(r.events[0].fault, 'unpaired', 'a hint is about the mic in your hand');
   assert.match(r.events[0].text, /links a transmitter to its receiver/);
-  ({ g, events } = run(g, { type: 'put', place: 'bad' }));
+  assert.equal(eng.act(g, { type: 'put', place: 'bad' }).error.code, 'not-here', 'bad mics go back in the drawer (Cary, 2026-10-02)');
+  ({ g, events } = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'put', place: 'bad' }));
   assert.equal(status(g, u), 'set-aside');
   assert.ok(events.some(e => e.type === 'set-aside' && /A spare covers it/.test(e.text)));
   ({ g } = run(g, { type: 'go', scene: 'storage-closet' }));
-  assert.equal(eng.act(g, { type: 'pick_up', device: u }).error.code, 'not-here', 'the set-aside spot is at FOH');
+  assert.equal(eng.act(g, { type: 'pick_up', device: u }).error.code, 'not-here', 'a bad mic is in the drawer, not here');
 });
 
 test('both faults, the way a player meets them: reversed batteries by hand, then Check the rest stops on the unpaired mic', () => {
@@ -433,6 +434,7 @@ test('both faults, the way a player meets them: reversed batteries by hand, then
   ({ g: g2 } = run(g2, { type: 'inspect', device: u }, { type: 'go', scene: 'foh-rack-closeup' }, { type: 'talk', device: u }));
   const v = eng.view(g2);
   assert.notDeepEqual({ group: v.lcd[u].group, channel: v.lcd[u].channel }, v.rfRx[u], 'the player can see the mismatch');
+  g2 = run(g2, { type: 'go', scene: 'foh-mic-drawer' }).g;
   for (const m of v.held) g2 = run(g2, { type: 'put', place: m === u ? 'bad' : 'chair', device: m }).g;
   ({ g: g2, events } = run(g2, { type: 'check_rest' }));
   const done = eng.view(g2);
@@ -445,7 +447,7 @@ test('both faults, the way a player meets them: reversed batteries by hand, then
   assert.match(text, /Ready: 15 mics verified at the X32 and 1 set aside/);
   assert.match(text, /was not paired with its receiver/);
   assert.match(text, /NOTICE ✓ .*Check the rest stopped on Mic \d+/);
-  assert.match(text, /ACT ✓ .*you set Mic \d+ .* aside as a bad mic/);
+  assert.match(text, /ACT ✓ .*you put Mic \d+ .* back in the drawer as a bad mic/);
   assert.match(text, /VERIFY ✓ a spare covers it: 15 mics verified, enough for every musician \(13\)/);
   assert.deepEqual(d.wrongAside, []);
 });
@@ -476,7 +478,7 @@ test('too many set aside and not every musician has a mic: not ready; picking th
   assert.equal(v.objective.verified, 12);
   assert.equal(v.objective.complete, false, '12 < 13: a musician would have no mic');
   assert.match(eng.debrief(g).lines[0], /every musician needs a mic \(13\)/);
-  g = run(g, { type: 'pick_up', device: aside[0] }, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'insert_batteries' }, { type: 'press', how: 'hold' },
+  g = run(g, { type: 'go', scene: 'foh-mic-drawer' }, { type: 'pick_up', device: aside[0] }, { type: 'insert_batteries' }, { type: 'press', how: 'hold' },
     { type: 'go', scene: 'x32-top' }, { type: 'talk' }, { type: 'put', place: 'chair' }).g;
   assert.equal(eng.view(g).objective.complete, true, '13 verified, 3 set aside');
 });

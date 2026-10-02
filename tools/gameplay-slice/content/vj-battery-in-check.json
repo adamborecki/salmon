@@ -19,10 +19,12 @@
   "brief": [
    "{mics} wireless mics, one routine for each: take it from the drawer, batteries in from the charger, switch it on, talk into it at the X32 and watch its meter, then put it on the chair.",
    "Do three by hand. After that, \"Check the rest\" runs the routine for you and stops on anything that sounds wrong.",
-   "A mic that won't work? Find out why before you fix it. Can't fix it? Set it aside: a spare covers it."
+   "A mic that won't work? Find out why before you fix it. Can't fix it? Back in the drawer it goes: a spare covers it."
   ],
   "go": "Let's go",
-  "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). USingers is the university choir that rehearses in the hall right before Vocal Jazz (Cary, 2026-10-01). {minutes} comes from clock.start/ready_by, {mics} from the mic count."
+  "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). USingers is the university choir that rehearses in the hall right before Vocal Jazz (Cary, 2026-10-01). {minutes} comes from clock.start/ready_by, {mics} from the mic count.",
+  "mentor_prompt": "Pick your mentor",
+  "mentor_status": "Cary, 2026-10-02: the player picks one of the three as a mentor; hints come as that mentor's speech bubbles. The hint text is the same whoever you pick (no personalities are decided)."
  },
  "clock": {
   "start": "16:50:00",
@@ -426,19 +428,14 @@
    "label": "Battery charger",
    "scene": "foh-mic-drawer",
    "cells": 32,
-   "status": "location: seen in photo IMG_4127 (a 16-slot CITYORK charger on top of the mic cabinet, above the drawer). 32 charged cells (enough for 16 mics) is a placeholder: where the cells beyond one charger come from (a second charger, the 'charged' drawer) is unknown; section 27 notes '16 or 18'."
+   "status": "location: seen in photo IMG_4127 (a 16-slot CITYORK charger on top of the mic cabinet, above the drawer). 32 charged cells (2 per mic) confirmed by Cary, 2026-10-02. Spare batteries live in a bin near the FOH computer (Cary, 2026-10-02); not simulated yet."
   },
   "bad": {
-   "label": "Set aside (bad mics)",
+   "label": "Back in the drawer (bad mics)",
    "reachable_from": [
-    "foh-wide",
-    "x32-top",
-    "foh-rack",
-    "foh-rack-closeup",
-    "foh-right-side",
     "foh-mic-drawer"
    ],
-   "status": "unknown where bad mics go in the room (the owner: \"we'll skip it\"); a placeholder spot at FOH. A bad-battery bin does not exist yet (section 27)."
+   "status": "Cary, 2026-10-02: bad mics go back in the drawer. The game still tracks them as set aside (bad), so the spares cover them; how the crew marks a mic as bad in the drawer is not recorded."
   }
  },
  "connections": [
@@ -683,14 +680,14 @@
     ],
     "status": "tentative: one of the later musician mics (5-13), so it is usually met through Check the rest; the owner's example of a 'bad mic' (2026-09-28): 'if it's not paired or some other problem then it's basically just a bad mic and we'll skip it'"
    },
-   "fix": "not fixable in this check (pairing is a later level): set it aside as a bad mic; a spare covers it",
+   "fix": "not fixable in this check (pairing is a later level): put it back in the drawer as a bad mic; a spare covers it",
    "debrief": {
     "failed": "{mic} was not paired with its receiver: it switched on, but its group/channel didn't match its receiver slot, so nothing arrived.",
     "act": {
-     "put:bad": "you set {mic} aside as a bad mic."
+     "put:bad": "you put {mic} back in the drawer as a bad mic."
     },
     "still": "{mic} is still in play, and it will never reach its receiver.",
-    "concepts": "a transmitter and its receiver must share a group/channel (pairing); an unfixable mic is set aside and a spare covers it"
+    "concepts": "a transmitter and its receiver must share a group/channel (pairing); an unfixable mic goes back in the drawer and a spare covers it"
    },
    "hints": [
     {
@@ -706,7 +703,7 @@
     {
      "level": 3,
      "kind": "direct",
-     "text": "It isn't paired with its receiver, and pairing isn't part of this check. Set it aside as a bad mic: a spare covers it."
+     "text": "It isn't paired with its receiver, and pairing isn't part of this check. Put it back in the drawer as a bad mic: a spare covers it."
     }
    ],
    "hints_status": "tentative wording, section 46 ladder shape",
@@ -769,7 +766,7 @@
  "objective": {
   "id": "battery-in-check",
   "label": "Battery-in check: the wireless mics",
-  "goal": "Before the mics go to the stage, verify every one: talking into it shows signal at its X32 input. A mic that can't be fixed is set aside; a spare covers it.",
+  "goal": "Before the mics go to the stage, verify every one: talking into it shows signal at its X32 input. A mic that can't be fixed goes back in the drawer; a spare covers it.",
   "source": "PRODUCT_DESIGN sections 45 (battery-in check; speak into each mic), 55 (goals, not recipes; complete only after verification)",
   "need_verified": {
    "value": 13,
@@ -806,7 +803,7 @@
   ],
   "optional": "The mic's display (group/channel, battery, mute) shows while it's in your hand. You don't need it when everything works; it's how you troubleshoot one that doesn't.",
   "status": "owner, 2026-09-28: this is the procedure (grab the right mic by colour, batteries in from the charger, switch it on, check the meter at the X32 = the win criterion).",
-  "bad_mic": "Can't make it work, and it isn't the batteries? Set it aside as a bad mic: a spare covers it.",
+  "bad_mic": "Can't make it work, and it isn't the batteries? Put it back in the drawer as a bad mic: a spare covers it.",
   "display_status": "Cary (collaborator), 2026-10-01: show the display as soon as the mic is in hand, instead of a separate 'read the display' action."
  },
  "skip": {

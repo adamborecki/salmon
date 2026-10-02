@@ -159,7 +159,7 @@ export function engine(content) {
       return h.length === 1 ? [h[0], null] : [null, fail('which-mic', 'you have two mics in hand: say which one')];
     };
     const reachable = { drawer: s => s === P.drawer.scene, chair: s => chairScenes.has(s), bad: s => badScenes.has(s) };
-    const placeName = { drawer: P.drawer.label.toLowerCase(), chair: P.chair.label.toLowerCase(), bad: 'set-aside spot' };
+    const placeName = { drawer: P.drawer.label.toLowerCase(), chair: P.chair.label.toLowerCase(), bad: P.bad ? P.bad.label.toLowerCase() : 'set-aside spot' };
 
     switch (a.type) {
       case 'go': {
@@ -308,7 +308,7 @@ export function engine(content) {
     // a mic that just became verified by hand gets the non-blocking toast of section 55
     if (a.type === 'talk') for (const m of g.inPlay) if (validPositive(g, m) && !validPositive(g0, m))
       events.push({ type: 'verified', mic: m, text: `Signal verified: receiver → X32 ch ${D[m].channel}.` });
-    if (a.type === 'put' && a.place === 'bad') events.push({ type: 'set-aside', device: g.log.at(-1).device, text: `${D[g.log.at(-1).device].label} set aside as a bad mic. A spare covers it.` });
+    if (a.type === 'put' && a.place === 'bad') events.push({ type: 'set-aside', device: g.log.at(-1).device, text: `${D[g.log.at(-1).device].label} is back in the drawer as a bad mic. A spare covers it.` });
     if (g.completedAt == null && complete(g)) {
       g.completedAt = { seq: g.seq, t: g.t };
       const b = setAside(g).length;
