@@ -46,7 +46,9 @@ and principle 4.10), as small as it can be while still being real:
 
 `harness.html` is a deliberately small, throwaway page for *feeling* the loop on the real photos
 (FOH, X32, wireless rack, mic cabinet). It opens on a title card (`content.intro`: "OH NO!", then
-Cary, Morgan and Magnolia: "Relax, let's handle this!"), where you pick one of them as your mentor.
+Cary, Morgan and Magnolia: "Relax, let's handle this!", and your job). Each level (the mics, the
+monitors, the line check) then opens on its own card where you **pick that level's mentor** (Cary,
+2026-10-08: a separate mentor per level, each remembered on its own).
 Hints then come as that mentor's speech bubbles, and the Hint button shows their face ("Ask 3"). Tap into scenes and take a mic from the
 drawer: all 16 are drawn from the content, with windscreen and ring colours. A mic in hand shows its
 display straight away (RF group/channel, battery, mute, in a placeholder layout). Put batteries in

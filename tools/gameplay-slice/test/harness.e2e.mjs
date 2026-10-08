@@ -47,10 +47,12 @@ await page.waitForFunction(() => [...document.querySelectorAll('.crew img')].eve
 ok((await page.$$eval('.crew figcaption', f => f.map(x => x.textContent))).join() === 'Cary,Morgan,Magnolia', 'title card: the crew, with their photos');
 ok(/Relax, let's handle this!/.test(await page.textContent('.bubble')), `title card: "Relax, let's handle this!"`);
 await shot('0-crew');
-ok(await page.$eval('#introGo', b => b.disabled), `"Let's go" waits for a mentor`);
-await tap('[data-mentor="morgan"]');
-ok((await page.$$eval('[data-mentor]', b => b.map(x => x.getAttribute('aria-pressed')))).join() === 'false,true,false', 'picked Morgan as mentor');
 await tap('#introGo');
+// each level has its own mentor (Cary): the mics' card
+ok(/The mics/.test(await page.textContent('#levelHead')) && await page.$eval('#levelGo', b => b.disabled), `level card: the mics; "Let's go" waits for a mentor`);
+await tap('#intro3 [data-mentor="morgan"]');
+ok((await page.$$eval('#intro3 [data-mentor]', b => b.map(x => x.getAttribute('aria-pressed')))).join() === 'false,true,false', 'picked Morgan as the mics mentor');
+await tap('#levelGo');
 ok(await page.$eval('#intro', e => e.hidden), `title card closes on "Let's go"`);
 ok(/Morgan/.test(await page.textContent('#mentor')) && /Rehearsal at 5:00/.test(await page.textContent('#mentor')), 'Morgan greets you in a speech bubble');
 ok(/Ask 3/.test(await page.textContent('#hintBtn')) && (await page.$('#hintBtn img')) !== null, "the hint button is Morgan's face: Ask 3");
@@ -165,6 +167,8 @@ await shot('6-debrief');
 const clockAtEnd = await page.textContent('#clock');
 ok(!(await page.$eval('#lineBtn', b => b.hidden)), 'debrief offers the line check');
 await tap('#lineBtn'); await page.waitForTimeout(300);
+ok(/The line check/.test(await page.textContent('#levelHead')) && await page.$eval('#levelGo', b => b.disabled), 'level card: the line check has its own mentor, not picked yet');
+await tap('#intro3 [data-mentor="morgan"]'); await tap('#levelGo');
 ok((await where()) === 'X32', 'line check: you start at the X32');
 const lineChs = await page.$$eval('.chips .chip', c => c.map(x => +x.dataset.ch));
 ok(lineChs.length === 13 && !lineChs.includes(unpCh) && lineChs.includes(14), `line check: 13 singers; spare 14 stands in for bad mic ${unpCh}`);
@@ -228,7 +232,8 @@ ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.do
 const p2 = await ctx.newPage(); p2.on('pageerror', e => errs.push(e.message));
 await p2.goto(BASE + '#LC-20164', { waitUntil: 'networkidle' });
 const page0 = page; page = p2;
-ok(await page.$eval('#intro', e => e.hidden), 'direct line check link: no title card once a mentor is picked');
+ok(/The line check/.test(await page.textContent('#levelHead')) && (await page.$eval('#intro3 [data-mentor="morgan"]', b => b.getAttribute('aria-pressed'))) === 'true', 'direct line check link: its level card, with Morgan remembered');
+await tap('#levelGo');
 ok((await page.$$eval('.chips .chip', c => c.length)) === 13, 'direct line check link: 13 singers');
 // the receivers tell switched off from muted: RF or not
 await tapBack(); await tapHot('Wireless rack'); await tapHot('Receivers');
@@ -247,9 +252,11 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   const ctx2 = await browser.newContext({ ...devices['iPhone 13'] });           // a fresh browser: no mentor remembered
   page = await ctx2.newPage(); page.on('pageerror', e => errs.push(e.message));
   await page.goto(BASE + '#VJ-48217', { waitUntil: 'networkidle' });
-  await tap('#introNext'); await tap('[data-mentor="magnolia"]');
+  await tap('#introNext');
   ok((await page.$$eval('[data-job]', b => b.map(x => x.getAttribute('aria-pressed')))).join() === 'true,false', 'title card: the job defaults to the mics');
   await tap('[data-job="monitors"]'); await tap('#introGo');
+  ok(/The monitors/.test(await page.textContent('#levelHead')) && await page.$eval('#levelGo', b => b.disabled), 'level card: the monitors, with its own mentor pick');
+  await tap('#intro3 [data-mentor="magnolia"]'); await tap('#levelGo');
   ok(/You're on monitors/.test(await page.textContent('#mentor')), 'monitors: Magnolia explains the job');
   ok(/MN-48217/.test(await page.textContent('#dbg')) && /10:00 to rehearsal/.test(await page.textContent('#due')), 'monitors: seed MN-48217 at 4:50');
   ok((await where()) === 'FOH', 'monitors: you start at FOH');
@@ -314,6 +321,8 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   ok(ml.some(l => /2 connectors reseated to find it/.test(l)) && ml.some(l => /1 failed lift/.test(l)), 'debrief: the reseats and the failed lift');
   await shot('9-monitors-debrief');
   await tap('#lineBtn'); await page.waitForTimeout(300);
+  await tap('#intro3 [data-mentor="cary"]'); await tap('#levelGo');
+  ok(/Cary/.test(await page.textContent('#mentor')), 'line check after the monitors: a different mentor (Cary) for this level');
   ok(/Wedge check done/.test(await page.textContent('#steps')) && (await page.$$eval('.chips .chip', c => c.length)) === 13, 'on to the line check: the wedge check is already done, 13 singers');
   ok(!/monitor amp/.test(await page.textContent('#dbg')), 'line check after the monitors: the amp is never the fault');
   ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'monitors: no sideways scroll');

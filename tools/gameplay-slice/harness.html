@@ -329,6 +329,7 @@ body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introHead" hidden>
   <div class="ipage" id="intro1"></div>
   <div class="ipage" id="intro2" hidden></div>
+  <div class="ipage" id="intro3" hidden></div>
 </div>
 
 <script type="application/json" id="contentData">__CONTENT__</script>
@@ -371,15 +372,26 @@ let mgame = null, selCable = null, lastListen = {};   // the monitors: its game,
 let job = 'mics';                                  // which job you took at 4:50 (Cary: the mics and the monitors happen at the same time)
 const curScene = () => mode === 'line' ? lgame.scene : mode === 'monitors' ? mgame.scene : game.scene;
 const curView = () => mode === 'line' ? leng.view(lgame) : mode === 'monitors' ? meng.view(mgame) : eng.view(game);
-// the player's mentor (one of content.intro.crew), remembered in this browser as a convenience
-let mentor = null; try { mentor = localStorage.getItem('salmon-mentor'); } catch (e) {}
-if (!content.intro.crew.includes(mentor)) mentor = null;
+// each level has its own mentor (Cary, 2026-10-08), one of content.intro.crew, remembered per level in this
+// browser as a convenience; `mentor` is the current level's. 'salmon-mentor-last' is for the final level.
+const LEVEL = () => mode === 'line' ? 'line' : mode === 'monitors' ? 'monitors' : 'mics';
+const mentors = {};
+for (const l of ['mics', 'monitors', 'line']) {
+  let m = null; try { m = localStorage.getItem('salmon-mentor-' + l) || (l === 'mics' ? localStorage.getItem('salmon-mentor') : null); } catch (e) {}
+  mentors[l] = content.intro.crew.includes(m) ? m : null;
+}
+let mentor = null;
+const syncMentor = () => { mentor = mentors[LEVEL()]; };
+function setMentor(l, m) {
+  mentors[l] = m; if (l === LEVEL()) mentor = m;
+  try { localStorage.setItem('salmon-mentor-' + l, m); localStorage.setItem('salmon-mentor-last', m); } catch (e) {}
+}
 const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
 function boot(seed, intro = false) {
   game = eng.start(seed); trail = []; lastT = 0; activeHand = 0; mode = 'battery'; lgame = null; mgame = null; document.body.classList.remove('linemode', 'monmode');
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = false;
-  render(true);
-  if (intro) showIntro(); else greet();
+  render(true); syncMentor();
+  if (intro) showIntro(); else showLevelCard();
 }
 const GREETING = '4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.';
 const LGREETING = 'The mics are on stage. First the wedges: play the Wii Shop theme through Bus 1. Then go down the line from black / red: each singer says something while you watch their meter, then ask if they can hear themselves in the wedge.';
@@ -400,28 +412,38 @@ function showIntro() {
   const line = fill(I.line).replace(new RegExp(`(${mins} minutes)`), '<em>$1</em>');
   const start = content.clock.start.split(':').map(Number), clk = `${start[0] % 12 || 12}<i>:</i>${two(start[1])} ${start[0] < 12 ? 'AM' : 'PM'}`;
   $('#intro1').innerHTML = `<div class="iclock">${clk}</div><h1 class="oh" id="introHead">${esc(I.headline)}</h1><p class="iline">${line}</p><button class="btn big" id="introNext">Next</button>`;
-  $('#intro2').innerHTML = `<div class="crew" role="group" aria-label="${esc(I.mentor_prompt)}">${I.crew.map(c => `<figure><button data-mentor="${c}" aria-pressed="${mentor ? c === mentor : 'mixed'}"><img src="p/${c}.jpg" alt=""><figcaption>${esc(I.crew_names[c])}</figcaption></button></figure>`).join('')}</div>
-    <p class="pickhint">${esc(I.mentor_prompt)}</p>
+  $('#intro2').innerHTML = `<div class="crew">${I.crew.map(c => `<figure><img src="p/${c}.jpg" alt=""><figcaption>${esc(I.crew_names[c])}</figcaption></figure>`).join('')}</div>
     <div class="jobs" role="group" aria-label="${esc(I.job_prompt)}"><span class="pickhint">${esc(I.job_prompt)}</span>${Object.entries(I.jobs).map(([k, t]) => `<button class="btn sm job" data-job="${k}" aria-pressed="${k === job}">${esc(t)}</button>`).join('')}</div>
-    <div class="bubble">${esc(I.crew_says)}</div><ul class="ibrief" id="ibrief">${(job === 'monitors' ? I.brief_monitors : I.brief).map(b => `<li>${fill(b)}</li>`).join('')}</ul><button class="btn big" id="introGo" ${mentor ? '' : 'disabled'}>${esc(I.go)}</button>`;
-  $('#intro2').querySelectorAll('[data-mentor]').forEach(b => b.onclick = () => {
-    mentor = b.dataset.mentor; try { localStorage.setItem('salmon-mentor', mentor); } catch (e) {}
-    $('#intro2').querySelectorAll('[data-mentor]').forEach(x => x.setAttribute('aria-pressed', x === b));
-    $('#introGo').disabled = false; renderHintBtn();
-  });
+    <div class="bubble">${esc(I.crew_says)}</div><ul class="ibrief" id="ibrief">${(job === 'monitors' ? I.brief_monitors : I.brief).map(b => `<li>${fill(b)}</li>`).join('')}</ul><button class="btn big" id="introGo">${esc(I.go)}</button>`;
   $('#intro').style.setProperty('--introbg', 'url(p/foh-wide.jpg)');
-  $('#intro1').hidden = false; $('#intro2').hidden = true; $('#intro').hidden = false;
+  $('#intro1').hidden = false; $('#intro2').hidden = true; $('#intro3').hidden = true; $('#intro').hidden = false;
   document.body.style.overflow = 'hidden';
   $('#introNext').onclick = () => { $('#intro1').hidden = true; $('#intro2').hidden = false; $('#introGo').focus(); };
   $('#intro2').querySelectorAll('[data-job]').forEach(b => b.onclick = () => {
     job = b.dataset.job; $('#intro2').querySelectorAll('[data-job]').forEach(x => x.setAttribute('aria-pressed', x === b));
     $('#ibrief').innerHTML = (job === 'monitors' ? I.brief_monitors : I.brief).map(x => `<li>${fill(x)}</li>`).join('');
   });
-  $('#introGo').onclick = () => {
-    if (!mentor) return; $('#intro').hidden = true; document.body.style.overflow = '';
-    if (job === 'monitors' && mode === 'battery') startMonitors(monSeed()); else greet();
-  };
+  $('#introGo').onclick = () => { if (job === 'monitors' && mode === 'battery') startMonitors(monSeed()); else showLevelCard(); };
   $('#introNext').focus();
+}
+// the level card: which level this is, pick its mentor (each level has its own), how it plays, Let's go
+function showLevelCard() {
+  const I = content.intro, lv = LEVEL(), L = I.levels[lv], brief = { mics: I.brief, monitors: I.brief_monitors, line: I.brief_line }[lv];
+  const mins = Math.round(WINDOW / 60), n = Object.values(D).filter(d => d.type === 'wireless-handheld').length, fill = t => esc(t).replace(/\{minutes\}/g, mins).replace(/\{mics\}/g, n);
+  $('#intro3').innerHTML = `<p class="pickhint">${esc(L.sub)}</p><h1 class="oh" style="font-size:clamp(40px,12vw,64px)" id="levelHead">${esc(L.title)}</h1>
+    <div class="crew" role="group" aria-label="${esc(I.level_mentor_prompt)}">${I.crew.map(c => `<figure><button data-mentor="${c}" aria-pressed="${mentors[lv] ? c === mentors[lv] : 'mixed'}"><img src="p/${c}.jpg" alt=""><figcaption>${esc(I.crew_names[c])}</figcaption></button></figure>`).join('')}</div>
+    <p class="pickhint">${esc(I.level_mentor_prompt)}</p>
+    <ul class="ibrief">${brief.map(b => `<li>${fill(b)}</li>`).join('')}</ul><button class="btn big" id="levelGo" ${mentors[lv] ? '' : 'disabled'}>${esc(I.go)}</button>`;
+  $('#intro3').querySelectorAll('[data-mentor]').forEach(b => b.onclick = () => {
+    setMentor(lv, b.dataset.mentor);
+    $('#intro3').querySelectorAll('[data-mentor]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#levelGo').disabled = false; renderHintBtn();
+  });
+  $('#levelGo').onclick = () => { if (!mentors[lv]) return; syncMentor(); renderHintBtn(); $('#intro').hidden = true; document.body.style.overflow = ''; greet(); };
+  $('#intro').style.setProperty('--introbg', `url(p/${{ mics: 'foh-mic-drawer', monitors: 'musician-pov', line: 'x32-top' }[lv]}.jpg)`);
+  $('#intro1').hidden = true; $('#intro2').hidden = true; $('#intro3').hidden = false; $('#intro').hidden = false;
+  document.body.style.overflow = 'hidden';
+  ($('#levelGo').disabled ? $('#intro3 [data-mentor]') : $('#levelGo')).focus();
 }
 function act(a) {
   if (mode === 'line') return lineAct(a);
@@ -648,11 +670,11 @@ function lineupFromBattery() {
   const spares = hs.filter(id => D[id].role === 'spare' && ok(id));
   return hs.filter(id => D[id].role === 'musician').map(id => ok(id) ? id : spares.shift()).filter(Boolean);
 }
-function startLine(seed, opts = {}, intro = false) {
+function startLine(seed, opts = {}) {
   mode = 'line'; document.body.classList.remove('monmode'); document.body.classList.add('linemode'); lgame = leng.start(seed, opts); sel = leng.view(lgame).next; trail = ['foh-wide']; lastT = lgame.t;
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
-  render(true);
-  if (intro) showIntro(); else greet();
+  render(true); syncMentor();
+  showLevelCard();
 }
 function lineAct(a) {
   const r = leng.act(lgame, a);
@@ -772,12 +794,12 @@ function ring() { const w = $('#wedges'); if (!w) return; w.classList.remove('ri
 const monSeed = () => game && /^VJ-\d+$/.test(game.seed) ? 'MN-' + game.seed.slice(3) : 'MN-' + String(Math.floor(10000 + Math.random() * 89999));
 const MW = MC.wedges, MS = MC.spots, MCB = MC.cables;
 const jackName = j => j.startsWith('nx3000:') ? `CH ${j.split(':')[1]}` : `${MW[j.split(':')[0]].label}, jack ${j.split(':')[1]}`;
-function startMonitors(seed, intro = false) {
+function startMonitors(seed) {
   mode = 'monitors'; document.body.classList.remove('linemode'); document.body.classList.add('monmode');
   mgame = meng.start(seed); selCable = null; lastListen = {}; trail = []; lastT = mgame.t;
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
-  render(true);
-  if (intro) showIntro(); else greet();
+  render(true); syncMentor();
+  showLevelCard();
 }
 function monAct(a) {
   const r = meng.act(mgame, a);
@@ -941,9 +963,9 @@ const start = data => {
     game = data.game; trail = data.trail || [];
     if (data.mode === 'line' && data.lgame && data.lgame.v === 2) { mode = 'line'; lgame = data.lgame; sel = data.sel; $('#chair').hidden = true; document.body.classList.add('linemode'); }
     if (data.mode === 'monitors' && data.mgame && data.mgame.v === 1) { mode = 'monitors'; mgame = data.mgame; $('#chair').hidden = true; document.body.classList.add('monmode'); }
-    render(true);
-  } else if (hashLine) { game = eng.start(newSeed()); startLine(hashLine, {}, !mentor); }
-  else if (hashMon) { game = eng.start(newSeed()); startMonitors(hashMon, !mentor); }
+    syncMentor(); render(true);
+  } else if (hashLine) { game = eng.start(newSeed()); startLine(hashLine); }
+  else if (hashMon) { game = eng.start(newSeed()); startMonitors(hashMon); }
   else boot(hashSeed || newSeed(), true);
 };
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});

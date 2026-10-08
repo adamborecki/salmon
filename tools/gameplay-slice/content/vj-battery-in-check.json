@@ -24,7 +24,7 @@
   "go": "Let's go",
   "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). USingers is the university choir that rehearses in the hall right before Vocal Jazz (Cary, 2026-10-01). {minutes} comes from clock.start/ready_by, {mics} from the mic count.",
   "mentor_prompt": "Pick your mentor",
-  "mentor_status": "Cary, 2026-10-02: the player picks one of the three as a mentor; hints come as that mentor's speech bubbles. The hint text is the same whoever you pick (no personalities are decided).",
+  "mentor_status": "Cary, 2026-10-02: the player picks one of the three as a mentor; hints come as that mentor's speech bubbles. Cary, 2026-10-08: a separate mentor per level (mics, monitors, line check), each remembered on its own, picked on a card when the level starts. The hint text is the same whoever you pick (no personalities are decided). The line-check brief is agent wording (tentative).",
   "job_prompt": "Your job at 4:50",
   "jobs": {
    "mics": "Mics (battery check)",
@@ -35,6 +35,26 @@
    "Three wedges from the storage closet to the stage: lift them (tap fast!), one or two at a time.",
    "The long speakON run from the NX3000's Channel A to the first wedge, then daisy-chain the others. The cables hang on the hook on the Monitor Rack.",
    "Power the Furman, then the NX3000. Then have the A1 play the Wii Shop theme through Bus 1, and listen to every wedge."
+  ],
+  "levels": {
+   "mics": {
+    "title": "The mics",
+    "sub": "The battery-in check"
+   },
+   "monitors": {
+    "title": "The monitors",
+    "sub": "Wedges out, cabled, powered, proved"
+   },
+   "line": {
+    "title": "The line check",
+    "sub": "Every singer, every wedge"
+   }
+  },
+  "level_mentor_prompt": "Pick your mentor for this level",
+  "brief_line": [
+   "First the wedges: play the Wii Shop theme through Bus 1 and listen.",
+   "Then down the line from black / red: each singer says something while you watch their meter, then tells you if they can hear themselves in the wedge.",
+   "You can't touch the mics on stage: ask the singer, or send the A2."
   ]
  },
  "clock": {
