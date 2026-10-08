@@ -296,3 +296,15 @@ test('two faults per run from all five kinds; the amp fault turns up', () => {
   assert.ok(ids.has('monitor-amp-off'));
   for (let i = 0; i < 40; i++) assert.equal(eng.start('K' + i).faults.length, 2);
 });
+
+test('after doing the monitors yourself: the wedge check is done and the amp is never the fault', () => {
+  for (let i = 0; i < 40; i++) {
+    const g = eng.start('W' + i, { wedgeChecked: true });
+    assert.ok(!g.faults.some(f => f.id === 'monitor-amp-off'));
+    assert.equal(eng.view(g).wedge.ok, true);
+  }
+  let g = eng.start('W1', { wedgeChecked: true, faults: [] });
+  for (const m of g.lineup) g = run(g, ...check(m)).g;
+  assert.equal(eng.view(g).complete, true);
+  assert.match(eng.debrief(g).lines.join('\n'), /Wedge check ✓ .*before the singers/);
+});

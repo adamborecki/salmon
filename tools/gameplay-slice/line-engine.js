@@ -7,6 +7,7 @@
 //
 //   const eng = lineEngine(lineContent, micContent.devices);
 //   let g = eng.start('LC-12345', { t: 312, lineup: ['handheld-01', ...] });   // both optional
+//   opts.wedgeChecked: you did the monitors yourself, so the wedge check is done (and the amp can't be off)
 //   ({ game: g, events, error } = eng.act(g, { type: 'call', device: 'handheld-01' }));
 //
 // Actions: go {scene} · play {to: bus1|mains} (the known playback) · call {device} (they say something)
@@ -86,7 +87,7 @@ export function lineEngine(content, devices) {
     const singer = {}, send = {}, faults = [], amp = clone(AMP.start);
     for (const m of lineup) { singer[m] = clone(content.singer.start); send[m] = stepOf(BUS.start_db); }
     // which faults (faults_per_run of them, by seed); singer faults go on different singers, never the first in line
-    const r = rng(seed), kinds = (opts.faults || FS.map(f => f.id)).slice();
+    const r = rng(seed), kinds = (opts.faults || FS.map(f => f.id).filter(id => !(opts.wedgeChecked && FBY[id].target === 'amp'))).slice();
     if (!opts.faults) for (let i = kinds.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [kinds[i], kinds[j]] = [kinds[j], kinds[i]]; }
     const pool = lineup.slice(1).filter(m => content.fault_channels.includes(D[m].channel));
     for (const id of kinds.slice(0, opts.faults ? kinds.length : content.faults_per_run)) {
@@ -98,10 +99,15 @@ export function lineEngine(content, devices) {
     }
     const order = f => f.device === AMP.id ? -1 : lineup.indexOf(f.device);   // the amp is met first, at the wedge check
     faults.sort((a, b) => order(a) - order(b));
-    return {
+    const g = {
       v: 2, content: content.id, seed, seq: 0, t: opts.t ?? C.default_offset_s, scene: SC.x32,
       lineup, singer, send, amp, faults, changed: {}, sendChanged: {}, evidence: [], hints: {}, log: [], completedAt: null,
     };
+    if (opts.wedgeChecked) {                         // proved during the monitor setup, before the singers
+      g.seq = 1; g.evidence.push({ seq: 1, kind: 'wedges', ok: true, via: 'monitors' });
+      g.log.push({ seq: 1, t: g.t, type: 'play', to: 'bus1', ok: true, device: AMP.id, via: 'monitors' });
+    }
+    return g;
   }
 
   // one basic action, applied in place; returns an error {code, message} or null
