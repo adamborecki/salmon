@@ -16,13 +16,13 @@ Source: project owner's notes. IDs at the bottom are suggested naming convention
 - **Mackie Mix5**: small mixer at top of rack; analog inputs, accepts phone/playback sources.
 - **Middle Atlantic PD-915R**: rack power distribution.
 - **Numark MP103 USB**: legacy/deactivated CD/media player, not important.
-- **Behringer S32**: digital stagebox, intended AES50 endpoint.
+- **Behringer S32**: digital stagebox, intended AES50 endpoint. Rear (Cary's photo, 2026-10-08): 32 XLR inputs, 16 XLR outputs, AES50 A/B; OUTPUT 1 (tape-labelled) feeds the NX3000's CH A input with the purple cable, i.e. that day Bus 1 reached the monitor amp over AES50 via the S32 (routing can change: PRODUCT_DESIGN section 36).
 - **Crown Com-Tech 210**: bottom of rack, drives installed passive ceiling mains.
 - **Installed mains**: passive ceiling speakers, high and wide L/R; model not important.
 
 ## Monitor Amp Rack
 - **Furman M-8Lx**: power conditioning.
-- **Behringer NX3000**: primary amp for Vocal Jazz wedges.
+- **Behringer NX3000**: primary amp for Vocal Jazz wedges. Rear (Cary's photo, 2026-10-08): speakON outputs CH B / CH A, XLR inputs CH B / CH A, MODE (bridge / stereo / mono) and CROSSOVER switches. The purple XLR into the CH A input comes from the S32's OUTPUT 1; CH B's input is empty. Cary uses Channel A for the wedges.
 - **Behringer KM750 x2**, **Crown Com-Tech 800**: additional amps.
 - Different amps are used for different setups; model instances separately.
 

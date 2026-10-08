@@ -67,3 +67,15 @@ At racks-front-wide (4218, the front of both racks) you can: open Mains Rack fro
 
 ## Scene graph
 `scene-graph.json` (every photo is a node with x/y for layout; links are `walk`, `control` or `closeup` with `turn_degrees`). It is edited in the scene-graph editor artifact; export from there, or ask Claude to sync the shared copy back into this file.
+
+## New photos from Cary (2026-10-08), not in the scene graph yet
+
+- `photos-working/stage-side/closeups/nx3000-rear-closeup.jpg`: the NX3000's rear, clearer than
+  `monitor-amp-rack-rear` (outputs CH B / CH A, inputs CH B / CH A, the purple Bus 1 cable in CH A,
+  coiled speakON cables).
+- `photos-working/stage-side/closeups/s32-rear-outputs.jpg`: the S32 stagebox on the Mains Rack
+  rear, OUTPUT 1 feeding the NX3000 (left 90 px trimmed: a blurred finger at the edge).
+
+No GPS or other metadata (re-saved without EXIF). The gameplay slice shows them as "Look closer"
+insets at the Monitor Rack rear (`content/vj-monitors.json` `photos`). The owner can add them as
+close-up nodes in the live editor; until then they have no `manifest.csv` row.

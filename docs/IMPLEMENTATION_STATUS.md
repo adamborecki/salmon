@@ -95,14 +95,23 @@ added the lift minigame and a real fault from that day. All of it is in PRODUCT_
 - The live editor DB could not be read from Cary's account (no access), so the scene graph was used
   read-only from the repo copy. No graph edits were made.
 
+### Cary's photos (2026-10-08, after part 5)
+- Two new close-ups (S32 rear, NX3000 rear) in `photos-working/stage-side/closeups/`, without
+  metadata. They're recorded in ASSET_STATUS and DEVICE_REFERENCE, and shown in the game under
+  "Look closer" at the Monitor Rack rear.
+- They show Bus 1's path that day: X32 Bus 1 -> AES50 -> S32 OUTPUT 1 -> purple XLR -> NX3000 CH A
+  input. CH B's input is empty, which answers the Bus 1 question below.
+- Spare speakON cables are coiled at the rack rear, which fits the hook being at the rear.
+- The NX3000's MODE (bridge / stereo / mono) and CROSSOVER switches are visible. A wrong MODE
+  setting could be a future fault (not built).
+
 ### Open (Cary)
 - **Spots:** where exactly do the three wedges go on stage, and do they need to face the singers
   (could "facing the wrong way" be a fault)?
 - **Hook:** is it on the front or the back of the Monitor Rack?
 - **Links:** are there exactly two short links, or more spares on the hook? Are the VP1220F's two
   speakON jacks really "in / link" in parallel?
-- **Bus 1 input:** does Bus 1 arrive on the NX3000's CH A input (the purple XLR on the rear photo)?
-  What's on CH B?
+- ~~Bus 1 input~~ answered by Cary's photos: S32 OUTPUT 1 -> CH A input; CH B input empty.
 - **Lift difficulty:** is it right? (`carry.lift` in the content.)
 
 ## Session 3, part 4 (2026-10-02, Cary): wedge check, monitor amp off, the A2
