@@ -25,7 +25,7 @@ photos. North star: **the game teaches you to see the system** (NOTICE -> TRACE 
 ```bash
 python3 tools/scene-graph-editor/validate.py
 python3 tools/scene-graph-editor/build.py && node tools/scene-graph-editor/tests/walk-touch.mjs && node tools/scene-graph-editor/tests/hotspots.mjs
-python3 tools/gameplay-slice/build.py && node --test tools/gameplay-slice/test/engine.test.mjs tools/gameplay-slice/test/line.test.mjs && node tools/gameplay-slice/test/harness.e2e.mjs
+python3 tools/gameplay-slice/build.py && node --test tools/gameplay-slice/test/engine.test.mjs tools/gameplay-slice/test/line.test.mjs tools/gameplay-slice/test/monitor.test.mjs && node tools/gameplay-slice/test/harness.e2e.mjs
 ```
 (Pillow for the Python scripts; Playwright + Chromium for the browser tests.)
 

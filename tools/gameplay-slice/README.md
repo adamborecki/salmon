@@ -37,6 +37,8 @@ and principle 4.10), as small as it can be while still being real:
 | `test/engine.test.mjs` | `node --test tools/gameplay-slice/test/engine.test.mjs` (Node 18+). |
 | `harness.html`, `build.py` | The throwaway playable page (below); the build also crops the three character portraits for the title card. `dist/` is gitignored. |
 | `line-engine.js`, `content/vj-line-check.json` | Part 2, the line check (below): the same style of engine and content; the mics' labels and colours come from the battery-in content. |
+| `monitor-engine.js`, `content/vj-monitors.json` | Part 0, the monitors (below): wedges out, cabled, powered, proved. Walk distances come from the scene graph. |
+| `test/monitor.test.mjs` | `node --test tools/gameplay-slice/test/monitor.test.mjs`: the monitors' rules. |
 | `test/line.test.mjs` | `node --test tools/gameplay-slice/test/line.test.mjs`: the line check's rules. |
 | `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size: the title card, the battery-in check, then the line check (and a direct `#LC-` link). |
 
@@ -60,6 +62,7 @@ the hotspots from `docs/scene-graph.json`; it is not a proposal for the real app
 python3 tools/gameplay-slice/build.py
 node --test tools/gameplay-slice/test/engine.test.mjs     # engine rules
 node --test tools/gameplay-slice/test/line.test.mjs       # line check rules
+node --test tools/gameplay-slice/test/monitor.test.mjs    # monitors rules
 node tools/gameplay-slice/test/harness.e2e.mjs            # full playthrough on a touch phone (Playwright)
 ```
 
@@ -112,6 +115,40 @@ scenario).
 - **Placeholders kept as flagged content values:** the display layout and mute glyph (speaker-with-
   slash, fine with the owner for now; `"MUTE"` is also drawable) and per-action game seconds. The
   step list is the owner's own procedure (2026-09-28).
+
+## Part 0: the monitors (Cary, 2026-10-08)
+
+At 4:50 the mics and the monitors happen at the same time, so the title card asks **"Your job at
+4:50"**: Mics (the battery-in check) or Monitors. Your crew covers the other job. A `#MN-12345` link
+(or "Jump to the monitors" in the instructor view) starts the monitors directly.
+
+You're the A2, starting at FOH. You walk with arrows on the photos; walk links come from the scene
+graph, with their direction and `distance_m`, so walking costs real game time, and more when you're
+carrying.
+
+1. **Wedges out.** In the storage closet, "Lift one" or "Lift two" opens the **strength check**
+   (Cary's idea): tap LIFT fast, or press Space, to fill the bar before it drains. Two is harder,
+   each failed lift costs time, and carrying two is slower. Put them at the three spots in front of
+   the singers.
+2. **Cable.** At the Monitor Rack rear, take the long speakON run and two links off the hook. Plug
+   the run into the NX3000's **CH A** output and into the first wedge, then daisy-chain the others
+   (each wedge's two jacks are wired together).
+3. **Power.** At the rack front: the Furman, then the NX3000. The NX3000 front shows POWER and a
+   SIGNAL light per channel.
+4. **Test.** "Ask the A1: Wii Shop → Bus 1", then "Listen to the wedges" on stage. A wedge counts
+   only when heard after the last change to the chain.
+
+Faults (each by its own chance, tentative):
+
+| Fault | What you see | Trace | Fix |
+|---|---|---|---|
+| the run left in CH B | every wedge silent with the rack on | the CH A SIGNAL light moves; the rear shows the run in CH B | move it to CH A |
+| a speakON that won't lock (Cary and Morgan's real one) | the chain is dead after one point | which wedges play; reseat along the signal flow | "Reseat" the loose one |
+
+Your own mistakes count too: the run plugged into CH B yourself, a missing link, or the NX3000 on
+before the Furman. All show up in the debrief. After the monitors, "On to the line check →"
+starts the line check with the wedge check already done (and no "amp off" fault, since you just
+proved the amp).
 
 ## Part 2: the line check (Cary, 2026-10-02)
 

@@ -19,6 +19,92 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 5 (2026-10-08, Cary): the monitors
+
+Cary: "full force go crazy and make the monitor section". Cary answered two rounds of questions and
+added the lift minigame and a real fault from that day. All of it is in PRODUCT_DESIGN section 45 and
+`content/vj-monitors.json`.
+
+### What changed
+- **New: `monitor-engine.js`, `content/vj-monitors.json`, `test/monitor.test.mjs`**, the same style as
+  the other engines.
+  - **Walking** along the scene graph (graph `distance_m`; slower carrying one, slower still carrying
+    two). You can step back out of a close-up; those links are one-way in the graph.
+  - **Carrying** up to two wedges (`take {count, fails}`, where fails come from the page's lift
+    minigame and each costs time).
+  - **Placing** at three spots (left / centre / right, tentative).
+  - **Cables:** the long run and two links off the hook (at the rack rear, tentative). Plug, unplug,
+    reseat. Short links can't reach from the rack to the stage.
+  - **Power:** the Furman, then the NX3000. Listening on stage while the A1 plays the Wii Shop theme
+    through Bus 1 or the mains.
+  - **Signal:** Bus 1 -> the CH A input (tentative) -> the CH A output -> anything connected to it
+    through cables (a wedge's two jacks are wired together).
+  - **Done** when all three spots have a wedge heard playing after the last chain change.
+  - **Faults:**
+    - the run left in CH B (Cary's wrong-channel mistake);
+    - a speakON that won't lock: one of your plugs, by seed, goes in loose until reseated (Cary and
+      Morgan's real fault).
+  - **Your own mistakes are in the debrief:**
+    - CH B;
+    - the NX3000 on before the Furman;
+    - failed lifts, trips and walking time.
+  - **Hints follow what's missing** (wedges, run, chain, power, test). A fault's hints win once
+    you've heard the symptom.
+- **Harness:**
+  - "Your job at 4:50: Mics / Monitors" on the title card, with a brief for each.
+  - Walk arrows placed the way the editor places them (`dir_degrees`, `icon_x/y`).
+  - Monitors panels:
+    - storage: Lift one / Lift two;
+    - stage: three spot cards with jacks;
+    - rack front: Furman / NX3000 with POWER and SIGNAL lights;
+    - rack rear: CH A / CH B outputs and the hook.
+  - Dock: carrying, your cables (tap a cable, then a jack), and Ask the A1.
+  - The lift minigame (tap LIFT or press Space, tentative numbers in `carry.lift`).
+  - `#MN-` links and "Jump to the monitors".
+  - After the monitors, the line check starts with `wedgeChecked` (the wedge check is done, and the
+    amp is never the fault).
+- `build.py` includes 13 more scenes (the walk to storage, the stage, the racks) and the monitors
+  engine; the public site build copies it too.
+- CLAUDE.md's checks include `monitor.test.mjs`.
+
+### Tested
+- `monitor.test.mjs` 14/14, including a no-soft-lock property test (100 random 80-action runs).
+  I broke 9 rules on purpose and a test caught each one:
+  - the NX3000 works without the Furman (the test was tightened to catch this);
+  - either channel plays;
+  - walking is free;
+  - no daisy chain;
+  - old listens still count;
+  - links reach anywhere;
+  - a loose plug passes signal;
+  - a reseat doesn't fix it;
+  - you can carry any number.
+- `line.test.mjs` 24/24 (+ `wedgeChecked`). Engine 31/31.
+- Harness e2e 165 checks. The new monitors run on MN-48217 (both faults):
+  - pick Monitors on the title card;
+  - walk by the arrows to storage;
+  - lift two by tapping;
+  - one deliberately failed lift, then lift one by Space;
+  - place, cable from the hook (the run is already in CH B), power;
+  - all three silent, then the CH A SIGNAL light, then move the run to CH A;
+  - only the first wedge plays, then reseat w1:2 (already locked) and w2:1 (loose);
+  - all three play; the debrief is 4/4 for both faults;
+  - on to the line check with the wedge check done.
+- All CLAUDE.md checks, plus the public site (now 11.9 MB; the new photos with people are
+  anonymized; checked by eye). Phone screenshots reviewed.
+- The live editor DB could not be read from Cary's account (no access), so the scene graph was used
+  read-only from the repo copy. No graph edits were made.
+
+### Open (Cary)
+- **Spots:** where exactly do the three wedges go on stage, and do they need to face the singers
+  (could "facing the wrong way" be a fault)?
+- **Hook:** is it on the front or the back of the Monitor Rack?
+- **Links:** are there exactly two short links, or more spares on the hook? Are the VP1220F's two
+  speakON jacks really "in / link" in parallel?
+- **Bus 1 input:** does Bus 1 arrive on the NX3000's CH A input (the purple XLR on the rear photo)?
+  What's on CH B?
+- **Lift difficulty:** is it right? (`carry.lift` in the content.)
+
 ## Session 3, part 4 (2026-10-02, Cary): wedge check, monitor amp off, the A2
 
 Cary: "usually the amp is not on", then "get to work on all that". All three candidates are built.

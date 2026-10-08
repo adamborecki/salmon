@@ -1625,6 +1625,20 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
 - Also (2026-10-02): bad mics go back in the drawer; 32 charged batteries is right; spare batteries
   are in a bin near the FOH computer.
 
+**The monitors, from Cary (2026-10-08):**
+
+- **Timing:** the monitors and the mics happen at the same time: the A1 and A2 split up.
+- **Wedges:** they're in the storage closet and get carried out. Cary carries two, then one.
+- **Power:** the Furman, then the NX3000.
+- **Cabling:** one long speakON run from the NX3000 to the first wedge, then daisy-chained.
+- **Cables:** the speakON cables hang on a hook on the amp (the Monitor Rack).
+- **Channels:** the NX3000 has Channel A and Channel B; Cary typically uses Channel A.
+- **Real mistakes:** the wedge cable in the wrong amp channel; and a cord that was just improperly
+  plugged. With Morgan, Cary fixed that by going to every cord in the signal flow and unplugging and
+  replugging.
+- **Game idea:** lifting the wedges is a "strength check" minigame (tap fast; two at a time is
+  harder).
+
 **Line check, Cary's round 2 (2026-10-02):**
 
 - **Who talks to whom:** the A1 usually talks to the singers directly, but the A2 often goes to the
