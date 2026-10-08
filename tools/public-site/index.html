@@ -7,7 +7,7 @@
 <meta name="description" content="A work-in-progress training simulator for live sound in Salmon Recital Hall, built on real photos of the room.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Press+Start+2P&display=swap">
 <style>
 :root{
   --paper:#eef0f2; --panel:#ffffff; --ink:#1b2530; --muted:#556371; --line:#d3d9df;
@@ -55,6 +55,12 @@ h1{margin:0;font:700 clamp(40px,8vw,68px)/.95 var(--cond);letter-spacing:-.01em;
 .way p{margin:0;color:var(--muted);font-size:15px}
 .go{justify-self:start;margin-top:6px;font:600 14px var(--sans);background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:6px}
 
+/* the secret: a dark card with a lock */
+.way.secret{background:linear-gradient(180deg,#1c2f8f,#0a1450);border:3px solid #e8ecff;color:#fff;grid-template-rows:1fr}
+.way.secret .kicker,.way.secret p{color:#c8d0ff}
+.way.secret h2{font:400 16px/1.5 "Press Start 2P",ui-monospace,monospace;color:#ffd84a}
+.way.secret .go{background:#ffd84a;color:#0a1450}
+
 /* progress, written as a signal chain: what works now, then what comes next */
 section h2.sec{margin:0 0 12px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .loop{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 18px;font:600 13px var(--mono)}
@@ -101,9 +107,17 @@ footer code{font:12px var(--mono)}
       <img src="battery-check/p/x32-top.jpg" alt="" width="1280" height="960" loading="lazy">
       <div class="body">
         <span class="kicker">Play the prototype</span>
-        <h2>Battery-in check</h2>
-        <p>It's 4:50 and rehearsal starts at 5:00. Put batteries into 16 wireless mics, switch them on, and check each one at the X32 meters before it goes to the stage. One won't switch on: find out why, fix it, and prove it works. Another can't be fixed at all: work out why and set it aside for a spare. After three mics by hand, "Check the rest" takes over.</p>
+        <h2>Ready by 5:00</h2>
+        <p>It's 4:50 and rehearsal starts at 5:00. Pick your job: the mics (batteries into 16 wireless mics, each checked at the X32) or the monitors (carry the wedges out, cable and power them, prove them with the Wii Shop theme). Then the line check: every singer, every wedge. Things go wrong: find out why, fix it, and prove it works.</p>
         <span class="go">Play</span>
+      </div>
+    </a>
+    <a class="way secret" href="final/">
+      <div class="body">
+        <span class="kicker">🔒 Password required</span>
+        <h2>SUPER SECRET FINAL LEVEL</h2>
+        <p>You know who you are.</p>
+        <span class="go">Enter</span>
       </div>
     </a>
   </div>
@@ -115,8 +129,9 @@ footer code{font:12px var(--mono)}
       <li class="done"><b>The room, walkable</b><span>Real photos linked into a map of the hall, with turns, walking routes and zoom-in views of the gear.</span>
         <div class="stats"><span>__SCENES__ scenes</span><span>__LINKS__ links</span><span>__INSETS__ equipment close-ups</span></div></li>
       <li class="done"><b>The first gameplay loop</b><span>Handheld → PTU-6000 receiver → X32 input. Batteries from the charger, a mic that won't switch on, a "bad mic" that has to be set aside for a spare, a hint ladder, and a debrief. A mic only counts when you've seen its signal at the X32: fixed isn't the same as verified.</span></li>
-      <li class="next"><b>Next: the game on the photos themselves</b><span>Fewer boxes and buttons: pick up mics, the charger and the meters right in the pictures.</span></li>
-      <li class="next"><b>Then: the on-stage line check, and a spare run to the stage</b><span>Musicians make sound, the A1 confirms each channel, and a dead mic gets swapped for a spare from FOH.</span></li>
+      <li class="done"><b>The monitors</b><span>Wedges carried from storage (a strength check to lift them), one speakON run from the NX3000's Channel A daisy-chained to three wedges, the Furman then the amp, and the Wii Shop theme through Bus 1 to prove it. A cable in the wrong channel, or a speakON that didn't lock.</span></li>
+      <li class="done"><b>The line check</b><span>Each singer says something while the A1 watches their meter, then checks they hear themselves in the wedges. Switched-off and muted mics, quiet singers, feedback, a dead monitor amp, and the A2 sent out to help.</span></li>
+      <li class="next"><b>Next: the game on the photos themselves</b><span>Fewer boxes and buttons: pick up mics, the charger and the wedges right in the pictures.</span></li>
     </ol>
   </section>
 

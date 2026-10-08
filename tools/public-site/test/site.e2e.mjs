@@ -63,6 +63,13 @@ ok((await page.$$eval('.chips .chip', c => c.length)) === 16, 'battery check: lo
 ok(await imgsLoaded(), 'battery check: photo loads');
 ok(await noSideScroll(), 'battery check: no sideways scroll');
 
+// the SUPER SECRET FINAL LEVEL: linked from the landing page, behind its gate
+await page.goto(BASE, { waitUntil: 'networkidle' });
+ok(/SUPER SECRET FINAL LEVEL/.test(await page.textContent('a.way[href="final/"]')), 'landing: the secret card');
+await Promise.all([page.waitForURL(/\/final\/$/), page.tap('a.way[href="final/"]')]); await page.waitForLoadState('networkidle');
+ok(!(await page.$eval('#gate', e => e.hidden)) && /"password_sha256":"[0-9a-f]{64}"/.test(await page.content()), 'final level: the gate (only a password hash in the page)');
+ok(await noSideScroll(), 'final level: no sideways scroll');
+
 // anonymized photos are what is served (differs from a plain build of the original, where one exists)
 for (const f of ['walk/p/outside-entry.jpg', 'walk/p/foh-wide.jpg', 'battery-check/p/foh-wide.jpg']) {
   const plain = join(ROOT, 'tools', f.startsWith('walk') ? 'scene-graph-editor' : 'gameplay-slice', 'dist', f.replace(/^[^/]+\//, ''));

@@ -5,6 +5,7 @@ Builds the public GitHub Pages site into tools/public-site/dist/:
   walk/             the scene-graph editor in public mode: walk, zoom, try the edit tools; nothing is
                     saved, and Export JSON downloads the edited graph
   battery-check/    the gameplay harness (battery-in check)
+  final/            the SUPER SECRET FINAL LEVEL (password gate, turn-based battle)
 
 People in the photos are anonymized first (tools/public-site/anonymize.py + people.json); the
 builds read the anonymized copies through --photos-overlay, so photos-working/ is never changed.
@@ -46,6 +47,8 @@ def main():
         shutil.copy(os.path.join(game_tmp, js), game)
     for f in os.listdir(os.path.join(game_tmp, 'p')):
         shutil.copy(os.path.join(game_tmp, 'p', f), os.path.join(game, 'p'))
+
+    run('tools/final-level/build.py', '--out', os.path.join(DIST, 'final'))      # the SUPER SECRET FINAL LEVEL
 
     g = json.load(open(os.path.join(ROOT, 'docs', 'scene-graph.json')))
     try:

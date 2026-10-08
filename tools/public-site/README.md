@@ -7,7 +7,8 @@ A public "under construction" page for showing progress, with two ways in:
   the live editor's database. **Export JSON** downloads the edited graph as a file. It goes through the
   usual `sync.py diff` / `validate.py` / `sync.py pull` workflow (see `tools/scene-graph-editor/README.md`),
   so someone can send the owner a file of suggested changes.
-- **`battery-check/`**: the gameplay harness (the battery-in check).
+- **`battery-check/`**: the gameplay harness (the mics, the monitors, the line check).
+- **`final/`**: the SUPER SECRET FINAL LEVEL (`tools/final-level/`), behind a password gate.
 
 ## People in the photos
 
