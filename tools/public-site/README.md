@@ -12,7 +12,8 @@ A public "under construction" page for showing progress, with two ways in:
 
 ## People in the photos
 
-Owner, 2026-09-28: the three character portraits (Cary, Morgan, Magnolia) may be shown. **Everyone else
+Owner, 2026-09-28: the three character portraits (Cary, Morgan, Magnolia) may be shown. Exception
+(2026-10-08): Adam Borecki's own photo is the final level's boss, with his OK (via Cary). **Everyone else
 in the room must not be identifiable.** `anonymize.py` reads `people.json` and writes public copies of
 the photos. Each marked person becomes a heavy blur with a plain grey figure on top, and body parts at
 the frame edge are blurred. Unlinked alt photos with people are blurred entirely. The originals in

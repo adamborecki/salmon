@@ -19,6 +19,14 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 8 (2026-10-08, Cary): Adam's photo as the boss
+- Cary sent a photo of Adam and confirmed Adam is okay with it being the boss on the public site.
+  It's saved as `photos-working/characters/adam.jpg` (square crop around the face, re-saved without
+  metadata; it had no GPS). `boss.photo` in `tools/final-level/content/final-battle.json` now points
+  at it, so the silhouette is gone.
+- The privacy rule (public site README, PRODUCT_DESIGN section 22) now names this one exception.
+- Tested: `final.e2e.mjs` checks the boss photo loads; all other checks pass.
+
 ## Session 3, part 7 (2026-10-08, Cary): a mentor per level; a party of 4
 
 ### What changed
@@ -106,7 +114,7 @@ based combat battle against Adam Borecki."
 
 ### Open (Cary / Adam)
 - The real moves for each person, the boss's moves and lines, the numbers (all placeholders).
-- A photo of Adam, from Adam.
+- ~~A photo of Adam~~ done (part 8).
 - When the final level unlocks in the story (after the line check?), and whether the main game should
   link to it.
 - On a public static site the password only hides the level; it isn't security.

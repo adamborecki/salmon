@@ -900,7 +900,8 @@ the characters (personality, role, behaviour in play) is decided. Text lives in 
 Cary, 2026-10-08: a SUPER SECRET FINAL LEVEL (password-protected): a Final Fantasy style party
 battle against Adam Borecki (`tools/final-level/`). The party is the player plus the three mentors
 (a party of 4), led by the player's mentor. Each level of the main game has its own mentor pick. The party's moves
-are placeholders, not personalities. There is no photo of Adam: use one only once Adam sends it.
+are placeholders, not personalities. Adam's photo is the boss, with Adam's OK (sent by Cary,
+2026-10-08); it is the only photo of a person besides the three portraits allowed on the public site.
 Cary, 2026-10-02: the player picks one of the three as a mentor, and hints come as that mentor's
 speech bubbles. The hint text is the same whoever you pick: no personalities are decided.
 
