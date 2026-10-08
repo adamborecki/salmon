@@ -19,6 +19,44 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 7 (2026-10-08, Cary): a mentor per level; a party of 4
+
+### What changed
+- **A separate mentor per level** (Cary picked this over a single mentor).
+  - The title card's second page keeps the crew ("Relax, let's handle this!") and the job pick.
+  - Each level then opens on its own **level card**: the level's name, the three portraits to pick
+    *that level's* mentor, the level's how-to (`intro.brief`, `brief_monitors`, the new `brief_line`)
+    and Let's go, which waits for a pick.
+  - Each level's mentor is remembered on its own (`salmon-mentor-mics` / `-monitors` / `-line`; the
+    old `salmon-mentor` becomes the mics mentor). `salmon-mentor-last` feeds the final level.
+  - The card shows when a level starts: from the title card, "New scenario", "On to the line check",
+    and `#MN-` / `#LC-` links.
+- **The final level's party of 4:** the player (type a name; a headphones avatar) plus the three
+  mentors.
+  - Your mentor leads (★): the one last picked in the main game, or picked in the final level's intro.
+  - The player's placeholder skills are Trace the Signal (exposes the boss) and Fixed ≠ Verified.
+  - The boss's HP went up to 1150 for balance; a sensible strategy still wins most seeds in about 8
+    rounds.
+  - The engine takes `start(seed, { order, names })`.
+
+### Tested
+- Harness e2e 169 checks:
+  - the mics card waits for a mentor;
+  - the line check card asks again (its own mentor);
+  - a direct `#LC-` link remembers the line mentor;
+  - the monitors card;
+  - after the monitors, a different mentor (Cary) for the line check.
+- `battle.test.mjs` 11/11 (+ the party of 4 and its order, + Trace the Signal).
+- `final.e2e.mjs`:
+  - FIGHT waits for a mentor;
+  - name "tester" and Morgan leading give MORGAN, TESTER, CARY, MAGNOLIA, with the ★ and the avatar;
+  - FL-1 won, FL-18 lost;
+  - the mentor remembered after a reload.
+- All other checks pass.
+
+### Open (Cary)
+- The player's real moves (and everyone's).
+
 ## Session 3, part 6 (2026-10-08, Cary): the SUPER SECRET FINAL LEVEL (infrastructure)
 
 Cary: "a new, final section... let's at least get the infrastructure part up on the game site. Should
