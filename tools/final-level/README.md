@@ -49,6 +49,6 @@ The public site builds it into `final/` and links it from the landing page.
   `#FL-123` replays a seed.
 
 ## Adam's photo
-There's no photo of Adam in the repo, so the boss is a silhouette. It's his public site: add a photo
-only once Adam sends one he's happy with (put its path, under `photos-working/`, in `boss.photo`;
-the build crops it into `p/boss.jpg`).
+`photos-working/characters/adam.jpg`: sent by Cary on 2026-10-08 with Adam's OK to be the boss on the
+public site (square crop, no metadata). `boss.photo` in the content points at it; the build copies it
+into `p/boss.jpg`. Without a photo the page draws a silhouette.

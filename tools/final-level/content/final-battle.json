@@ -171,8 +171,8 @@
  "boss": {
   "id": "adam",
   "name": "Adam Borecki",
-  "photo": null,
-  "photo_status": "No photo of Adam in the repo. It's his public site: use a photo only once Adam sends one he's happy with (then put its path here). Until then the page draws a silhouette.",
+  "photo": "characters/adam.jpg",
+  "photo_status": "Adam Borecki's photo, sent by Cary on 2026-10-08 with Adam's OK (Cary confirmed Adam agreed to it being the boss on the public site). Square crop, re-saved without metadata (photos-working/characters/adam.jpg). An exception to the 'only the three character portraits' rule, for this level only.",
   "hp": 1150,
   "atk": 36,
   "def": 20,

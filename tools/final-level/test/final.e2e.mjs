@@ -43,7 +43,8 @@ ok(/Adam Borecki blocks the path/.test(await page.textContent('#crawl')), 'the r
 ok(await page.$eval('#fight', b => b.disabled), 'FIGHT waits for your mentor (none picked in the main game here)');
 await page.fill('#pname', 'tester'); await tap('[data-lead="morgan"]');
 await tap('#fight');
-ok(/ADAM BORECKI/.test(await page.textContent('#bossName')) && (await page.$('#boss svg')) !== null, 'the boss: Adam Borecki (a silhouette until there is a photo)');
+await page.waitForFunction(() => { const i = document.querySelector('#boss img'); return i && i.complete && i.naturalWidth > 0; });
+ok(/ADAM BORECKI/.test(await page.textContent('#bossName')) && (await page.$eval('#boss img', i => i.alt)) === 'Adam Borecki', 'the boss: Adam Borecki, with his photo');
 await page.waitForFunction(() => [...document.querySelectorAll('.pm img')].every(i => i.complete && i.naturalWidth > 0));
 ok((await page.$$eval('.pm b', b => b.map(x => x.textContent))).join() === 'MORGAN,TESTER,CARY,MAGNOLIA', 'a party of 4: your mentor (Morgan) leads, then you, then the other mentors');
 ok((await page.$eval('[data-pm="morgan"] .tag.lead', () => true).catch(() => false)) && (await page.$('[data-pm="player"] svg.av')) !== null, 'the leader has a ★; you have an avatar');
