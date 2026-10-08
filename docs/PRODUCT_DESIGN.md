@@ -897,6 +897,9 @@ title card where Cary, Morgan and Magnolia say "Relax, let's handle this!" after
 only left you 10 minutes to set up for Vocal Jazz!". That line is theirs to give; nothing else about
 the characters (personality, role, behaviour in play) is decided. Text lives in the slice content
 (`intro`). USingers is the university choir that rehearses in the hall right before Vocal Jazz.
+Cary, 2026-10-08: a SUPER SECRET FINAL LEVEL (password-protected): a Final Fantasy style party
+battle with Cary, Morgan and Magnolia against Adam Borecki (`tools/final-level/`). The party's moves
+are placeholders, not personalities. There is no photo of Adam: use one only once Adam sends it.
 Cary, 2026-10-02: the player picks one of the three as a mentor, and hints come as that mentor's
 speech bubbles. The hint text is the same whoever you pick: no personalities are decided.
 

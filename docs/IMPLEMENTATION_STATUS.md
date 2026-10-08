@@ -19,6 +19,60 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
+## Session 3, part 6 (2026-10-08, Cary): the SUPER SECRET FINAL LEVEL (infrastructure)
+
+Cary: "a new, final section... let's at least get the infrastructure part up on the game site. Should
+be labeled SUPER SECRET FINAL LEVEL and password protected... a final fantasy style party based turn
+based combat battle against Adam Borecki."
+
+### What changed
+- **New: `tools/final-level/`** (see its README). It's a page with:
+  - a password gate (only the SHA-256 is stored; the password is Cary's and isn't in the repo);
+  - an intro;
+  - an FF-style battle: Cary, Morgan and Magnolia (their portraits) vs Adam Borecki.
+- **The battle:** each round you command every standing member (ATTACK / SKILL / DEFEND / ITEM),
+  then everyone acts in speed order.
+  - Boss moves include MUTE ALL (no skills) and a phase 2 at half health.
+  - Victory and Game Over screens; `#FL-` seeds.
+- **Placeholders:** all moves, numbers and words in `content/final-battle.json`.
+- **The boss is a silhouette:** there's no photo of Adam in the repo. It's his site, so his photo
+  goes in only when he sends one (`boss.photo`).
+- **Public site:**
+  - built into `final/`;
+  - a "SUPER SECRET FINAL LEVEL" card on the landing page;
+  - the landing page's progress list brought up to date (the monitors and the line check are done;
+    the card now reads "Ready by 5:00").
+- CLAUDE.md's checks include the final level's build and tests.
+
+### Tested
+- `battle.test.mjs` 9/9:
+  - only the hash is stored;
+  - determinism;
+  - rounds resolve after every command;
+  - defending halves damage;
+  - every skill;
+  - MUTE ALL blocks skills (and a queued skill fizzles without spending MP);
+  - items, including the spare-mic revive;
+  - a sensible strategy wins at least 14 of 20 seeds, with phase 2;
+  - defending forever loses.
+- `final.e2e.mjs` 13 checks:
+  - the gate (wrong, then right in any case);
+  - no plain password in the page;
+  - the intro and the portraits;
+  - FL-1 won and FL-16 lost through the menus;
+  - FIGHT AGAIN;
+  - the unlock surviving a reload;
+  - no page errors, no sideways scroll.
+- `site.e2e.mjs` adds the secret card and the gate. Phone screenshots reviewed.
+- One bug was found by the e2e and fixed: damage to the boss looked up the wrong id and froze the round.
+
+### Open (Cary / Adam)
+- The real moves for each person, the boss's moves and lines, the numbers (all placeholders).
+- A photo of Adam, from Adam.
+- When the final level unlocks in the story (after the line check?), and whether the main game should
+  link to it.
+- On a public static site the password only hides the level; it isn't security.
+
 ## Session 3, part 5 (2026-10-08, Cary): the monitors
 
 Cary: "full force go crazy and make the monitor section". Cary answered two rounds of questions and
