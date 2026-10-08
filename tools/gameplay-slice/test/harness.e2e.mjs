@@ -288,6 +288,9 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   ok((await stepsDone()).join() === 'wedges', 'steps: wedges out');
   await walkTo('monitor-amp-rack-rear');
   ok(/its end is in CH B/.test(await page.textContent('#panel')), 'rack rear: the run on the hook is still plugged into CH B (the fault)');
+  await page.tap('#panel details.more summary');
+  await page.waitForFunction(() => [...document.querySelectorAll('#panel img.inset')].every(i => i.complete && i.naturalWidth > 0));
+  ok((await page.$$eval('#panel img.inset', i => i.length)) === 2 && /S32 stagebox OUTPUT 1/.test(await page.textContent('#panel')), "rack rear: 'Look closer' shows Cary's NX3000 and S32 photos and Bus 1's path");
   for (const c of ['run', 'link1', 'link2']) await tap(`[data-hook="${c}"]`);
   await walkTo('musician-pov');
   for (const [c, j] of [['run', 'w1:1'], ['link1', 'w1:2'], ['link1', 'w2:1'], ['link2', 'w2:2'], ['link2', 'w3:1']]) { await tap(`[data-cable="${c}"]`); await tap(`[data-jack="${j}"]`); }

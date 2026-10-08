@@ -243,6 +243,7 @@ button.chip{font:inherit;color:inherit;cursor:pointer}
 .jobs .btn[aria-pressed="true"]{background:var(--sig-hi);border-color:var(--sig-hi);color:#0b0f13;font-weight:600}
 .a1row{display:flex;flex-wrap:wrap;align-items:center;gap:6px} .a1row .btn{min-height:34px}
 .hook{display:flex;flex-wrap:wrap;gap:6px}
+.inset{display:block;width:100%;border-radius:6px;margin-top:6px}
 .cables{display:flex;flex-wrap:wrap;gap:6px}
 .cablechip{border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;text-align:left;line-height:1.3}
 .cablechip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent);font-weight:600}
@@ -851,6 +852,7 @@ function renderMonPanel(v) {
       <p class="fine">The order: the Furman, then the NX3000. A SIGNAL light flickers when audio reaches that channel. (The CH A / CH B gain knobs aren't simulated.)</p>`;
   } else if (sc === S.rack_rear) {
     p.innerHTML = `<h3>Monitor Rack: rear</h3>
+      <details class="more"><summary>Look closer</summary><img class="inset" src="p/inset-rack_rear_closeup.jpg" alt="${esc(MC.photos.rack_rear_closeup.alt)}"><p class="fine">Bus 1's path: ${esc(MC.rack.bus1_path)}.</p><img class="inset" src="p/inset-s32_outputs.jpg" alt="${esc(MC.photos.s32_outputs.alt)}"></details>
       <div class="panelrow"><b>NX3000 OUTPUTS</b><span class="fine" style="color:#aeb9c4">Bus 1 comes in on the CH A input</span></div>
       <div class="spots" style="grid-template-columns:repeat(2,minmax(0,1fr))">${v.amp.outputs.map(o => `<div class="spot has"><h4>CH ${o.channel} speakON</h4>${jackHTML(o.jack, o.cable)}</div>`).join('')}</div>
       <h3>The hook</h3><div class="hook">${v.hook.length ? v.hook.map(c => `<button class="btn sm" data-hook="${c}">Take the ${esc(MCB[c].label)}${c === 'run' && mgame.cables.run.ends.a ? ` (its end is in ${esc(jackName(mgame.cables.run.ends.a))})` : ''}</button>`).join('') : '<span class="fine">Empty: you have the cables.</span>'}</div>`;

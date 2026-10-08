@@ -86,7 +86,7 @@
    "long": false
   },
   "home": "hook",
-  "status": "Cary, 2026-10-08: the speakON cables are on a hook on the amp. The hook is placed at the rack rear here (tentative). One long run plus two short links is the minimum for a daisy chain of three (counts tentative). A short link's two ends must be in the same place."
+  "status": "Cary, 2026-10-08: the speakON cables are on a hook on the amp. The hook is placed at the rack rear here (tentative). One long run plus two short links is the minimum for a daisy chain of three (counts tentative). A short link's two ends must be in the same place. Cary's photo (2026-10-08) shows spare speakON cables coiled with Velcro on the left side of the Monitor Rack rear, which fits the hook being at the rear (to confirm)."
  },
  "rack": {
   "furman": {
@@ -105,7 +105,8 @@
    "furman": "off",
    "nx3000": "off"
   },
-  "status": "Photos (monitor-amp-rack-front / rear): Furman M-8Lx with a POWER switch; NX3000 with CH A / CH B gain knobs, PROTECT / LIMIT / SIGNAL lights per channel and a POWER button; speakON outputs CH A / CH B and XLR inputs on the rear. Cary, 2026-10-08: power the Furman, then the NX3000; the wedges go on Channel A. 'Bus 1 arrives on the CH A input' is tentative (one XLR is plugged in on the rear photo). Starting with both off is tentative (Cary, 2026-10-02: when the monitors don't work, it's usually that the amp isn't on). Gain knobs are not simulated."
+  "status": "Photos (monitor-amp-rack-front / rear): Furman M-8Lx with a POWER switch; NX3000 with CH A / CH B gain knobs, PROTECT / LIMIT / SIGNAL lights per channel and a POWER button; speakON outputs CH A / CH B and XLR inputs on the rear. Cary, 2026-10-08: power the Furman, then the NX3000; the wedges go on Channel A. 'Bus 1 arrives on the CH A input' is tentative (one XLR is plugged in on the rear photo). Starting with both off is tentative (Cary, 2026-10-02: when the monitors don't work, it's usually that the amp isn't on). Gain knobs are not simulated. Cary's photos (2026-10-08): the purple XLR from the S32 stagebox's OUTPUT 1 (Mains Rack rear) goes into the NX3000's CH A INPUT; CH B's input is empty, so Bus 1 arriving on CH A is now from the room (that day's routing: X32 Bus 1 -> AES50 -> S32 output 1 -> NX3000 CH A; transport can change, section 36). The wedge run (blue speakON) is in an output on the NX3000 rear. The rear also has a MODE switch (bridge / stereo / mono) and a CROSSOVER switch, not simulated.",
+  "bus1_path": "X32 Bus 1 -> AES50 -> S32 stagebox OUTPUT 1 -> purple XLR -> NX3000 CH A input"
  },
  "playback": {
   "label": "The Wii Shop theme",
@@ -294,5 +295,18 @@
   ],
   "status": "Cary, 2026-10-08 (the order of power, the cabling, carrying); step wording is the agent's"
  },
- "faults_status": "each fault is drawn independently by its chance (tentative), so a run can have none, one, or both"
+ "faults_status": "each fault is drawn independently by its chance (tentative), so a run can have none, one, or both",
+ "photos": {
+  "rack_rear_closeup": {
+   "file": "stage-side/closeups/nx3000-rear-closeup.jpg",
+   "alt": "The NX3000's rear: speakON outputs CH B and CH A, XLR inputs CH B and CH A (the purple cable in CH A), and coiled speakON cables on the left.",
+   "source": "Cary, 2026-10-08"
+  },
+  "s32_outputs": {
+   "file": "stage-side/closeups/s32-rear-outputs.jpg",
+   "alt": "The S32 stagebox on the Mains Rack rear: 32 inputs, 16 outputs; the purple cable comes out of OUTPUT 1.",
+   "source": "Cary, 2026-10-08"
+  },
+  "status": "insets shown in the game's Monitor Rack rear panel; not nodes in the scene graph (the owner can add them as close-ups in the live editor)"
+ }
 }

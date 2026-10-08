@@ -77,6 +77,11 @@ def main():
             src = os.path.join(args.photos_overlay, graph['nodes'][k]['file'])
         im = Image.open(src)
         im.thumbnail((1280, 960)); im.save(os.path.join(out, 'p', k + '.jpg'), quality=78)
+    for key, ph in mon.get('photos', {}).items():                     # the monitors' close-up insets (not graph nodes)
+        if key == 'status': continue
+        src = os.path.join(ROOT, 'photos-working', ph['file'])
+        if args.photos_overlay and os.path.exists(os.path.join(args.photos_overlay, ph['file'])): src = os.path.join(args.photos_overlay, ph['file'])
+        im = Image.open(src); im.thumbnail((1280, 960)); im.save(os.path.join(out, 'p', 'inset-' + key + '.jpg'), quality=80)
     for name, box in CHARACTERS.items():
         im = Image.open(os.path.join(ROOT, 'photos-working', 'characters', name + '.jpg')).convert('RGB').crop(box)
         im.thumbnail((320, 320)); im.save(os.path.join(out, 'p', name + '.jpg'), quality=82)
