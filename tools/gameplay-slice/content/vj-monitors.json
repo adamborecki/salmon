@@ -58,19 +58,20 @@
    "model": "Behringer Eurolive VP1220F"
   },
   "jacks": 2,
-  "status": "PRODUCT_DESIGN section 31: the three VP1220F (passive, 8 ohm, speakON/NL4 and 1/4-inch) are the principal Vocal Jazz wedges. Two speakON jacks per wedge wired in parallel (in / link) is tentative: either jack works for the run or a link."
+  "status": "PRODUCT_DESIGN section 31: the three VP1220F (passive, 8 ohm, speakON/NL4 and 1/4-inch) are the principal Vocal Jazz wedges. Cary, 2026-10-08: the two speakON jacks work the same (in / link, wired together), so either takes the run or a link."
  },
  "spots": {
   "left": {
-   "label": "Stage left"
+   "label": "Left side"
   },
   "center": {
-   "label": "Centre"
+   "label": "Back"
   },
   "right": {
-   "label": "Stage right"
+   "label": "Right side"
   },
-  "status": "tentative: three wedges across the front of the singers' line, facing them (the musician-pov photo shows wedges at the singers' feet); exact positions are not recorded"
+  "shape": "u",
+  "status": "Cary, 2026-10-08: the three wedges sit in an arc, a U that opens toward the mixer (FOH): one on each side and one at the back, facing the singers inside the U. The ids stay left / center / right (center = the back of the U)."
  },
  "cables": {
   "run": {
@@ -267,7 +268,7 @@
  },
  "objective": {
   "label": "Monitors: three wedges working",
-  "goal": "Three wedges on stage in front of the singers, cabled from the NX3000 (one run, daisy-chained), the rack powered, and every wedge heard playing the Wii Shop theme through Bus 1.",
+  "goal": "Three wedges on stage in a U that opens toward the mixer, cabled from the NX3000 (one run, daisy-chained), the rack powered, and every wedge heard playing the Wii Shop theme through Bus 1.",
   "status": "a wedge counts only when heard playing Bus 1 playback after the last change to the monitor chain (cables, wedges, power)"
  },
  "procedure": {

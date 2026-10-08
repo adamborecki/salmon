@@ -217,6 +217,7 @@ button.chip{font:inherit;color:inherit;cursor:pointer}
 .warrow:focus-visible{outline:2px solid var(--accent-hi,#3cc4ba);outline-offset:2px;border-radius:8px}
 /* the monitors: stage spots, wedge jacks, the rack panels, the hook */
 .spots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.umap{display:block;width:100%;max-width:260px;margin:0 auto}
 .spot{border:1px dashed var(--line);border-radius:6px;padding:6px;display:grid;gap:5px;justify-items:center;text-align:center;align-content:start;min-height:120px}
 .spot.has{border-style:solid}
 .spot.heard{border-color:var(--sig);box-shadow:inset 0 0 0 1px var(--sig)}
@@ -837,13 +838,17 @@ function renderMonPanel(v) {
       <div class="row"><button class="btn talk" data-lift="1" ${v.left && v.carrying.length < MC.carry.max_wedges ? '' : 'disabled'}>Lift one</button><button class="btn talk" data-lift="2" ${v.left >= 2 && !v.carrying.length ? '' : 'disabled'}>Lift two</button></div>
       <p class="fine">Two at a time saves a trip, but they're heavy: it's a harder lift, and you walk slower.</p>`;
   } else if (sc === S.stage) {
-    p.innerHTML = `<h3>The stage: wedges in front of the singers</h3><div class="spots">${v.spots.map(sp => {
+    const dot = id => { const sp = v.spots.find(x => x.id === id), heard = lastListen[id]; return sp.heard || heard === true ? 'var(--sig)' : heard === false ? 'var(--bad)' : sp.wedge ? 'var(--ink)' : 'none'; };
+    const uSVG = `<svg class="umap" viewBox="0 0 220 96" role="img" aria-label="The wedges in a U that opens toward the mixer"><path d="M50 14 Q110 -6 170 14" fill="none" stroke="var(--line)" stroke-dasharray="3 4"/>
+      ${[['left', 40, 46, 60], ['center', 110, 14, 0], ['right', 180, 46, -60]].map(([id, x, y, r]) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M-14 -8h28l-6 14h-16z" fill="${dot(id)}" stroke="var(--ink)" stroke-width="1.4"/></g><text x="${x}" y="${y + 22}" text-anchor="middle" font-size="9" fill="var(--muted)">${esc(MS[id].label)}</text>`).join('')}
+      <text x="110" y="56" text-anchor="middle" font-size="9" fill="var(--muted)">singers</text><text x="110" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">↓ open toward the mixer</text></svg>`;
+    p.innerHTML = `<h3>The stage: wedges in a U, facing the singers</h3>${uSVG}<div class="spots">${v.spots.map(sp => {
       const heard = lastListen[sp.id], cls = sp.wedge ? `spot has${sp.heard || heard === true ? ' heard' : heard === false ? ' silent' : ''}` : 'spot';
       return `<div class="${cls}" data-spotcard="${sp.id}"><h4>${esc(sp.label)}</h4>${sp.wedge ? `${wedgeSVG()}<b>${esc(MW[sp.wedge].label)}</b>${heard === true || sp.heard ? '<span class="fine">♪ playing</span>' : heard === false ? '<span class="fine">silent</span>' : ''}
         ${sp.jacks.map(j => jackHTML(j.jack, j.cable)).join('')}<button class="btn sm" data-pickup="${sp.id}">Pick up</button>`
         : `<button class="btn sm talk" data-place="${sp.id}" ${v.carrying.length ? '' : 'disabled'}>Put a wedge here</button>`}</div>`; }).join('')}</div>
       <div class="row"><button class="btn talk" data-listen>Listen to the wedges</button></div>
-      <p class="fine">Facing the singers. Listening tells you which wedges are playing; ask the A1 for playback first (below).</p>`;
+      <p class="fine">A U that opens toward the mixer, each wedge facing the singers. Listening tells you which wedges are playing; ask the A1 for playback first (below).</p>`;
   } else if (sc === S.rack_front) {
     const f = v.front;
     p.innerHTML = `<h3>Monitor Rack: front</h3>
