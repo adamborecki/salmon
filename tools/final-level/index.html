@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SUPER SECRET FINAL LEVEL</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --night:#05060f; --win1:#1c2f8f; --win2:#0a1450; --edge:#e8ecff; --text:#ffffff; --dim:#aab4e8;
+  --hp:#3fe07a; --hpLow:#f2b233; --hpCrit:#ff5a5f; --mp:#5cc8ff; --gold:#ffd84a; --red:#ff5a5f;
+  --pixel:"Press Start 2P",ui-monospace,monospace; --sans:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% 0%,#1a1f4a 0%,var(--night) 70%);color:var(--text);font:15px/1.45 var(--sans)}
+button{font:inherit;color:inherit;touch-action:manipulation}
+.wrap{max-width:560px;margin:0 auto;padding:max(14px,env(safe-area-inset-top,0px)) 16px max(18px,env(safe-area-inset-bottom,0px));display:grid;gap:12px;min-height:100vh;align-content:start}
+/* the classic blue window */
+.win{background:linear-gradient(180deg,var(--win1),var(--win2));border:3px solid var(--edge);border-radius:8px;box-shadow:0 0 0 2px #000,inset 0 0 0 2px #000;padding:12px 14px}
+.px{font-family:var(--pixel);letter-spacing:.02em;line-height:1.6}
+h1{margin:0;font:400 clamp(17px,5.4vw,26px)/1.5 var(--pixel);color:var(--gold);text-align:center;text-shadow:3px 3px 0 #7a1f24}
+.btn{border:2px solid var(--edge);background:#0a1450;border-radius:6px;padding:10px 14px;min-height:44px;cursor:pointer;font:400 12px var(--pixel)}
+.btn:hover:not(:disabled),.btn:focus-visible{background:#22389e;outline:none}
+.btn:disabled{opacity:.4;cursor:default}
+a{color:var(--mp)}
+/* the gate */
+.gate{display:grid;gap:14px;justify-items:center;text-align:center;margin-top:8vh}
+.lock{font-size:46px}
+.gate input{width:min(280px,100%);font:16px var(--mono);padding:10px 12px;border-radius:6px;border:2px solid var(--edge);background:#000;color:#fff;text-align:center}
+.gate .no{color:var(--red);font:400 11px var(--pixel);min-height:1.6em}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.crawl{display:grid;gap:10px}
+.crawl p{margin:0;font:400 12px/1.9 var(--pixel)}
+/* the battle */
+.msg{min-height:62px;font:400 11px/1.9 var(--pixel)}
+.arena{position:relative;display:grid;justify-items:center;gap:4px;padding:2px 0}
+.boss{position:relative;width:min(150px,36vw);aspect-ratio:1;border-radius:10px;overflow:hidden;background:#111a3a;box-shadow:0 0 30px rgba(255,90,95,.35)}
+.boss img,.boss svg{width:100%;height:100%;object-fit:cover;display:block}
+.boss.hit{animation:flash .35s}
+@keyframes flash{30%{filter:brightness(2.4) saturate(0)}}
+.bossname{font:400 12px var(--pixel);color:var(--red)}
+.bar{width:min(240px,70vw);height:10px;border:2px solid var(--edge);border-radius:3px;background:#000;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--hp);transition:width .4s}
+.bar.mpb i{background:var(--mp)}
+.party{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pm{position:relative;display:grid;gap:4px;justify-items:center;text-align:center;padding:8px 4px;border-radius:8px;border:2px solid transparent}
+.pm.turn{border-color:var(--gold);box-shadow:0 0 12px rgba(255,216,74,.4)}
+.pm.down{opacity:.45;filter:grayscale(1)}
+.pm.hit{animation:shake .35s}
+.pm img{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--edge)}
+.pm b{font:400 9px var(--pixel)}
+.pm .nums{font:600 11px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.pm .bar{width:100%;height:7px}
+.tags{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;min-height:14px}
+.tag{font:400 7px var(--pixel);padding:2px 3px;border-radius:2px;background:#000;border:1px solid var(--dim)}
+.tag.mute{color:var(--red);border-color:var(--red)} .tag.up{color:var(--hp);border-color:var(--hp)} .tag.guard{color:var(--mp);border-color:var(--mp)}
+.pop{position:absolute;left:50%;top:30%;transform:translateX(-50%);font:400 14px var(--pixel);color:#fff;text-shadow:2px 2px 0 #000;pointer-events:none;animation:pop 1s forwards;z-index:3}
+.pop.heal{color:var(--hp)}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,6px)}15%{opacity:1;transform:translate(-50%,-6px)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-18px)}}
+.menu{display:grid;gap:8px}
+.menu .who{font:400 11px var(--pixel);color:var(--gold)}
+.cmds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cmds .btn{text-align:left}
+.cmds .btn::before{content:"▶ ";visibility:hidden}
+.cmds .btn:hover::before,.cmds .btn:focus-visible::before{visibility:visible}
+.cmds .btn small{display:block;font:500 11px var(--mono);color:var(--dim);margin-top:4px}
+.end{display:grid;gap:12px;text-align:center}
+.end p{margin:0;font:400 12px/1.9 var(--pixel)}
+.end .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.foot{font:500 11px var(--mono);color:var(--dim);text-align:center}
+@media (prefers-reduced-motion:reduce){.shake,.boss.hit,.pm.hit,.pop{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="gate" id="gate">
+    <div class="lock" aria-hidden="true">🔒</div>
+    <h1>SUPER SECRET<br>FINAL LEVEL</h1>
+    <form id="gateForm" class="gate" style="margin:0">
+      <label class="px" for="pw" style="font-size:10px;color:var(--dim)">PASSWORD</label>
+      <input id="pw" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+      <button class="btn" type="submit">ENTER</button>
+      <div class="no" id="no" aria-live="polite"></div>
+    </form>
+    <a class="foot" href="../">← back to the Salmon Simulator</a>
+  </section>
+
+  <section id="intro" hidden>
+    <h1>FINAL LEVEL</h1>
+    <div class="win crawl" id="crawl"></div>
+    <button class="btn" id="fight" style="justify-self:center">FIGHT!</button>
+  </section>
+
+  <section id="battle" hidden class="wrap" style="padding:0;min-height:0">
+    <div class="win msg" id="msg" aria-live="polite"></div>
+    <div class="arena">
+      <div class="boss" id="boss"></div>
+      <div class="bossname" id="bossName"></div>
+      <div class="bar" aria-hidden="true"><i id="bossHp"></i></div>
+    </div>
+    <div class="win party" id="party"></div>
+    <div class="win menu" id="menu"></div>
+    <div class="win end" id="end" hidden></div>
+  </section>
+</div>
+
+<script type="application/json" id="battleData">__BATTLE__</script>
+<script type="module">
+import { battle } from './battle.js';
+const C = JSON.parse(document.getElementById('battleData').textContent);
+const B = battle(C), $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 120) : ms));
+let g = null, busy = false, sub = null;   // sub: an open submenu (skill/item list, or a target pick)
+
+// ---- the gate: only the password's SHA-256 is in this page (a fun lock, not security: the code is public) ----
+async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function unlocked() { try { return sessionStorage.getItem('fl-ok') === '1'; } catch (e) { return false; } }
+$('#gateForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const ok = (await sha256($('#pw').value.trim().toLowerCase())) === C.gate.password_sha256;
+  if (!ok) { $('#no').textContent = 'ACCESS DENIED'; const f = $('#gateForm'); f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake'); $('#pw').select(); return; }
+  try { sessionStorage.setItem('fl-ok', '1'); } catch (e) {}
+  showIntro();
+};
+function showIntro() {
+  $('#gate').hidden = true; $('#intro').hidden = false;
+  $('#crawl').innerHTML = C.intro.map(l => `<p>${esc(l)}</p>`).join('');
+  $('#fight').focus();
+}
+$('#fight').onclick = () => startFight();
+
+// ---- the battle ----
+const seedFromHash = /^#FL-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
+function startFight() {
+  g = B.start(seedFromHash || 'FL-' + Math.floor(10000 + Math.random() * 89999)); sub = null; busy = false;
+  $('#intro').hidden = true; $('#gate').hidden = true; $('#battle').hidden = false; $('#end').hidden = true; $('#menu').hidden = false;
+  $('#boss').innerHTML = C.boss.photo ? `<img src="p/boss.jpg" alt="${esc(C.boss.name)}">`
+    : `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(C.boss.name)}: a mysterious silhouette"><rect width="100" height="100" fill="#111a3a"/><circle cx="50" cy="38" r="17" fill="#000"/><path d="M18 100c2-24 15-36 32-36s30 12 32 36z" fill="#000"/><text x="50" y="46" text-anchor="middle" font-family="Press Start 2P,monospace" font-size="16" fill="#ff5a5f">?</text></svg>`;
+  $('#bossName').textContent = C.boss.name.toUpperCase();
+  say(`${C.boss.name} blocks the way!`);
+  render();
+}
+function say(t) { $('#msg').textContent = t; }
+function render(st = g) {   // st: what to draw (the state before a round, while it plays)
+  const nb = B.nextUp(g);
+  $('#bossHp').style.width = `${100 * st.boss.hp / st.boss.maxHp}%`;
+  $('#party').innerHTML = st.party.map(p => {
+    const pct = p.hp / p.maxHp, col = pct < .25 ? 'var(--hpCrit)' : pct < .5 ? 'var(--hpLow)' : 'var(--hp)';
+    return `<div class="pm${p.hp <= 0 ? ' down' : ''}${p.id === nb && !busy ? ' turn' : ''}" data-pm="${p.id}">
+      <img src="p/${p.id}.jpg" alt=""><b>${esc(p.name.toUpperCase())}</b>
+      <div class="bar" aria-hidden="true"><i style="width:${100 * pct}%;background:${col}"></i></div>
+      <div class="nums" aria-label="${esc(p.name)}: ${p.hp} of ${p.maxHp} HP, ${p.mp} MP">${p.hp}/${p.maxHp}<br>MP ${p.mp}</div>
+      <div class="tags">${p.silenced ? '<span class="tag mute">MUTED</span>' : ''}${p.buff ? '<span class="tag up">ATK↑</span>' : ''}${st.pending[p.id] ? '<span class="tag">✓</span>' : ''}</div></div>`; }).join('');
+  renderMenu();
+}
+function renderMenu() {
+  const m = $('#menu'), id = B.nextUp(g);
+  if (busy || !id || g.outcome) { m.innerHTML = ''; m.hidden = true; return; }
+  m.hidden = false;
+  const p = g.party.find(x => x.id === id), o = B.options(g, id);
+  if (!sub) {
+    m.innerHTML = `<div class="who">${esc(p.name.toUpperCase())}</div><div class="cmds">
+      <button class="btn" data-c="attack">ATTACK</button><button class="btn" data-c="skill" ${o.skills.some(s => s.ok) ? '' : 'disabled'}>SKILL${p.silenced ? '<small>muted</small>' : ''}</button>
+      <button class="btn" data-c="defend">DEFEND</button><button class="btn" data-c="item" ${o.items.some(i => i.ok) ? '' : 'disabled'}>ITEM</button></div>`;
+    m.querySelector('[data-c="attack"]').onclick = () => pick({ type: 'attack' });
+    m.querySelector('[data-c="defend"]').onclick = () => pick({ type: 'defend' });
+    m.querySelector('[data-c="skill"]').onclick = () => { sub = { kind: 'skill' }; renderMenu(); };
+    m.querySelector('[data-c="item"]').onclick = () => { sub = { kind: 'item' }; renderMenu(); };
+  } else if (sub.kind === 'skill' || sub.kind === 'item') {
+    const list = sub.kind === 'skill' ? o.skills : o.items;
+    m.innerHTML = `<div class="who">${esc(p.name.toUpperCase())}: ${sub.kind.toUpperCase()}</div><div class="cmds">${list.map(x => `<button class="btn" data-x="${x.id}" ${x.ok ? '' : 'disabled'}>${esc(x.name.toUpperCase())}<small>${sub.kind === 'skill' ? `${x.mp} MP${x.why ? ` · ${x.why}` : ''}` : `× ${x.left}`}</small></button>`).join('')}<button class="btn" data-back>BACK</button></div>`;
+    m.querySelectorAll('[data-x]').forEach(b => b.onclick = () => {
+      const x = list.find(y => y.id === b.dataset.x), cmd = sub.kind === 'skill' ? { type: 'skill', skill: x.id } : { type: 'item', item: x.id };
+      if (x.target === 'ally' || x.target === 'fallen') { sub = { kind: 'target', cmd, fallen: x.target === 'fallen' }; renderMenu(); } else pick(cmd);
+    });
+    m.querySelector('[data-back]').onclick = () => { sub = null; renderMenu(); };
+  } else if (sub.kind === 'target') {
+    const ok = q => sub.fallen ? q.hp <= 0 : q.hp > 0;
+    m.innerHTML = `<div class="who">ON WHOM?</div><div class="cmds">${g.party.map(q => `<button class="btn" data-t="${q.id}" ${ok(q) ? '' : 'disabled'}>${esc(q.name.toUpperCase())}<small>${q.hp}/${q.maxHp}</small></button>`).join('')}<button class="btn" data-back>BACK</button></div>`;
+    m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => pick({ ...sub.cmd, target: b.dataset.t }));
+    m.querySelector('[data-back]').onclick = () => { sub = null; renderMenu(); };
+  }
+  m.querySelector('.btn:not(:disabled)')?.focus({ preventScroll: true });
+}
+async function pick(cmd) {
+  const id = B.nextUp(g), r = B.choose(g, id, cmd); sub = null;
+  if (r.error) { say(r.error.message); renderMenu(); return; }
+  const before = g; g = r.game;
+  if (!r.events.some(e => e.type === 'round')) { render(); return; }
+  busy = true; render(before); await play(r.events, before); busy = false;
+  if (g.outcome) return finish();
+  render();
+}
+// play a round's events one at a time: the text, then damage numbers and flashes
+async function play(events, before) {
+  const shown = JSON.parse(JSON.stringify(before));   // the party bars move as the story plays, not all at once
+  for (const e of events) {
+    if (e.type === 'act' || e.type === 'phase') { say(e.text); await wait(900); }
+    else if (e.type === 'damage') {
+      if (e.target === shown.boss.id) { $('#boss').classList.remove('hit'); void $('#boss').offsetWidth; $('#boss').classList.add('hit'); shown.boss.hp = Math.max(0, shown.boss.hp - e.amount); $('#bossHp').style.width = `${100 * shown.boss.hp / shown.boss.maxHp}%`; popAt($('.arena'), e.amount); }
+      else { const el = document.querySelector(`[data-pm="${e.target}"]`); el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); popAt(el, e.amount); }
+      await wait(450);
+    } else if (e.type === 'heal' || e.type === 'revive' || e.type === 'mp') { popAt(document.querySelector(`[data-pm="${e.target}"]`), (e.type === 'mp' ? 'MP+' : '+') + e.amount, true); await wait(350); }
+  }
+}
+function popAt(el, t, heal) { if (!el) return; const s = document.createElement('span'); s.className = 'pop' + (heal ? ' heal' : ''); s.textContent = t; el.appendChild(s); setTimeout(() => s.remove(), 1000); }
+function finish() {
+  render(); $('#menu').hidden = true;
+  const win = g.outcome === 'victory', lines = win ? C.victory : C.defeat;
+  say(lines[0]);
+  $('#end').hidden = false;
+  $('#end').innerHTML = `<h1>${win ? 'VICTORY!' : 'GAME OVER'}</h1>${lines.map(l => `<p>${esc(l)}</p>`).join('')}<div class="row"><button class="btn" id="again">FIGHT AGAIN</button><a class="btn" href="../" style="text-decoration:none">LEAVE</a></div>`;
+  $('#again').onclick = () => startFight(); $('#again').focus();
+}
+// read-only, for tests and curious instructors: the fight as it stands
+window.__finalLevel = { state: () => g && JSON.parse(JSON.stringify(g)), busy: () => busy };
+if (unlocked()) showIntro(); else $('#pw').focus();
+</script>
+</body>
+</html>
