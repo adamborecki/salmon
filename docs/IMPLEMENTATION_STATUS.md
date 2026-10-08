@@ -113,11 +113,10 @@ added the lift minigame and a real fault from that day. All of it is in PRODUCT_
   not tentative.
 
 ### Open (Cary)
-- ~~Spots~~ answered (a U). Still open: does facing matter (could "a wedge facing the wrong way" be
-  a fault)?
+- ~~Spots, facing~~ answered: a U; a wedge facing the wrong way "usually never happens", so it
+  won't be a fault (Cary, 2026-10-08).
 - **Hook:** is it on the front or the back of the Monitor Rack?
-- **Links:** are there exactly two short links, or more spares on the hook? (The jacks are answered:
-  they work the same.)
+- ~~Links~~ answered: the exact number doesn't matter (two stays).
 - ~~Bus 1 input~~ answered by Cary's photos: S32 OUTPUT 1 -> CH A input; CH B input empty.
 - **Lift difficulty:** is it right? (`carry.lift` in the content.)
 

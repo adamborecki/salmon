@@ -71,7 +71,7 @@
    "label": "Right side"
   },
   "shape": "u",
-  "status": "Cary, 2026-10-08: the three wedges sit in an arc, a U that opens toward the mixer (FOH): one on each side and one at the back, facing the singers inside the U. The ids stay left / center / right (center = the back of the U)."
+  "status": "Cary, 2026-10-08: the three wedges sit in an arc, a U that opens toward the mixer (FOH): one on each side and one at the back, facing the singers inside the U. The ids stay left / center / right (center = the back of the U). Facing is not simulated: a wedge facing the wrong way usually never happens (Cary, 2026-10-08)."
  },
  "cables": {
   "run": {
@@ -87,7 +87,7 @@
    "long": false
   },
   "home": "hook",
-  "status": "Cary, 2026-10-08: the speakON cables are on a hook on the amp. The hook is placed at the rack rear here (tentative). One long run plus two short links is the minimum for a daisy chain of three (counts tentative). A short link's two ends must be in the same place. Cary's photo (2026-10-08) shows spare speakON cables coiled with Velcro on the left side of the Monitor Rack rear, which fits the hook being at the rear (to confirm)."
+  "status": "Cary, 2026-10-08: the speakON cables are on a hook on the amp. The hook is placed at the rack rear here (tentative). One long run plus two short links is the minimum for a daisy chain of three (counts tentative). A short link's two ends must be in the same place. Cary's photo (2026-10-08) shows spare speakON cables coiled with Velcro on the left side of the Monitor Rack rear, which fits the hook being at the rear (to confirm). Cary, 2026-10-08: the exact number of links doesn't matter; two is enough for the game."
  },
  "rack": {
   "furman": {
