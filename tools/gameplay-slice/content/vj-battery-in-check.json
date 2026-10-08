@@ -24,7 +24,18 @@
   "go": "Let's go",
   "status": "Cary (collaborator), 2026-10-01: a title card on entering the game, with Cary, Morgan and Magnolia saying 'Relax, let's handle this!'. Headline and the crew's line are Cary's; the brief is agent wording (tentative). USingers is the university choir that rehearses in the hall right before Vocal Jazz (Cary, 2026-10-01). {minutes} comes from clock.start/ready_by, {mics} from the mic count.",
   "mentor_prompt": "Pick your mentor",
-  "mentor_status": "Cary, 2026-10-02: the player picks one of the three as a mentor; hints come as that mentor's speech bubbles. The hint text is the same whoever you pick (no personalities are decided)."
+  "mentor_status": "Cary, 2026-10-02: the player picks one of the three as a mentor; hints come as that mentor's speech bubbles. The hint text is the same whoever you pick (no personalities are decided).",
+  "job_prompt": "Your job at 4:50",
+  "jobs": {
+   "mics": "Mics (battery check)",
+   "monitors": "Monitors (wedges)"
+  },
+  "job_status": "Cary, 2026-10-08: the mics and the monitors happen at the same time; the A1 and A2 split up. You pick one; the crew covers the other. Both lead into the line check. The monitors brief is agent wording (tentative).",
+  "brief_monitors": [
+   "Three wedges from the storage closet to the stage: lift them (tap fast!), one or two at a time.",
+   "The long speakON run from the NX3000's Channel A to the first wedge, then daisy-chain the others. The cables hang on the hook on the Monitor Rack.",
+   "Power the Furman, then the NX3000. Then have the A1 play the Wii Shop theme through Bus 1, and listen to every wedge."
+  ]
  },
  "clock": {
   "start": "16:50:00",

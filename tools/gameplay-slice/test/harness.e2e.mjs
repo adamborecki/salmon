@@ -240,5 +240,81 @@ page = page0;
 ok(await page.evaluate(() => parseFloat(document.body.style.paddingBottom) >= document.querySelector('#dock').offsetHeight), 'the page ends clear of the hands dock');
 ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'no sideways scroll at phone width');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
+
+// ---- the monitors (Cary, 2026-10-08): pick the job on the title card, walk, lift, cable, power, prove ----
+{
+  const G = JSON.parse(await readFile(join(DIST, '..', '..', '..', 'docs', 'scene-graph.json'), 'utf8'));
+  const ctx2 = await browser.newContext({ ...devices['iPhone 13'] });           // a fresh browser: no mentor remembered
+  page = await ctx2.newPage(); page.on('pageerror', e => errs.push(e.message));
+  await page.goto(BASE + '#VJ-48217', { waitUntil: 'networkidle' });
+  await tap('#introNext'); await tap('[data-mentor="magnolia"]');
+  ok((await page.$$eval('[data-job]', b => b.map(x => x.getAttribute('aria-pressed')))).join() === 'true,false', 'title card: the job defaults to the mics');
+  await tap('[data-job="monitors"]'); await tap('#introGo');
+  ok(/You're on monitors/.test(await page.textContent('#mentor')), 'monitors: Magnolia explains the job');
+  ok(/MN-48217/.test(await page.textContent('#dbg')) && /10:00 to rehearsal/.test(await page.textContent('#due')), 'monitors: seed MN-48217 at 4:50');
+  ok((await where()) === 'FOH', 'monitors: you start at FOH');
+  // walk the shortest way, tapping what a player would: an arrow, a close-up hotspot, or Back out of a close-up
+  async function walkTo(to) {
+    for (let guard = 0; guard < 20; guard++) {
+      const cur = await page.evaluate(() => document.body.dataset.scene);
+      if (cur === to) return;
+      const prev = { [cur]: null }, q = [cur], next = x => [...G.edges.filter(e => e.from === x).map(e => [e.to, e.kind === 'closeup' ? 'hot' : 'walk']), ...G.edges.filter(e => e.to === x && e.kind === 'closeup').map(e => [e.from, 'back'])];
+      while (q.length) { const x = q.shift(); for (const [n, how] of next(x)) if (!(n in prev)) { prev[n] = [x, how]; q.push(n); } }
+      let step = to; while (prev[step][0] !== cur) step = prev[step][0];
+      const how = prev[step][1];
+      if (how === 'walk') await tap(`#walks [data-walk="${step}"]`);
+      else if (how === 'hot') await tapHot(await page.evaluate(id => document.querySelector(`#hot polygon[data-to="${id}"]`).getAttribute('aria-label'), step));
+      else await tapBack();
+      await page.waitForTimeout(120);
+    }
+    throw new Error('could not walk to ' + to);
+  }
+  const lift = async (n, how = 'tap') => {
+    await tap(`[data-lift="${n}"]`);
+    for (let i = 0; i < 80 && !(await page.$eval('#lift', l => l.hidden)); i++) { if (how === 'space') await page.keyboard.press('Space'); else await page.tap('#liftTap'); }
+    return page.textContent('#toast');
+  };
+  await walkTo('storage-closet'); ok((await where()) === 'Storage closet', 'monitors: walked FOH → hall → crossroads → storage by the arrows');
+  ok(/3 wedges here/.test(await page.textContent('#panel')), 'storage: three wedges');
+  ok(/Two wedges up/.test(await lift(2)), 'lift two: the strength check, by tapping');
+  await walkTo('musician-pov'); await tap('[data-place="left"]'); await tap('[data-place="center"]');
+  ok((await page.$$eval('.spot.has', s => s.length)) === 2, 'stage: two wedges down');
+  await walkTo('storage-closet');
+  await tap('[data-lift="1"]'); await page.waitForTimeout(4300);                 // don't tap: the bar drains and the lift fails
+  ok(/too heavy/.test(await page.textContent('#liftMsg')), 'lift: no tapping = a failed lift');
+  for (let i = 0; i < 40 && !(await page.$eval('#lift', l => l.hidden)); i++) await page.keyboard.press('Space');
+  ok(/A wedge up \(after 1 failed lift\)/.test(await page.textContent('#toast')), 'lift one: by Space, after one failed lift (it costs time)');
+  await walkTo('musician-pov'); await tap('[data-place="right"]');
+  ok((await stepsDone()).join() === 'wedges', 'steps: wedges out');
+  await walkTo('monitor-amp-rack-rear');
+  ok(/its end is in CH B/.test(await page.textContent('#panel')), 'rack rear: the run on the hook is still plugged into CH B (the fault)');
+  for (const c of ['run', 'link1', 'link2']) await tap(`[data-hook="${c}"]`);
+  await walkTo('musician-pov');
+  for (const [c, j] of [['run', 'w1:1'], ['link1', 'w1:2'], ['link1', 'w2:1'], ['link2', 'w2:2'], ['link2', 'w3:1']]) { await tap(`[data-cable="${c}"]`); await tap(`[data-jack="${j}"]`); }
+  ok((await stepsDone()).join() === 'wedges,cable', 'steps: cabled (it looks plugged in)');
+  await walkTo('monitor-amp-rack-front'); await tap('[data-switch="furman"]'); await tap('[data-switch="nx3000"]');
+  ok(await page.$eval('[data-switch="nx3000"]', b => b.getAttribute('aria-pressed') === 'true') && /lights up/.test(await page.textContent('#toast')), 'rack: the Furman, then the NX3000');
+  await walkTo('musician-pov'); await tap('[data-a1="bus1"]'); await tap('[data-listen]');
+  ok(/Silent: stage left, centre, stage right/.test(await page.textContent('#toast')), 'listen: all three silent (NOTICE)');
+  await walkTo('monitor-amp-rack-front');
+  ok(await page.$eval('.panelrow:nth-of-type(2) .led.sig', () => true).catch(() => false) && /CH A SIGNAL/.test(await page.textContent('#panel')), 'NX3000: the CH A SIGNAL light flickers with Bus 1 (TRACE)');
+  await walkTo('monitor-amp-rack-rear'); await tap('[data-unplug="nx3000:B"]'); await tap('[data-cable="run"]'); await tap('[data-jack="nx3000:A"]');
+  await walkTo('musician-pov'); await tap('[data-listen]');
+  ok(/Playing: stage left\. Silent: centre, stage right/.test(await page.textContent('#toast')), 'listen: only the first wedge plays (the chain dies after it)');
+  await tap('[data-reseat="w1:2"]'); ok(/already locked/.test(await page.textContent('#toast')), 'reseat wedge 1 jack 2: already locked');
+  await tap('[data-reseat="w2:1"]'); ok(/clicks\. Locked/.test(await page.textContent('#toast')), 'reseat wedge 2 jack 1: it was loose');
+  await tap('[data-listen]'); await page.waitForTimeout(1700);
+  ok(!(await page.$eval('#sheet', s => s.hidden)) && /monitors/i.test(await page.textContent('#dbTitle')), 'all three play: the monitors debrief opens');
+  const ml = await page.$$eval('#dbList li', ls => ls.map(l => l.textContent));
+  ok(/Monitors ready/.test(ml[0]), 'debrief: ' + ml[0]);
+  for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(ml.filter(l => l.startsWith(step)).length === 2, `monitors debrief: ${step} for both faults`);
+  ok(ml.some(l => /2 connectors reseated to find it/.test(l)) && ml.some(l => /1 failed lift/.test(l)), 'debrief: the reseats and the failed lift');
+  await shot('9-monitors-debrief');
+  await tap('#lineBtn'); await page.waitForTimeout(300);
+  ok(/Wedge check done/.test(await page.textContent('#steps')) && (await page.$$eval('.chips .chip', c => c.length)) === 13, 'on to the line check: the wedge check is already done, 13 singers');
+  ok(!/monitor amp/.test(await page.textContent('#dbg')), 'line check after the monitors: the amp is never the fault');
+  ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'monitors: no sideways scroll');
+  await ctx2.close();
+}
 await browser.close(); server.close();
 console.log(failures ? `${failures} FAILED` : 'ALL PASS'); process.exit(failures ? 1 : 0);

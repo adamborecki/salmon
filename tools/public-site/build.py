@@ -42,7 +42,7 @@ def main():
     game = os.path.join(DIST, 'battery-check')
     os.makedirs(os.path.join(game, 'p'))
     shutil.copy(os.path.join(game_tmp, 'local.html'), os.path.join(game, 'index.html'))   # the copy with a doctype
-    for js in ('engine.js', 'line-engine.js'):
+    for js in ('engine.js', 'line-engine.js', 'monitor-engine.js'):
         shutil.copy(os.path.join(game_tmp, js), game)
     for f in os.listdir(os.path.join(game_tmp, 'p')):
         shutil.copy(os.path.join(game_tmp, 'p', f), os.path.join(game, 'p'))
