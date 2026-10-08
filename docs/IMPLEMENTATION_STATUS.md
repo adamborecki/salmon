@@ -105,12 +105,19 @@ added the lift minigame and a real fault from that day. All of it is in PRODUCT_
 - The NX3000's MODE (bridge / stereo / mono) and CROSSOVER switches are visible. A wrong MODE
   setting could be a future fault (not built).
 
+### Cary's answers (2026-10-08, later)
+- **Placement:** the wedges sit in an arc, a U that opens toward the mixer. The spots are now "left
+  side / back / right side", with a small U diagram on the stage panel. The ids are still
+  left / center / right.
+- **Jacks:** the two speakON jacks on a wedge work the same. That's now confirmed in the content,
+  not tentative.
+
 ### Open (Cary)
-- **Spots:** where exactly do the three wedges go on stage, and do they need to face the singers
-  (could "facing the wrong way" be a fault)?
+- ~~Spots~~ answered (a U). Still open: does facing matter (could "a wedge facing the wrong way" be
+  a fault)?
 - **Hook:** is it on the front or the back of the Monitor Rack?
-- **Links:** are there exactly two short links, or more spares on the hook? Are the VP1220F's two
-  speakON jacks really "in / link" in parallel?
+- **Links:** are there exactly two short links, or more spares on the hook? (The jacks are answered:
+  they work the same.)
 - ~~Bus 1 input~~ answered by Cary's photos: S32 OUTPUT 1 -> CH A input; CH B input empty.
 - **Lift difficulty:** is it right? (`carry.lift` in the content.)
 

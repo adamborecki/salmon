@@ -1638,6 +1638,9 @@ The first gameplay slice's "line-check" is really the battery-in check and shoul
   replugging.
 - **Game idea:** lifting the wedges is a "strength check" minigame (tap fast; two at a time is
   harder).
+- **Placement:** the three wedges sit in an arc, a U that opens toward the mixer: one on each side and
+  one at the back, facing the singers.
+- **Jacks:** the wedges' two speakON jacks work the same (either takes the run or a link).
 
 **Line check, Cary's round 2 (2026-10-02):**
 
