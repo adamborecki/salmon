@@ -1,0 +1,298 @@
+{
+ "id": "vj-monitors",
+ "title": "Vocal Jazz: the monitors",
+ "about": "Monitor deployment (PRODUCT_DESIGN sections 30, 31, 41, 42, 43): get the three wedges from the storage closet onto the stage in front of the singers, run the long speakON cable from the monitor amp to the first wedge and daisy-chain the others, power the Monitor Rack, and prove the wedges with known playback through Bus 1. The player is the A2 doing the monitors while the crew does the mics (they happen at the same time).",
+ "status": "Cary (collaborator), 2026-10-08: the monitors and the mics happen at the same time (the A1 and A2 split up); the wedges are in the storage closet and get carried out (Cary carries two, then one; either works); power: the Furman, then the NX3000; one long speakON run from the NX3000 to the first wedge, then daisy-chained; the speakON cables hang on a hook on the amp (the Monitor Rack); the NX3000 has Channel A and Channel B, and Cary typically uses Channel A; the real mistake is the wedge cable in the wrong amp channel.",
+ "clock": {
+  "start": "16:50:00",
+  "ready_by": "17:00:00",
+  "walk_m_per_s": 1.3,
+  "carry_m_per_s": {
+   "1": 1.0,
+   "2": 0.7
+  },
+  "take_s": 3,
+  "place_s": 3,
+  "plug_s": 3,
+  "switch_s": 2,
+  "ask_s": 3,
+  "listen_s": 4,
+  "status": "tentative: walking time comes from the scene graph's distance_m between photos; speeds, and the seconds per action, are placeholders Reseating a connector (unplug, push, twist) 4 s.",
+  "reseat_s": 4
+ },
+ "scenes": {
+  "start": "foh-wide",
+  "storage": "storage-closet",
+  "stage": "musician-pov",
+  "rack_front": "monitor-amp-rack-front",
+  "rack_rear": "monitor-amp-rack-rear",
+  "status": "the storage closet holds the wedges; musician-pov is centre stage with the wedges at the singers' feet (PRODUCT_DESIGN section 15); the Monitor Rack is stage-side (front and rear photos)"
+ },
+ "carry": {
+  "max_wedges": 2,
+  "status": "Cary, 2026-10-08: 'depends on preference but I do two then one': up to two at a time",
+  "lift": {
+   "one": {
+    "gain": 14,
+    "decay_per_s": 28
+   },
+   "two": {
+    "gain": 8,
+    "decay_per_s": 34
+   },
+   "seconds": 4,
+   "status": "Cary, 2026-10-08: a 'strength check' minigame when lifting: tap fast (or press Space) to fill the bar before it drains; two at a time is harder. Numbers are the agent's (tentative); each failed lift costs take_s of game time."
+  }
+ },
+ "wedges": {
+  "w1": {
+   "label": "Wedge 1",
+   "model": "Behringer Eurolive VP1220F"
+  },
+  "w2": {
+   "label": "Wedge 2",
+   "model": "Behringer Eurolive VP1220F"
+  },
+  "w3": {
+   "label": "Wedge 3",
+   "model": "Behringer Eurolive VP1220F"
+  },
+  "jacks": 2,
+  "status": "PRODUCT_DESIGN section 31: the three VP1220F (passive, 8 ohm, speakON/NL4 and 1/4-inch) are the principal Vocal Jazz wedges. Two speakON jacks per wedge wired in parallel (in / link) is tentative: either jack works for the run or a link."
+ },
+ "spots": {
+  "left": {
+   "label": "Stage left"
+  },
+  "center": {
+   "label": "Centre"
+  },
+  "right": {
+   "label": "Stage right"
+  },
+  "status": "tentative: three wedges across the front of the singers' line, facing them (the musician-pov photo shows wedges at the singers' feet); exact positions are not recorded"
+ },
+ "cables": {
+  "run": {
+   "label": "Long speakON run",
+   "long": true
+  },
+  "link1": {
+   "label": "speakON link 1",
+   "long": false
+  },
+  "link2": {
+   "label": "speakON link 2",
+   "long": false
+  },
+  "home": "hook",
+  "status": "Cary, 2026-10-08: the speakON cables are on a hook on the amp. The hook is placed at the rack rear here (tentative). One long run plus two short links is the minimum for a daisy chain of three (counts tentative). A short link's two ends must be in the same place."
+ },
+ "rack": {
+  "furman": {
+   "label": "Furman M-8Lx",
+   "switch": "POWER"
+  },
+  "nx3000": {
+   "label": "Behringer NX3000",
+   "channels": [
+    "A",
+    "B"
+   ],
+   "bus1_input": "A"
+  },
+  "start": {
+   "furman": "off",
+   "nx3000": "off"
+  },
+  "status": "Photos (monitor-amp-rack-front / rear): Furman M-8Lx with a POWER switch; NX3000 with CH A / CH B gain knobs, PROTECT / LIMIT / SIGNAL lights per channel and a POWER button; speakON outputs CH A / CH B and XLR inputs on the rear. Cary, 2026-10-08: power the Furman, then the NX3000; the wedges go on Channel A. 'Bus 1 arrives on the CH A input' is tentative (one XLR is plugged in on the rear photo). Starting with both off is tentative (Cary, 2026-10-02: when the monitors don't work, it's usually that the amp isn't on). Gain knobs are not simulated."
+ },
+ "playback": {
+  "label": "The Wii Shop theme",
+  "status": "Cary, 2026-10-02: the wedges are checked with known playback, often the Wii Shop theme. Text only. Here you ask the A1 at FOH to play it (they are on the mics, but a button press is quick); the mains always work (no mains faults yet)."
+ },
+ "faults": [
+  {
+   "id": "run-in-ch-b",
+   "label": "The run was plugged into Channel B",
+   "chance": 0.5,
+   "set": {
+    "cable": "run",
+    "end": "a",
+    "jack": "nx3000:B"
+   },
+   "status": "Cary, 2026-10-08: the real mistake is the wedge cable in the wrong amp channel. Here, about half the time, the run is still plugged into Channel B from the last event when you take it off the hook (tentative framing); you can also make the mistake yourself.",
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "The amp is on and Bus 1 is reaching it, but nothing reaches the wedges. Which part of the amp feeds them?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Look at the NX3000: which channel's SIGNAL light moves with the Wii Shop theme? Then look at the rear: which output is the run in?"
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The run is in Channel B, but Bus 1 comes in on Channel A. Move the run to the CH A output, then listen again."
+    }
+   ],
+   "debrief": {
+    "failed": "The long run was plugged into the NX3000's Channel B output, but Bus 1 comes in on Channel A.",
+    "act": "you moved the run to the Channel A output.",
+    "concepts": "an amp channel only amplifies what comes into that channel: follow Bus 1 into the amp and out of the same channel"
+   },
+   "type": "preplug"
+  },
+  {
+   "id": "loose-speakon",
+   "type": "loose",
+   "label": "A speakON wasn't locked in",
+   "chance": 0.5,
+   "status": "Cary, 2026-10-08 (a real one from that day, with Morgan): one of the cords was just improperly plugged; Cary went to every cord in the signal flow, unplugged and replugged, and that fixed it. Here one of the speakON connections you make (by seed) goes in without locking: it looks plugged in but passes nothing until it is reseated.",
+   "hints": [
+    {
+     "level": 1,
+     "kind": "concept",
+     "text": "Everything looks plugged in, but part of the chain is silent. Can a cable be 'in' without making contact?"
+    },
+    {
+     "level": 2,
+     "kind": "location",
+     "text": "Listen to which wedges are silent: the problem is at or before the first silent one. Reseat each speakON along that part of the chain: unplug, push in, twist until it locks."
+    },
+    {
+     "level": 3,
+     "kind": "direct",
+     "text": "The speakON in {jack} isn't locked. Unplug it and plug it back in, twisting until it clicks, then listen again."
+    }
+   ],
+   "debrief": {
+    "failed": "A speakON in {jack} went in without locking: it looked plugged in, but passed nothing.",
+    "act": "you reseated it, and it locked.",
+    "concepts": "'plugged in' isn't 'connected': a speakON has to twist and lock; when the chain looks right but is dead, reseat along the signal flow"
+   }
+  }
+ ],
+ "hints": {
+  "wedges": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "The singers need three wedges in front of them. Where do the wedges live between events?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "The storage closet: through the crossroads, to the right. You can carry two at a time."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "Bring all three wedges from the storage closet to the stage and put one at each spot, facing the singers."
+   }
+  ],
+  "run": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "Passive wedges need a speaker cable from the amp. Where are the speakON cables kept?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "On the hook on the Monitor Rack (round the back): one long run and two short links."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "Plug the long run into the NX3000's CH A output at the rack rear, and the other end into the first wedge."
+   }
+  ],
+  "chain": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "One cable comes from the amp. How do the other wedges get signal?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "Each wedge has two speakON jacks wired together: one in, one out to the next wedge."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "Daisy-chain them: a link from the first wedge's second jack to the next wedge, and again to the last one."
+   }
+  ],
+  "power": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "Passive wedges have no power of their own. What drives them?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "The Monitor Rack front: the Furman power strip at the top, then the NX3000."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "Switch on the Furman, then press the NX3000's POWER button."
+   }
+  ],
+  "verify": [
+   {
+    "level": 1,
+    "kind": "concept",
+    "text": "Connected isn't the same as working. How do you prove every wedge makes sound?"
+   },
+   {
+    "level": 2,
+    "kind": "location",
+    "text": "Known source first: ask the A1 to play the Wii Shop theme through Bus 1, and listen on stage."
+   },
+   {
+    "level": 3,
+    "kind": "direct",
+    "text": "Ask the A1 to play the Wii Shop theme through Bus 1, then listen to the wedges from the stage."
+   }
+  ],
+  "status": "procedure hints (agent wording, tentative), chosen from what is missing; a fault's own hints win once its symptom has been seen"
+ },
+ "objective": {
+  "label": "Monitors: three wedges working",
+  "goal": "Three wedges on stage in front of the singers, cabled from the NX3000 (one run, daisy-chained), the rack powered, and every wedge heard playing the Wii Shop theme through Bus 1.",
+  "status": "a wedge counts only when heard playing Bus 1 playback after the last change to the monitor chain (cables, wedges, power)"
+ },
+ "procedure": {
+  "steps": [
+   {
+    "id": "wedges",
+    "short": "Wedges out",
+    "text": "Carry the three wedges from the storage closet to the stage, one at each spot."
+   },
+   {
+    "id": "cable",
+    "short": "Cable",
+    "text": "Long run from the NX3000 (rack rear) to the first wedge, then daisy-chain the others."
+   },
+   {
+    "id": "power",
+    "short": "Power",
+    "text": "Rack front: the Furman, then the NX3000."
+   },
+   {
+    "id": "test",
+    "short": "Test",
+    "text": "Ask the A1 for the Wii Shop theme through Bus 1, and listen to every wedge."
+   }
+  ],
+  "status": "Cary, 2026-10-08 (the order of power, the cabling, carrying); step wording is the agent's"
+ },
+ "faults_status": "each fault is drawn independently by its chance (tentative), so a run can have none, one, or both"
+}
