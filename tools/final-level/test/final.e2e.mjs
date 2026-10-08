@@ -1,5 +1,5 @@
-// End-to-end: the SUPER SECRET FINAL LEVEL on a phone: the gate (wrong, then right), the intro, and a whole
-// fight played through the menus (FL-1 is a win, FL-16 a loss for this strategy). Reduced motion keeps it quick.
+// End-to-end: the SUPER SECRET FINAL LEVEL on a phone: the gate (wrong, then right), the intro (your name, your
+// mentor leads), and a whole fight played through the menus (FL-1 is a win, FL-18 a loss for this strategy). Reduced motion keeps it quick.
 // Run from the repo root after `python3 tools/final-level/build.py`:  node tools/final-level/test/final.e2e.mjs
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
@@ -40,10 +40,13 @@ ok(await page.$eval('#intro', e => e.hidden), 'a wrong password: ACCESS DENIED')
 await page.fill('#pw', TEST_PW.toUpperCase()); await tap('#gateForm button');
 await page.waitForFunction(() => !document.querySelector('#intro').hidden);
 ok(/Adam Borecki blocks the path/.test(await page.textContent('#crawl')), 'the right password (any case): the intro');
+ok(await page.$eval('#fight', b => b.disabled), 'FIGHT waits for your mentor (none picked in the main game here)');
+await page.fill('#pname', 'tester'); await tap('[data-lead="morgan"]');
 await tap('#fight');
 ok(/ADAM BORECKI/.test(await page.textContent('#bossName')) && (await page.$('#boss svg')) !== null, 'the boss: Adam Borecki (a silhouette until there is a photo)');
 await page.waitForFunction(() => [...document.querySelectorAll('.pm img')].every(i => i.complete && i.naturalWidth > 0));
-ok((await page.$$eval('.pm b', b => b.map(x => x.textContent))).join() === 'CARY,MORGAN,MAGNOLIA', 'the party: Cary, Morgan, Magnolia, with portraits');
+ok((await page.$$eval('.pm b', b => b.map(x => x.textContent))).join() === 'MORGAN,TESTER,CARY,MAGNOLIA', 'a party of 4: your mentor (Morgan) leads, then you, then the other mentors');
+ok((await page.$eval('[data-pm="morgan"] .tag.lead', () => true).catch(() => false)) && (await page.$('[data-pm="player"] svg.av')) !== null, 'the leader has a ★; you have an avatar');
 
 // the strategy, through the menus: revive with the spare mic, Cary heals when two are hurt, Magnolia gain-stages, else attack
 async function fight() {
@@ -56,6 +59,7 @@ async function fight() {
     if (down && g.items.spare > 0 && !pend.some(c => c.item === 'spare')) { await tap('[data-c="item"]'); await tap('[data-x="spare"]'); await tap(`[data-t="${down.id}"]`); }
     else if (id === 'cary' && !m.silenced && low.length >= 2 && m.mp >= 8) { await tap('[data-c="skill"]'); await tap('[data-x="wii-shop"]'); }
     else if (id === 'magnolia' && !m.silenced && m.mp >= 12) { await tap('[data-c="skill"]'); await tap('[data-x="gain-staging"]'); }
+    else if (id === 'player' && !m.silenced && !g.boss.exposed && m.mp >= 6) { await tap('[data-c="skill"]'); await tap('[data-x="trace"]'); }
     else await tap('[data-c="attack"]');
   }
 }
@@ -69,11 +73,12 @@ await tap('#again');
 ok(!(await page.$eval('#battle', e => e.hidden)) && (await page.$eval('#end', e => e.hidden)), 'FIGHT AGAIN starts a new fight');
 
 // the unlock lasts for the browser session: a reload skips the password
-await page.goto(BASE + '?again=1#FL-16', { waitUntil: 'networkidle' });   // a real reload, not just a hash change
+await page.goto(BASE + '?again=1#FL-18', { waitUntil: 'networkidle' });   // a real reload, not just a hash change
 ok(await page.$eval('#gate', e => e.hidden) && !(await page.$eval('#intro', e => e.hidden)), 'reload: already unlocked this session');
+ok((await page.$eval('[data-lead="morgan"]', b => b.getAttribute('aria-pressed'))) === 'true' && !(await page.$eval('#fight', b => b.disabled)), 'reload: your mentor is remembered');
 await tap('#fight'); await fight();
 end = await page.textContent('#end');
-ok(/GAME OVER/.test(end) && /Back to the battery-in check/.test(end), 'FL-16: this strategy loses, and the game says so');
+ok(/GAME OVER/.test(end) && /Back to the battery-in check/.test(end), 'FL-18: this strategy loses, and the game says so');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
 await browser.close(); server.close();
 console.log(failures ? `${failures} FAILED` : 'ALL PASS'); process.exit(failures ? 1 : 0);

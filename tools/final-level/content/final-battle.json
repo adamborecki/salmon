@@ -9,38 +9,213 @@
  "intro": [
   "The rehearsal went perfectly. Every mic, every wedge, every line check.",
   "And then the lights flicker. A figure steps out from behind FOH.",
-  "Adam Borecki blocks the path!"
+  "Adam Borecki blocks the path!",
+  "Your mentor steps up beside you."
  ],
  "party": [
-  { "id": "cary", "name": "Cary", "hp": 120, "mp": 30, "atk": 30, "def": 18, "mag": 26, "spd": 12, "skills": ["wii-shop", "reseat"] },
-  { "id": "morgan", "name": "Morgan", "hp": 110, "mp": 30, "atk": 32, "def": 16, "mag": 24, "spd": 14, "skills": ["check-the-rest", "phantom-power"] },
-  { "id": "magnolia", "name": "Magnolia", "hp": 115, "mp": 30, "atk": 28, "def": 17, "mag": 32, "spd": 13, "skills": ["gain-staging", "sends-on-fader"] }
+  {
+   "id": "player",
+   "name": "You",
+   "player": true,
+   "hp": 125,
+   "mp": 30,
+   "atk": 31,
+   "def": 18,
+   "mag": 27,
+   "spd": 13,
+   "skills": [
+    "trace",
+    "verify"
+   ]
+  },
+  {
+   "id": "cary",
+   "name": "Cary",
+   "hp": 120,
+   "mp": 30,
+   "atk": 30,
+   "def": 18,
+   "mag": 26,
+   "spd": 12,
+   "skills": [
+    "wii-shop",
+    "reseat"
+   ]
+  },
+  {
+   "id": "morgan",
+   "name": "Morgan",
+   "hp": 110,
+   "mp": 30,
+   "atk": 32,
+   "def": 16,
+   "mag": 24,
+   "spd": 14,
+   "skills": [
+    "check-the-rest",
+    "phantom-power"
+   ]
+  },
+  {
+   "id": "magnolia",
+   "name": "Magnolia",
+   "hp": 115,
+   "mp": 30,
+   "atk": 28,
+   "def": 17,
+   "mag": 32,
+   "spd": 13,
+   "skills": [
+    "gain-staging",
+    "sends-on-fader"
+   ]
+  }
  ],
- "party_status": "Names and portraits from the three character photos (PRODUCT_DESIGN section 22). The stats and which skills each person gets are placeholders, not personalities: Cary and the crew decide those.",
+ "party_status": "Cary, 2026-10-08: the party is the player plus the three mentors (Cary, Morgan, Magnolia): 'final fantasy is best with a party of 4!'. The mentor you picked in the main game leads the party (if the game doesn't know, the final level asks). The player types their name. Stats and which skills each person gets are placeholders, not personalities: Cary and the crew decide those.",
  "skills": {
-  "wii-shop": { "name": "Wii Shop Theme", "mp": 8, "target": "party", "kind": "heal", "power": 26, "text": "{user} cues up the Wii Shop theme. Everyone feels better." },
-  "reseat": { "name": "Reseat", "mp": 4, "target": "ally", "kind": "cleanse", "power": 18, "text": "{user} reseats {target}'s connection. Click. Locked." },
-  "check-the-rest": { "name": "Check the Rest", "mp": 10, "target": "boss", "kind": "multi", "power": 0.55, "hits": 3, "text": "{user} checks the rest!" },
-  "phantom-power": { "name": "Phantom Power", "mp": 6, "target": "party", "kind": "buff", "power": 1.3, "rounds": 3, "text": "{user} switches on phantom power: +48 V of attack." },
-  "gain-staging": { "name": "Gain Staging", "mp": 12, "target": "boss", "kind": "magic", "power": 3.2, "text": "{user} sets the gain just right." },
-  "sends-on-fader": { "name": "Sends on Fader", "mp": 6, "target": "boss", "kind": "debuff", "power": 0.7, "rounds": 3, "text": "{user} pulls the boss down on the faders." }
+  "wii-shop": {
+   "name": "Wii Shop Theme",
+   "mp": 8,
+   "target": "party",
+   "kind": "heal",
+   "power": 26,
+   "text": "{user} cues up the Wii Shop theme. Everyone feels better."
+  },
+  "reseat": {
+   "name": "Reseat",
+   "mp": 4,
+   "target": "ally",
+   "kind": "cleanse",
+   "power": 18,
+   "text": "{user} reseats {target}'s connection. Click. Locked."
+  },
+  "check-the-rest": {
+   "name": "Check the Rest",
+   "mp": 10,
+   "target": "boss",
+   "kind": "multi",
+   "power": 0.55,
+   "hits": 3,
+   "text": "{user} checks the rest!"
+  },
+  "phantom-power": {
+   "name": "Phantom Power",
+   "mp": 6,
+   "target": "party",
+   "kind": "buff",
+   "power": 1.3,
+   "rounds": 3,
+   "text": "{user} switches on phantom power: +48 V of attack."
+  },
+  "gain-staging": {
+   "name": "Gain Staging",
+   "mp": 12,
+   "target": "boss",
+   "kind": "magic",
+   "power": 3.2,
+   "text": "{user} sets the gain just right."
+  },
+  "sends-on-fader": {
+   "name": "Sends on Fader",
+   "mp": 6,
+   "target": "boss",
+   "kind": "debuff",
+   "power": 0.7,
+   "rounds": 3,
+   "text": "{user} pulls the boss down on the faders."
+  },
+  "trace": {
+   "name": "Trace the Signal",
+   "mp": 6,
+   "target": "boss",
+   "kind": "expose",
+   "power": 0.5,
+   "rounds": 3,
+   "text": "{user} traces the signal. Adam's defenses are exposed."
+  },
+  "verify": {
+   "name": "Fixed ≠ Verified",
+   "mp": 10,
+   "target": "boss",
+   "kind": "magic",
+   "power": 2.6,
+   "text": "{user} verifies the fix. It hits hard."
+  }
  },
  "items": {
-  "battery": { "name": "Fresh AA", "count": 3, "kind": "heal", "power": 45, "target": "ally", "text": "{target} gets fresh batteries." },
-  "coffee": { "name": "Iced coffee", "count": 2, "kind": "mp", "power": 15, "target": "ally", "text": "{target} drinks an iced coffee." },
-  "spare": { "name": "Spare mic", "count": 1, "kind": "revive", "power": 0.5, "target": "fallen", "text": "{target} is back in it with a spare mic!" }
+  "battery": {
+   "name": "Fresh AA",
+   "count": 3,
+   "kind": "heal",
+   "power": 45,
+   "target": "ally",
+   "text": "{target} gets fresh batteries."
+  },
+  "coffee": {
+   "name": "Iced coffee",
+   "count": 2,
+   "kind": "mp",
+   "power": 15,
+   "target": "ally",
+   "text": "{target} drinks an iced coffee."
+  },
+  "spare": {
+   "name": "Spare mic",
+   "count": 1,
+   "kind": "revive",
+   "power": 0.5,
+   "target": "fallen",
+   "text": "{target} is back in it with a spare mic!"
+  }
  },
  "boss": {
   "id": "adam",
   "name": "Adam Borecki",
   "photo": null,
   "photo_status": "No photo of Adam in the repo. It's his public site: use a photo only once Adam sends one he's happy with (then put its path here). Until then the page draws a silhouette.",
-  "hp": 900, "atk": 36, "def": 20, "mag": 30, "spd": 11,
+  "hp": 1150,
+  "atk": 36,
+  "def": 20,
+  "mag": 30,
+  "spd": 11,
   "moves": [
-   { "id": "pop-quiz", "name": "Pop Quiz", "weight": 4, "target": "one", "kind": "phys", "power": 1.0, "text": "\"Quick: what's the signal flow from the wireless rack to the wedges?\"" },
-   { "id": "feedback", "name": "Feedback Squeal", "weight": 3, "target": "party", "kind": "magic", "power": 0.75, "text": "The wedges start to ring." },
-   { "id": "mute-all", "name": "MUTE ALL", "weight": 2, "target": "party", "kind": "silence", "rounds": 2, "text": "MUTE ALL flashes on the stagebox. Nobody can use skills!" },
-   { "id": "four-fifty-nine", "name": "It's 4:59", "weight": 1, "phase": 2, "target": "one", "kind": "phys", "power": 1.9, "text": "\"Rehearsal starts in one minute.\"" }
+   {
+    "id": "pop-quiz",
+    "name": "Pop Quiz",
+    "weight": 4,
+    "target": "one",
+    "kind": "phys",
+    "power": 1.0,
+    "text": "\"Quick: what's the signal flow from the wireless rack to the wedges?\""
+   },
+   {
+    "id": "feedback",
+    "name": "Feedback Squeal",
+    "weight": 3,
+    "target": "party",
+    "kind": "magic",
+    "power": 0.75,
+    "text": "The wedges start to ring."
+   },
+   {
+    "id": "mute-all",
+    "name": "MUTE ALL",
+    "weight": 2,
+    "target": "party",
+    "kind": "silence",
+    "rounds": 2,
+    "text": "MUTE ALL flashes on the stagebox. Nobody can use skills!"
+   },
+   {
+    "id": "four-fifty-nine",
+    "name": "It's 4:59",
+    "weight": 1,
+    "phase": 2,
+    "target": "one",
+    "kind": "phys",
+    "power": 1.9,
+    "text": "\"Rehearsal starts in one minute.\""
+   }
   ],
   "phase2_at": 0.5,
   "phase2_text": "Adam Borecki pulls up the scope ladder. Things get serious.",
@@ -56,8 +231,16 @@
   "\"Back to the battery-in check.\""
  ],
  "rules": {
-  "variance": [0.9, 1.1],
+  "variance": [
+   0.9,
+   1.1
+  ],
   "defend": 0.5,
   "status": "Damage = (attacker atk x 2 - target def) x power x variance, at least 1; magic uses mag. Defending halves damage for that round. Turn order each round is by speed. Placeholders."
+ },
+ "player": {
+  "default_name": "A2",
+  "max_name": 10,
+  "status": "the player is the A2 from the main game; no photo, the page draws an avatar"
  }
 }

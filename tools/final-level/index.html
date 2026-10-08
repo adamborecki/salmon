@@ -48,7 +48,19 @@ a{color:var(--mp)}
 .bar{width:min(240px,70vw);height:10px;border:2px solid var(--edge);border-radius:3px;background:#000;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--hp);transition:width .4s}
 .bar.mpb i{background:var(--mp)}
-.party{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.party{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pm .av{width:58px;height:58px;border-radius:50%;border:2px solid var(--edge);background:#22389e;display:block}
+.tag.lead{color:var(--gold);border-color:var(--gold)}
+/* the intro: your name, your mentor */
+.setup{display:grid;gap:10px;justify-items:center;text-align:center}
+.setup label{font:400 10px var(--pixel);color:var(--dim)}
+.setup input{width:min(220px,100%);font:400 14px var(--pixel);text-transform:uppercase;padding:10px;border-radius:6px;border:2px solid var(--edge);background:#000;color:#fff;text-align:center}
+.leads{display:flex;gap:10px;justify-content:center}
+.leads button{display:grid;gap:4px;justify-items:center;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;color:#fff}
+.leads img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--edge)}
+.leads button[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 12px rgba(255,216,74,.4)}
+.leads button[aria-pressed="false"] img{opacity:.55;filter:grayscale(.5)}
+.leads span{font:400 8px var(--pixel)}
 .pm{position:relative;display:grid;gap:4px;justify-items:center;text-align:center;padding:8px 4px;border-radius:8px;border:2px solid transparent}
 .pm.turn{border-color:var(--gold);box-shadow:0 0 12px rgba(255,216,74,.4)}
 .pm.down{opacity:.45;filter:grayscale(1)}
@@ -94,6 +106,10 @@ a{color:var(--mp)}
   <section id="intro" hidden>
     <h1>FINAL LEVEL</h1>
     <div class="win crawl" id="crawl"></div>
+    <div class="win setup">
+      <label for="pname">YOUR NAME</label><input id="pname" autocomplete="off" spellcheck="false">
+      <label>YOUR MENTOR LEADS THE PARTY</label><div class="leads" id="leads" role="group" aria-label="Your mentor"></div>
+    </div>
     <button class="btn" id="fight" style="justify-self:center">FIGHT!</button>
   </section>
 
@@ -129,17 +145,32 @@ $('#gateForm').onsubmit = async ev => {
   try { sessionStorage.setItem('fl-ok', '1'); } catch (e) {}
   showIntro();
 };
+// your mentor: the one you last picked in the main game (same site, so the same browser storage), or pick here
+const MENTORS = C.party.filter(p => !p.player).map(p => p.id);
+let lead = null; try { lead = localStorage.getItem('salmon-mentor-last'); } catch (e) {}
+if (!MENTORS.includes(lead)) lead = null;
 function showIntro() {
   $('#gate').hidden = true; $('#intro').hidden = false;
   $('#crawl').innerHTML = C.intro.map(l => `<p>${esc(l)}</p>`).join('');
-  $('#fight').focus();
+  const pn = $('#pname'); pn.maxLength = C.player.max_name; if (!pn.value) pn.value = C.player.default_name;
+  const drawLeads = () => {
+    $('#leads').innerHTML = MENTORS.map(id => `<button data-lead="${id}" aria-pressed="${lead ? id === lead : 'mixed'}"><img src="p/${id}.jpg" alt=""><span>${esc(C.party.find(p => p.id === id).name.toUpperCase())}</span></button>`).join('');
+    $('#leads').querySelectorAll('[data-lead]').forEach(b => b.onclick = () => { lead = b.dataset.lead; try { localStorage.setItem('salmon-mentor-last', lead); } catch (e) {} drawLeads(); });
+    $('#fight').disabled = !lead;
+  };
+  drawLeads();
+  (lead ? $('#fight') : $('#leads button')).focus();
 }
 $('#fight').onclick = () => startFight();
 
 // ---- the battle ----
+// the player has no photo: a headphones avatar
+const AVATAR = `<svg class="av" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="27" r="11" fill="#e8ecff"/><path d="M12 62c1-13 9-20 20-20s19 7 20 20z" fill="#e8ecff"/><path d="M19 28a13 13 0 0 1 26 0" fill="none" stroke="#ffd84a" stroke-width="3"/><rect x="15" y="25" width="6" height="10" rx="2" fill="#ffd84a"/><rect x="43" y="25" width="6" height="10" rx="2" fill="#ffd84a"/></svg>`;
 const seedFromHash = /^#FL-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
 function startFight() {
-  g = B.start(seedFromHash || 'FL-' + Math.floor(10000 + Math.random() * 89999)); sub = null; busy = false;
+  const name = ($('#pname').value || C.player.default_name).trim().slice(0, C.player.max_name).toUpperCase() || C.player.default_name;
+  const player = C.party.find(p => p.player).id, order = [lead, player, ...MENTORS.filter(id => id !== lead)];
+  g = B.start(seedFromHash || 'FL-' + Math.floor(10000 + Math.random() * 89999), { order, names: { [player]: name } }); sub = null; busy = false;
   $('#intro').hidden = true; $('#gate').hidden = true; $('#battle').hidden = false; $('#end').hidden = true; $('#menu').hidden = false;
   $('#boss').innerHTML = C.boss.photo ? `<img src="p/boss.jpg" alt="${esc(C.boss.name)}">`
     : `<svg viewBox="0 0 100 100" role="img" aria-label="${esc(C.boss.name)}: a mysterious silhouette"><rect width="100" height="100" fill="#111a3a"/><circle cx="50" cy="38" r="17" fill="#000"/><path d="M18 100c2-24 15-36 32-36s30 12 32 36z" fill="#000"/><text x="50" y="46" text-anchor="middle" font-family="Press Start 2P,monospace" font-size="16" fill="#ff5a5f">?</text></svg>`;
@@ -154,10 +185,10 @@ function render(st = g) {   // st: what to draw (the state before a round, while
   $('#party').innerHTML = st.party.map(p => {
     const pct = p.hp / p.maxHp, col = pct < .25 ? 'var(--hpCrit)' : pct < .5 ? 'var(--hpLow)' : 'var(--hp)';
     return `<div class="pm${p.hp <= 0 ? ' down' : ''}${p.id === nb && !busy ? ' turn' : ''}" data-pm="${p.id}">
-      <img src="p/${p.id}.jpg" alt=""><b>${esc(p.name.toUpperCase())}</b>
+      ${p.player ? AVATAR : `<img src="p/${p.id}.jpg" alt="">`}<b>${esc(p.name.toUpperCase())}</b>
       <div class="bar" aria-hidden="true"><i style="width:${100 * pct}%;background:${col}"></i></div>
       <div class="nums" aria-label="${esc(p.name)}: ${p.hp} of ${p.maxHp} HP, ${p.mp} MP">${p.hp}/${p.maxHp}<br>MP ${p.mp}</div>
-      <div class="tags">${p.silenced ? '<span class="tag mute">MUTED</span>' : ''}${p.buff ? '<span class="tag up">ATK↑</span>' : ''}${st.pending[p.id] ? '<span class="tag">✓</span>' : ''}</div></div>`; }).join('');
+      <div class="tags">${p.id === lead ? '<span class="tag lead">★</span>' : ''}${p.silenced ? '<span class="tag mute">MUTED</span>' : ''}${p.buff ? '<span class="tag up">ATK↑</span>' : ''}${st.pending[p.id] ? '<span class="tag">✓</span>' : ''}</div></div>`; }).join('');
   renderMenu();
 }
 function renderMenu() {

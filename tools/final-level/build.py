@@ -33,6 +33,7 @@ def main():
     open(os.path.join(out, 'index.html'), 'w').write(open(os.path.join(HERE, 'index.html')).read().replace('__BATTLE__', dump))
     shutil.copy(os.path.join(HERE, 'battle.js'), os.path.join(out, 'battle.js'))
     for m in content['party']:
+        if m.get('player'): continue                                     # no photo: the page draws an avatar
         im = Image.open(os.path.join(ROOT, 'photos-working', 'characters', m['id'] + '.jpg')).convert('RGB').crop(sb.CHARACTERS[m['id']])
         im.thumbnail((240, 240)); im.save(os.path.join(out, 'p', m['id'] + '.jpg'), quality=82)
     if content['boss'].get('photo'):

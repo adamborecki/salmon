@@ -4,7 +4,7 @@
 // (the random state lives in the game, so a game can be saved, replayed and tested).
 //
 //   const b = battle(content);                        // content: content/final-battle.json
-//   let g = b.start('FL-1');
+//   let g = b.start('FL-1', { order: ['morgan', 'player', 'cary', 'magnolia'], names: { player: 'Sam' } });   // opts optional
 //   ({ game: g, events, error } = b.choose(g, 'cary', { type: 'attack' }));
 //   ...once every standing member has a command, the round resolves and `events` tells the story.
 
@@ -17,10 +17,11 @@ export function battle(content) {
   const SK = content.skills, IT = content.items, B = content.boss, R = content.rules;
   const say = (t, o) => t.replace(/\{user\}/g, o.user || '').replace(/\{target\}/g, o.target || '');
 
-  function start(seed = 'FL-00001') {
-    const party = content.party.map(p => ({ id: p.id, name: p.name, hp: p.hp, maxHp: p.hp, mp: p.mp, maxMp: p.mp, atk: p.atk, def: p.def, mag: p.mag, spd: p.spd,
+  function start(seed = 'FL-00001', opts = {}) {
+    const ids = content.party.map(p => p.id), order = opts.order && opts.order.length === ids.length && ids.every(i => opts.order.includes(i)) ? opts.order : ids;
+    const party = order.map(i => content.party.find(p => p.id === i)).map(p => ({ id: p.id, name: (opts.names && opts.names[p.id]) || p.name, player: !!p.player, hp: p.hp, maxHp: p.hp, mp: p.mp, maxMp: p.mp, atk: p.atk, def: p.def, mag: p.mag, spd: p.spd,
       skills: p.skills.slice(), silenced: 0, buff: null, guard: false }));
-    const boss = { id: B.id, name: B.name, hp: B.hp, maxHp: B.hp, atk: B.atk, def: B.def, mag: B.mag, spd: B.spd, debuff: null, phase: 1 };
+    const boss = { id: B.id, name: B.name, hp: B.hp, maxHp: B.hp, atk: B.atk, def: B.def, mag: B.mag, spd: B.spd, debuff: null, exposed: null, phase: 1 };
     return { v: 1, content: content.id, seed, rng: hashSeed(seed), round: 1, party, boss, items: Object.fromEntries(Object.entries(IT).map(([k, v]) => [k, v.count])),
       pending: {}, log: [], outcome: null };
   }
@@ -29,6 +30,7 @@ export function battle(content) {
   const variance = g => R.variance[0] + next(g) * (R.variance[1] - R.variance[0]);
   const atkOf = p => p.atk * (p.buff ? p.buff.mult : 1);
   const bossAtk = b => b.atk * (b.debuff ? b.debuff.mult : 1);
+  const bossDef = b => b.def * (b.exposed ? b.exposed.mult : 1);
 
   // the commands a member may pick right now (the UI's menu, and the rules choose() enforces)
   function options(g, id) {
@@ -77,7 +79,7 @@ export function battle(content) {
     if (actor === 'boss') return bossAct(g, events);
     const p = member(g, actor); if (p.hp <= 0) return;
     const c = g.pending[actor], b = g.boss;
-    if (c.type === 'attack') { events.push({ type: 'act', actor, text: `${p.name} attacks!` }); hit(g, b, (atkOf(p) * 2 - b.def) * variance(g), events, actor); }
+    if (c.type === 'attack') { events.push({ type: 'act', actor, text: `${p.name} attacks!` }); hit(g, b, (atkOf(p) * 2 - bossDef(b)) * variance(g), events, actor); }
     else if (c.type === 'defend') events.push({ type: 'act', actor, text: `${p.name} braces.` });
     else if (c.type === 'skill') {
       const s = SK[c.skill];
@@ -86,8 +88,9 @@ export function battle(content) {
       events.push({ type: 'act', actor, skill: c.skill, text: say(s.text, { user: p.name, target: t ? t.name : '' }) });
       if (s.kind === 'heal') for (const m of standing(g)) { const h = Math.round(s.power + p.mag * 0.3); m.hp = Math.min(m.maxHp, m.hp + h); events.push({ type: 'heal', target: m.id, amount: h }); }
       else if (s.kind === 'cleanse') { const tt = t && t.hp > 0 ? t : p; tt.silenced = 0; const h = Math.round(s.power); tt.hp = Math.min(tt.maxHp, tt.hp + h); events.push({ type: 'heal', target: tt.id, amount: h, cleansed: true }); }
-      else if (s.kind === 'multi') for (let k = 0; k < s.hits && b.hp > 0; k++) hit(g, b, (atkOf(p) * 2 - b.def) * s.power * variance(g), events, actor);
-      else if (s.kind === 'magic') hit(g, b, (p.mag * 2 - b.def) * s.power * variance(g) / 2, events, actor);
+      else if (s.kind === 'multi') for (let k = 0; k < s.hits && b.hp > 0; k++) hit(g, b, (atkOf(p) * 2 - bossDef(b)) * s.power * variance(g), events, actor);
+      else if (s.kind === 'magic') hit(g, b, (p.mag * 2 - bossDef(b)) * s.power * variance(g) / 2, events, actor);
+      else if (s.kind === 'expose') { b.exposed = { mult: s.power, rounds: s.rounds }; events.push({ type: 'expose', target: 'boss' }); }
       else if (s.kind === 'buff') for (const m of standing(g)) { m.buff = { mult: s.power, rounds: s.rounds }; events.push({ type: 'buff', target: m.id }); }
       else if (s.kind === 'debuff') { b.debuff = { mult: s.power, rounds: s.rounds }; events.push({ type: 'debuff', target: 'boss' }); }
     } else if (c.type === 'item') {
@@ -126,6 +129,7 @@ export function battle(content) {
     // the end of the round: statuses tick down, guards drop, the next round's menu opens
     for (const m of g.party) { m.guard = false; if (m.silenced) m.silenced--; if (m.buff && --m.buff.rounds <= 0) m.buff = null; }
     if (g.boss.debuff && --g.boss.debuff.rounds <= 0) g.boss.debuff = null;
+    if (g.boss.exposed && --g.boss.exposed.rounds <= 0) g.boss.exposed = null;
     g.log.push({ round: g.round, commands: g.pending, events: events.filter(e => e.type !== 'chosen').length });
     g.pending = {}; g.round++;
     if (g.outcome) events.push({ type: g.outcome, text: (g.outcome === 'victory' ? content.victory : content.defeat).join(' ') });

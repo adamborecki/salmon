@@ -7,7 +7,8 @@ import { battle } from '../battle.js';
 
 const C = JSON.parse(readFileSync(new URL('../content/final-battle.json', import.meta.url)));
 const b = battle(C);
-const ids = C.party.map(p => p.id);
+const ids = C.party.map(p => p.id);   // the play order in these tests is the content's order
+const P = (g, id) => g.party.find(p => p.id === id), CP = id => C.party.find(p => p.id === id);
 // play one round: cmds maps member -> command (members that are down are skipped)
 function round(g, cmds) {
   const events = [];
@@ -29,6 +30,7 @@ const smart = (g, id) => {
   if (low.length && left(g, 'battery') > 0) return { type: 'item', item: 'battery', target: low[0].id };
   if (m.mp < 6 && left(g, 'coffee') > 0) return { type: 'item', item: 'coffee', target: id };
   if (!m.silenced && id === 'magnolia' && m.mp >= 12) return { type: 'skill', skill: 'gain-staging' };
+  if (!m.silenced && id === 'player' && !g.boss.exposed && m.mp >= 6) return { type: 'skill', skill: 'trace' };
   if (!m.silenced && id === 'morgan' && !m.buff && m.mp >= 6) return { type: 'skill', skill: 'phantom-power' };
   if (!m.silenced && id === 'morgan' && m.mp >= 10) return { type: 'skill', skill: 'check-the-rest' };
   return { type: 'attack' };
@@ -53,7 +55,7 @@ test('start: the party at full health, the boss at full health, items counted; s
 test('a round resolves only when every standing member has a command; then the boss acts too', () => {
   let g = b.start('FL-1');
   let r = b.choose(g, 'cary', { type: 'attack' }); g = r.game;
-  assert.equal(b.nextUp(g), 'morgan'); assert.ok(!r.events.some(e => e.type === 'round'));
+  assert.equal(b.nextUp(g), 'player', 'the first without a command'); assert.ok(!r.events.some(e => e.type === 'round'));
   assert.equal(b.choose(g, 'cary', { type: 'attack' }).error.code, 'chosen');
   ({ g } = round(g, {}));
   assert.equal(g.round, 2); assert.ok(g.boss.hp < C.boss.hp);
@@ -72,35 +74,35 @@ test('skills cost MP and do their thing: heal, multi-hit, magic, buff, debuff, c
   let g = b.start('FL-3');
   g.party.forEach(p => { p.hp = 40; });
   let r = round(g, { cary: { type: 'skill', skill: 'wii-shop' }, morgan: { type: 'skill', skill: 'phantom-power' }, magnolia: { type: 'skill', skill: 'sends-on-fader' } });
-  assert.ok(r.events.filter(e => e.type === 'heal').length === 3);
-  assert.equal(r.g.party[0].mp, C.party[0].mp - 8);
+  assert.ok(r.events.filter(e => e.type === 'heal').length === 4);
+  assert.equal(P(r.g, 'cary').mp, CP('cary').mp - 8);
   assert.ok(r.g.party.every(p => p.hp <= 0 || p.buff), 'phantom power on the party');
   assert.ok(r.g.boss.debuff);
   r = round(r.g, { morgan: { type: 'skill', skill: 'check-the-rest' }, magnolia: { type: 'skill', skill: 'gain-staging' } });
   assert.equal(r.events.filter(e => e.type === 'damage' && e.from === 'morgan').length, 3, 'three hits');
-  g = r.g; g.party[1].silenced = 2;
+  g = r.g; P(g, 'morgan').silenced = 2;
   r = round(g, { cary: { type: 'skill', skill: 'reseat', target: 'morgan' } });
-  assert.equal(r.g.party[1].silenced, 0, 'reseat clears MUTE ALL');
+  assert.equal(P(r.g, 'morgan').silenced, 0, 'reseat clears MUTE ALL');
 });
 
 test('MUTE ALL: a muted member cannot pick a skill, and one queued before the mute fizzles without spending MP', () => {
-  let g = b.start('FL-1'); g.party[0].silenced = 1;
+  let g = b.start('FL-1'); P(g, 'cary').silenced = 1;
   assert.equal(b.choose(g, 'cary', { type: 'skill', skill: 'wii-shop' }).error.code, 'muted');
   assert.ok(b.options(g, 'cary').skills.every(s => !s.ok && s.why === 'muted'));
   // force the boss to mute before Morgan acts: Morgan (spd 14) is faster than the boss (11), so use Cary (12)... make the boss faster
   const fast = battle({ ...C, boss: { ...C.boss, spd: 99, moves: [{ ...C.boss.moves.find(m => m.id === 'mute-all'), weight: 1 }] } });
   g = fast.start('FL-1');
   for (const id of ids) g = fast.choose(g, id, id === 'cary' ? { type: 'skill', skill: 'wii-shop' } : { type: 'attack' }).game;
-  assert.equal(g.party[0].mp, C.party[0].mp, 'no MP spent on a fizzled skill');
+  assert.equal(P(g, 'cary').mp, CP('cary').mp, 'no MP spent on a fizzled skill');
   assert.ok(g.party.every(p => p.silenced > 0), 'still muted next round');
 });
 
 test('items: limited, aimed at the right people, and the spare mic revives', () => {
   let g = b.start('FL-1');
   assert.equal(b.choose(g, 'cary', { type: 'item', item: 'spare', target: 'morgan' }).error.code, 'target', 'nobody is down');
-  g.party[1].hp = 0;
+  P(g, 'morgan').hp = 0;
   let r = round(g, { cary: { type: 'item', item: 'spare', target: 'morgan' } });
-  assert.ok(r.g.party[1].hp > 0 || r.events.some(e => e.type === 'damage' && e.target === 'morgan'), 'revived (unless hit again right away)');
+  assert.ok(P(r.g, 'morgan').hp > 0 || r.events.some(e => e.type === 'damage' && e.target === 'morgan'), 'revived (unless hit again right away)');
   assert.equal(r.g.items.spare, 0);
   g = b.start('FL-1');
   g.items.battery = 1;
@@ -127,4 +129,20 @@ test('doing nothing but defending loses (eventually), and the game says so', () 
   assert.equal(g.outcome, 'defeat');
   assert.ok(events.some(e => e.type === 'defeat'));
   assert.equal(b.choose(g, 'cary', { type: 'attack' }).error.code, 'over');
+});
+
+test('a party of 4: the player plus the three mentors; your mentor leads; your name', () => {
+  assert.deepEqual(C.party.map(p => p.id).sort(), ['cary', 'magnolia', 'morgan', 'player']);
+  const g = b.start('FL-1', { order: ['morgan', 'player', 'cary', 'magnolia'], names: { player: 'Sam' } });
+  assert.deepEqual(g.party.map(p => p.id), ['morgan', 'player', 'cary', 'magnolia']);
+  assert.equal(g.party[1].name, 'Sam'); assert.equal(g.party[1].player, true);
+  assert.equal(b.nextUp(g), 'morgan', 'the leader picks first');
+  assert.deepEqual(b.start('FL-1', { order: ['morgan', 'nobody'] }).party.map(p => p.id), C.party.map(p => p.id), 'a bad order falls back to the default');
+});
+
+test("the player's Trace the Signal exposes the boss: everyone's attacks hit harder for a few rounds", () => {
+  const calm = battle({ ...C, boss: { ...C.boss, moves: [{ ...C.boss.moves[0], power: 0.01 }] } });
+  const dealt = trace => { let g = calm.start('FL-9'); if (trace) g = round(g, { player: { type: 'skill', skill: 'trace' }, cary: { type: 'defend' }, morgan: { type: 'defend' }, magnolia: { type: 'defend' } }).g;
+    const hp = g.boss.hp; g = round(g, {}).g; return hp - g.boss.hp; };
+  assert.ok(dealt(true) > dealt(false) * 1.15, `${dealt(true)} vs ${dealt(false)}`);
 });
