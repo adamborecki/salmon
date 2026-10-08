@@ -20,6 +20,10 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 
 ## Session 3, part 8 (2026-10-08, Cary): Adam's photo as the boss
+- Cary named the first real move: Cary's **"Awesome and Funny Joke"**. It's now first in Cary's
+  skill menu, before Wii Shop Theme and Reseat. What it does (a magic hit on Adam, 8 MP, "Adam can't
+  stop laughing!") is a placeholder until Cary says. Cary will send more move names and aesthetics
+  later. `battle.test.mjs` 12/12.
 - Cary sent a photo of Adam and confirmed Adam is okay with it being the boss on the public site.
   It's saved as `photos-working/characters/adam.jpg` (square crop around the face, re-saved without
   metadata; it had no GPS). `boss.photo` in `tools/final-level/content/final-battle.json` now points

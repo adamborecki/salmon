@@ -38,6 +38,7 @@
    "mag": 26,
    "spd": 12,
    "skills": [
+    "awesome-joke",
     "wii-shop",
     "reseat"
    ]
@@ -140,6 +141,15 @@
    "kind": "magic",
    "power": 2.6,
    "text": "{user} verifies the fix. It hits hard."
+  },
+  "awesome-joke": {
+   "name": "Awesome and Funny Joke",
+   "mp": 8,
+   "target": "boss",
+   "kind": "magic",
+   "power": 2.4,
+   "text": "{user} tells an Awesome and Funny Joke. Adam can't stop laughing!",
+   "status": "Cary, 2026-10-08: the name is Cary's. What it does (damage, 8 MP) and the line are placeholders until Cary says."
   }
  },
  "items": {

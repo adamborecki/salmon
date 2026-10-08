@@ -146,3 +146,12 @@ test("the player's Trace the Signal exposes the boss: everyone's attacks hit har
     const hp = g.boss.hp; g = round(g, {}).g; return hp - g.boss.hp; };
   assert.ok(dealt(true) > dealt(false) * 1.15, `${dealt(true)} vs ${dealt(false)}`);
 });
+
+test("Cary's Awesome and Funny Joke (Cary, 2026-10-08): it's Cary's, costs MP, and lands on Adam", () => {
+  assert.ok(CP('cary').skills.includes('awesome-joke'));
+  const calm = battle({ ...C, boss: { ...C.boss, moves: [C.boss.moves.find(m => m.id === 'pop-quiz')] } });
+  let g = calm.start('FL-4');
+  for (const id of ids) g = calm.choose(g, id, id === 'cary' ? { type: 'skill', skill: 'awesome-joke' } : { type: 'defend' }).game;
+  assert.equal(P(g, 'cary').mp, CP('cary').mp - C.skills['awesome-joke'].mp);
+  assert.ok(g.boss.hp < C.boss.hp, 'it hit');
+});
