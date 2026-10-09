@@ -8,7 +8,8 @@ photos. North star: **the game teaches you to see the system** (NOTICE -> TRACE 
 2. `docs/PRODUCT_DESIGN.md`: what and why. Highest authority on product intent; read the sections
    your task touches, and section 91 (scope ladder) and 99 (autonomy rules) always.
 3. `docs/SESSION_HANDOFF.md`: how the scene-graph prototype works.
-4. The README of whatever tool you touch (`tools/scene-graph-editor/`, `tools/gameplay-slice/`).
+4. The README of whatever tool you touch (`tools/scene-graph-editor/`, `tools/gameplay-slice/`,
+   `tools/upstairs/` for the upstairs BH208/BH209 signal flow, a separate system).
 
 ## Rules that bite
 - **Live Artifact sync.** The owner edits the live editor at
@@ -27,6 +28,7 @@ python3 tools/scene-graph-editor/validate.py
 python3 tools/scene-graph-editor/build.py && node tools/scene-graph-editor/tests/walk-touch.mjs && node tools/scene-graph-editor/tests/hotspots.mjs
 python3 tools/gameplay-slice/build.py && node --test tools/gameplay-slice/test/engine.test.mjs tools/gameplay-slice/test/line.test.mjs tools/gameplay-slice/test/monitor.test.mjs && node tools/gameplay-slice/test/harness.e2e.mjs
 python3 tools/final-level/build.py && node --test tools/final-level/test/battle.test.mjs && node tools/final-level/test/final.e2e.mjs
+python3 tools/upstairs/build.py && node tools/upstairs/test/upstairs.e2e.mjs
 ```
 (Pillow for the Python scripts; Playwright + Chromium for the browser tests.)
 

@@ -18,6 +18,54 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
    walk-around with Export JSON, the battery-in check).
 3. ~~Mute glyph~~ the placeholder is fine for now. The step list is now your own procedure (2026-09-28).
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
+5. **New (2026-10-09): the upstairs signal flow** (BH208/BH209), on the site at `upstairs/`. It's a first
+   draft with 13 open questions for you (session 4 below).
+
+## Session 4 (2026-10-09, owner): the upstairs signal flow (BH208 + BH209)
+
+The owner, from the upstairs rooms: a separate system from the downstairs one, "the most important
+thing is visualizing the signal flow". Documentation first, maybe a game later; public, as another
+option on the homepage.
+
+### What changed
+- **New: `tools/upstairs/`** (see its README).
+  - `content/upstairs.json` holds every fact with a `status` and a `source`: the four hanging mics,
+    the splitter, the Grace m101s, the Zoom H6 (backup) and Zoom F8 (main), the retiring 8PreX, the
+    Tio1608-D, Dante, the 01V96, the two Ranes, the two ATEMs, and 13 open questions.
+  - The page draws the diagram from it (phone-first, top to bottom), with tap-for-details, three
+    highlightable paths (recorders, livestream, main recording), the Dante devices and the photos.
+- **Public site:** a new card on the landing page, built into `upstairs/`.
+- **Photos:** 7 from today, in `tools/upstairs/photos/`. People and poster faces are blurred and
+  metadata is stripped; they are already anonymized in the repo.
+
+### What we know (owner, 2026-10-09)
+- The F8 is a real Zoom F8, the only one. Its main mix goes into the Tio.
+- The 8PreX is old and will be retired soon-ish.
+- Board feed: today from the stage-side analog XLR patch bay. Dante from FOH would be better but
+  isn't set up.
+- Livestream: Tio → Dante → 01V96 → ATEM Mini Extreme ISO.
+- Main recording: Tio analog out → XLR-to-¼" adapters (fixed today) → the older ATEM Production
+  Studio 4K.
+- The Rane AD22S delay (≈249 ms) is somewhere around the PS4K; its placement is unknown.
+- From the Dante screenshot:
+  - the 01V96 receives Tio transmit 1-6;
+  - the Tio self-routes its transmit 1-2 to its receive 1-2;
+  - Tio receive 3-8 show warnings.
+- Today the owner unplugged two TRS cables from the 8PreX and two XLR-to-¼" cables from the Grace
+  outputs.
+
+### Tested
+- `upstairs.e2e.mjs` passes in light and dark:
+  - every device and link is drawn, and text fits its box;
+  - the detail sheet, following links, and the Livestream path;
+  - the questions, the Dante list, and the photos.
+- `site.e2e.mjs` passes, including the new card and its back link. All other checks pass.
+
+### Needs the owner
+- The open questions on the page (the F8 inputs, the Tio inputs and outputs, the Rane placement,
+  the recorder behind the PS4K, the splitter model, the Dante device names, a second Tio-looking unit
+  at the bottom of the BH208 rack).
+- The updated splitter diagram they mentioned.
 
 ## Session 3, part 8 (2026-10-08, Cary): Adam's photo as the boss
 - Cary named the first real move: Cary's **"Awesome and Funny Joke"**. It's now first in Cary's
