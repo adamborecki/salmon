@@ -9,6 +9,8 @@ A public "under construction" page for showing progress, with two ways in:
   so someone can send the owner a file of suggested changes.
 - **`battery-check/`**: the gameplay harness (the mics, the monitors, the line check).
 - **`final/`**: the SUPER SECRET FINAL LEVEL (`tools/final-level/`), behind a password gate.
+- **`upstairs/`**: the upstairs signal flow, BH208 (audio) and BH209 (video) (`tools/upstairs/`).
+  Documentation for now. Its photos were anonymized when they were added, so they skip `anonymize.py`.
 
 ## People in the photos
 

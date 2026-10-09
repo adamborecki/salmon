@@ -1,0 +1,260 @@
+{
+  "title": "Upstairs signal flow",
+  "subtitle": "BH208 (audio side) and BH209 (video side): how the hall gets recorded and streamed",
+  "version": "v1, first draft",
+  "updated": "2026-10-09",
+  "about": "A first, good-enough map from a walkthrough on 2026-10-09. Every box and line says how sure we are. Dashed means not confirmed yet; grey with a ? means unknown. Tap anything for the details and where the information came from.",
+
+  "statuses": {
+    "confirmed": "Seen or stated plainly by the owner",
+    "tentative": "Probably right: from the old diagram, a hedged answer, or an inference",
+    "unknown": "We don't know yet; see the open questions",
+    "legacy": "Still there, being retired",
+    "planned": "Not set up yet"
+  },
+  "kinds": {
+    "mic": "Mic level (analog)",
+    "line": "Line level (analog)",
+    "dante": "Dante (audio over the network)",
+    "out": "Program out (stream, recording)"
+  },
+  "sources": {
+    "owner": "Owner (Adam), on site, 2026-10-09",
+    "dante": "Dante Controller screenshot, 2026-10-09",
+    "photo": "Photos taken on 2026-10-09",
+    "old-diagram": "The old splitter diagram (undated, from the 8PreX era; partly out of date)"
+  },
+
+  "rooms": [
+    { "id": "hall", "name": "Salmon Recital Hall (downstairs)", "y": 0, "h": 170 },
+    { "id": "bh208", "name": "BH208 · audio side", "y": 180, "h": 260 },
+    { "id": "bh209", "name": "BH209 · video side", "y": 488, "h": 214 },
+    { "id": "out", "name": "Out", "y": 712, "h": 82 }
+  ],
+
+  "devices": [
+    { "id": "ortf", "room": "hall", "name": "ORTF pair", "sub": "center · 2 hanging mics", "status": "confirmed",
+      "x": 10, "y": 38, "w": 122,
+      "notes": [
+        { "text": "Two of the four hanging microphones: the center ORTF pair. Analog XLR up to BH208.", "source": "owner", "status": "confirmed" },
+        { "text": "Phantom power (48V) comes from the Grace m101 preamps.", "source": "owner", "status": "tentative" },
+        { "text": "Mic make and model: unknown.", "status": "unknown" }
+      ] },
+    { "id": "ab", "room": "hall", "name": "Wide AB pair", "sub": "2 hanging mics", "status": "confirmed",
+      "x": 142, "y": 38, "w": 122,
+      "notes": [
+        { "text": "The other two hanging microphones: a wide spaced (AB) pair. Analog XLR up to BH208.", "source": "owner", "status": "confirmed" },
+        { "text": "Phantom power (48V) comes from the Zoom H6.", "source": "owner", "status": "confirmed" },
+        { "text": "Mic make and model: unknown.", "status": "unknown" }
+      ] },
+    { "id": "foh", "room": "hall", "name": "FOH", "sub": "downstairs mix position", "status": "confirmed",
+      "x": 276, "y": 38, "w": 134,
+      "notes": [
+        { "text": "The downstairs system at front of house (the rest of this project). There's an Ethernet link up to BH208.", "source": "owner", "status": "confirmed" },
+        { "text": "The better route for the board feed would be Dante from here, but it isn't configured yet.", "source": "owner", "status": "planned" }
+      ] },
+    { "id": "patch", "room": "hall", "name": "Stage patch bay", "sub": "board feed L/R · XLR", "status": "confirmed",
+      "x": 276, "y": 108, "w": 134,
+      "notes": [
+        { "text": "Today the board feed (the console's mix, L/R) comes up from the analog XLR patch bay at stage side.", "source": "owner", "status": "confirmed" }
+      ] },
+
+    { "id": "splitter", "room": "bh208", "name": "Mic splitter", "sub": "ART S8? · old diagram: MS8000", "status": "tentative",
+      "x": 10, "y": 208, "w": 254,
+      "notes": [
+        { "text": "All four hanging mics come into the splitter, which copies each one out to several devices at different gain (\"safe\" and \"hot\" copies, for redundancy).", "source": "owner", "status": "confirmed" },
+        { "text": "Model: the owner remembers an ART S8; the old diagram says Behringer MS8000 with links 1-2, 3-4, 5-6 and 7-8 on. One splitter, or two (\"split twice\")?", "source": "owner", "status": "tentative" },
+        { "text": "The exact outputs: see the old diagram (photo below). An updated splitter diagram is coming from the owner.", "source": "old-diagram", "status": "tentative" }
+      ] },
+    { "id": "grace", "room": "bh208", "name": "Grace m101 ×2", "sub": "ORTF · 48V", "status": "confirmed",
+      "x": 10, "y": 290, "w": 88,
+      "notes": [
+        { "text": "Two Grace Design m101 mic preamps for the ORTF pair, and they power it (48V).", "source": "owner", "status": "tentative" },
+        { "text": "Old diagram: their outputs went to the 8PreX inputs 1-2 and the Tio inputs 1-2 (\"hot\", high gain).", "source": "old-diagram", "status": "tentative" },
+        { "text": "2026-10-09: two XLR-to-¼\" cables were unplugged from the Grace outputs (probably the 8PreX legs).", "source": "owner", "status": "confirmed" }
+      ] },
+    { "id": "h6", "room": "bh208", "name": "Zoom H6", "sub": "backup recorder", "status": "confirmed", "rec": true,
+      "x": 106, "y": 290, "w": 80,
+      "notes": [
+        { "text": "The backup audio recorder (on the mic stand next to the rack). It powers the wide AB mics (48V).", "source": "owner", "status": "confirmed" },
+        { "text": "Old diagram: IN 1-2 ORTF (safe), IN 3-4 AB (48V, safe), L/R board feed from Tio outputs 3-4.", "source": "old-diagram", "status": "tentative" }
+      ] },
+    { "id": "f8", "room": "bh208", "name": "Zoom F8", "sub": "main recorder · 8 in", "status": "confirmed", "rec": true,
+      "x": 194, "y": 290, "w": 110,
+      "notes": [
+        { "text": "The main device. One Zoom F8, 8 inputs. Its main mix goes into the Tio1608-D.", "source": "owner", "status": "confirmed" },
+        { "text": "Inputs 7-8: the board feed.", "source": "owner", "status": "tentative" },
+        { "text": "Inputs 1-6: which mic copies (safe/hot) are on which: unknown.", "status": "unknown" },
+        { "text": "Which Tio inputs the main mix lands on: unknown.", "status": "unknown" }
+      ] },
+    { "id": "prex", "room": "bh208", "name": "Focusrite 8PreX", "sub": "being retired", "status": "legacy",
+      "x": 312, "y": 290, "w": 98,
+      "notes": [
+        { "text": "Old and due to be retired \"soon-ish\". The F8 took over as the main device.", "source": "owner", "status": "legacy" },
+        { "text": "Old diagram: IN 1-2 ORTF hot (from the Grace), 3-4 ORTF safe, 5-6 AB safe (from the splitter), 7-8 board feed (from the Tio). The same diagram also says the board feed went to 5-6, so it contradicts itself.", "source": "old-diagram", "status": "legacy" },
+        { "text": "2026-10-09: two TRS cables unplugged from it (the owner thinks they fed the BH208 speaker).", "source": "owner", "status": "confirmed" }
+      ] },
+    { "id": "tio", "room": "bh208", "name": "Yamaha Tio1608-D", "sub": "16 in / 8 out · Dante · clock leader", "status": "confirmed",
+      "x": 10, "y": 375, "w": 294,
+      "notes": [
+        { "text": "Stage box with Dante: turns analog into network audio and back. It's the Dante Primary Leader Clock (Y001-bTio1608D).", "source": "dante", "status": "confirmed" },
+        { "text": "Sends its channels 1-6 over Dante to the Yamaha 01V96 in BH209 (01V receive 1-6).", "source": "dante", "status": "confirmed" },
+        { "text": "Self-routing: its own transmit 1-2 are patched to its own receive 1-2, so whatever arrives on inputs 1-2 comes back out of analog outputs 1-2.", "source": "dante", "status": "confirmed" },
+        { "text": "Receive 3-8 show orange warnings in Dante Controller (subscribed to something that isn't resolving). Cause: unknown.", "source": "dante", "status": "unknown" },
+        { "text": "Analog outputs feed the older ATEM in BH209 through XLR-to-¼\" adapters (fixed on 2026-10-09).", "source": "owner", "status": "confirmed" },
+        { "text": "What's on inputs 1-6: unknown. Old diagram: 1-2 ORTF hot (Grace), 3-4 ORTF safe, 5-6 AB safe, 9-10 AB hot (Tio preamps). The F8 main mix now lands somewhere on it too.", "source": "old-diagram", "status": "tentative" }
+      ] },
+    { "id": "mac", "room": "bh208", "name": "Mac", "sub": "SalmonAudioRec · Dante", "status": "tentative",
+      "x": 312, "y": 375, "w": 98,
+      "notes": [
+        { "text": "The BH208 computer running Dante Controller. Its monitor is labelled BH208-SalmonAudioRec, but Dante lists a device BH209-SalmonAudioRec. Same machine, or a naming slip?", "source": "photo", "status": "tentative" },
+        { "text": "Whether it records anything over Dante: unknown.", "status": "unknown" }
+      ] },
+
+    { "id": "dante", "room": "bh209", "name": "Dante network", "sub": "", "status": "confirmed", "bar": true, "labelAt": 0.41,
+      "x": 10, "y": 452, "w": 400, "h": 22,
+      "notes": [
+        { "text": "Five Dante devices on the network on 2026-10-09: BH208-493C-or-PostProduction3, BH209-01, BH209-SalmonAudioRec, Y001-bTio1608D, Yamaha01V-MY16. Multicast bandwidth 0 bps (all unicast).", "source": "dante", "status": "confirmed" },
+        { "text": "Routing is done in Dante Controller.", "source": "owner", "status": "confirmed" }
+      ] },
+
+    { "id": "v01", "room": "bh209", "name": "Yamaha 01V96", "sub": "console · MY16 Dante card", "status": "confirmed",
+      "x": 10, "y": 516, "w": 142,
+      "notes": [
+        { "text": "Gets the audio over Dante (receive 1-6 from the Tio) and sends it on to the livestream.", "source": "owner", "status": "confirmed" },
+        { "text": "Dante name Yamaha01V-MY16: a Dante card in its expansion slot.", "source": "dante", "status": "confirmed" },
+        { "text": "Which 01V channels and outputs, and the cable to the ATEM Mini: unknown.", "status": "unknown" }
+      ] },
+    { "id": "me60", "room": "bh209", "name": "Rane ME60", "sub": "graphic EQ · ?", "status": "unknown",
+      "x": 160, "y": 516, "w": 80,
+      "notes": [
+        { "text": "Stereo 1/3-octave graphic EQ in BH209 rack 2. What it's in line with: unknown.", "source": "photo", "status": "unknown" }
+      ] },
+    { "id": "ad22s", "room": "bh209", "name": "Rane AD22S", "sub": "delay ≈249 ms · ?", "status": "unknown",
+      "x": 262, "y": 516, "w": 148,
+      "notes": [
+        { "text": "Audio delay set to 248.99 ms (ch 1) and 249.99 ms (ch 2): almost certainly there to line audio up with video.", "source": "photo", "status": "tentative" },
+        { "text": "Where it sits: probably around the ATEM Production Studio 4K, maybe on the feed to downstairs. Input side or output side: unknown.", "source": "owner", "status": "unknown" }
+      ] },
+    { "id": "mini", "room": "bh209", "name": "ATEM Mini Extreme ISO", "sub": "livestream", "status": "confirmed",
+      "x": 10, "y": 610, "w": 142,
+      "notes": [
+        { "text": "The livestream switcher. Its audio comes from the 01V96.", "source": "owner", "status": "confirmed" },
+        { "text": "Cameras, streaming platform and settings: not documented yet (audio first).", "status": "unknown" }
+      ] },
+    { "id": "ps4k", "room": "bh209", "name": "ATEM Production Studio 4K", "sub": "older · rack 2", "status": "confirmed",
+      "x": 262, "y": 610, "w": 148,
+      "notes": [
+        { "text": "The older switcher that feeds the main recording system. Its audio is the analog feed from the Tio1608-D in BH208.", "source": "owner", "status": "confirmed" },
+        { "text": "Which ATEM audio inputs: unknown.", "status": "unknown" }
+      ] },
+
+    { "id": "live", "room": "out", "name": "Livestream", "sub": "", "status": "confirmed", "end": true,
+      "x": 10, "y": 732, "w": 142,
+      "notes": [ { "text": "From the ATEM Mini Extreme ISO.", "source": "owner", "status": "confirmed" } ] },
+    { "id": "rec", "room": "out", "name": "Main recording", "sub": "recorder: ?", "status": "confirmed", "end": true,
+      "x": 262, "y": 732, "w": 148,
+      "notes": [
+        { "text": "The main (video) recording, fed by the ATEM Production Studio 4K.", "source": "owner", "status": "confirmed" },
+        { "text": "Which device actually records it: unknown.", "status": "unknown" }
+      ] }
+  ],
+
+  "links": [
+    { "id": "ortf-split", "from": "ortf", "to": "splitter", "kind": "mic", "status": "confirmed", "source": "owner",
+      "label": "ORTF L/R", "fx": 0.5, "tx": 0.24 },
+    { "id": "ab-split", "from": "ab", "to": "splitter", "kind": "mic", "status": "confirmed", "source": "owner",
+      "label": "AB L/R", "fx": 0.5, "tx": 0.76 },
+
+    { "id": "split-grace", "from": "splitter", "to": "grace", "kind": "mic", "status": "tentative", "source": "old-diagram",
+      "label": "ORTF L/R (48V from the Grace)", "fx": 0.17, "tx": 0.5 },
+    { "id": "split-h6", "from": "splitter", "to": "h6", "kind": "mic", "status": "confirmed", "source": "owner",
+      "label": "AB L/R with 48V from the H6; old diagram adds ORTF (safe) on IN 1-2", "fx": 0.43, "tx": 0.5 },
+    { "id": "split-f8", "from": "splitter", "to": "f8", "kind": "mic", "status": "tentative", "source": "owner",
+      "label": "mic copies on F8 IN 1-6: which ones is unknown", "fx": 0.78, "tx": 0.4 },
+    { "id": "split-tio", "from": "splitter", "to": "tio", "kind": "mic", "status": "tentative", "source": "old-diagram",
+      "label": "old diagram: ORTF/AB safe on Tio IN 3-6, AB hot on IN 9-10", "fx": 0.36, "tx": 0.31, "via": [[102, 268], [102, 360]] },
+    { "id": "split-prex", "from": "splitter", "to": "prex", "kind": "mic", "status": "legacy", "source": "old-diagram",
+      "label": "old diagram: ORTF/AB safe on 8PreX IN 3-6", "fx": 0.97, "tx": 0.3 },
+    { "id": "patch-f8", "from": "patch", "to": "f8", "kind": "line", "status": "tentative", "source": "owner",
+      "label": "board feed L/R on F8 IN 7-8", "fx": 0.5, "tx": 0.8, "tag": "board feed" },
+
+    { "id": "grace-tio", "from": "grace", "to": "tio", "kind": "line", "status": "tentative", "source": "old-diagram",
+      "label": "old diagram: ORTF hot on Tio IN 1-2", "fx": 0.5, "tx": 0.15 },
+    { "id": "f8-tio", "from": "f8", "to": "tio", "kind": "line", "status": "confirmed", "source": "owner",
+      "label": "F8 main mix (L/R) to the Tio; which Tio inputs is unknown", "fx": 0.5, "tx": 0.84, "tag": "main mix" },
+
+    { "id": "tio-dante", "from": "tio", "to": "dante", "kind": "dante", "status": "confirmed", "source": "dante",
+      "label": "Tio transmit 1-6", "fx": 0.3, "tx": 0.24, "tag": "tx 1-6" },
+    { "id": "mac-dante", "from": "mac", "to": "dante", "kind": "dante", "status": "unknown", "source": "dante",
+      "label": "on the network; what it sends or receives is unknown", "fx": 0.5, "tx": 0.88 },
+    { "id": "foh-dante", "from": "foh", "to": "dante", "kind": "dante", "status": "planned", "source": "owner",
+      "label": "Ethernet to downstairs; board feed over Dante: not set up yet", "fside": "right", "tx": 0.99, "via": [[416, 62], [416, 440]], "tag": "Ethernet", "tagAt": 0.45, "tagVertical": true },
+    { "id": "dante-v01", "from": "dante", "to": "v01", "kind": "dante", "status": "confirmed", "source": "dante",
+      "label": "01V96 receive 1-6 ← Tio transmit 1-6", "fx": 0.32, "tx": 0.9, "tag": "rx 1-6", "tagAt": 0.22 },
+
+    { "id": "tio-ps4k", "from": "tio", "to": "ps4k", "kind": "line", "status": "confirmed", "source": "owner",
+      "label": "analog out (likely 1-2, the self-routed pair) → XLR-to-¼\" adapters → tie line to BH209", "fx": 0.86, "tx": 0.3, "via": [[253, 440], [253, 590]], "tag": "analog tie line", "tagAt": 0.3 },
+    { "id": "ad22s-ps4k", "from": "ad22s", "to": "ps4k", "kind": "line", "status": "unknown", "source": "owner",
+      "label": "in this path? before or after the ATEM?", "fx": 0.7, "tx": 0.7, "tag": "?" },
+
+    { "id": "v01-mini", "from": "v01", "to": "mini", "kind": "line", "status": "confirmed", "source": "owner",
+      "label": "audio for the livestream (cable and outputs unknown)", "fx": 0.5, "tx": 0.5 },
+    { "id": "mini-live", "from": "mini", "to": "live", "kind": "out", "status": "confirmed", "source": "owner",
+      "label": "stream", "fx": 0.5, "tx": 0.5 },
+    { "id": "ps4k-rec", "from": "ps4k", "to": "rec", "kind": "out", "status": "confirmed", "source": "owner",
+      "label": "program to the main recording", "fx": 0.5, "tx": 0.5 }
+  ],
+
+  "paths": [
+    { "name": "Recorders", "links": ["ortf-split", "ab-split", "split-h6", "split-f8", "patch-f8"],
+      "text": "The four hanging mics → splitter → Zoom F8 (main) and Zoom H6 (backup), which record on their own. The board feed joins on the F8." },
+    { "name": "Livestream", "links": ["f8-tio", "tio-dante", "dante-v01", "v01-mini", "mini-live"],
+      "text": "Into the Tio1608-D (the F8 main mix and maybe mics; which channels is open) → Tio transmit 1-6 over Dante → Yamaha 01V96 → ATEM Mini Extreme ISO → stream." },
+    { "name": "Main recording", "links": ["f8-tio", "tio-ps4k", "ad22s-ps4k", "ps4k-rec"],
+      "text": "Tio1608-D analog out → XLR-to-¼\" adapters → tie line to BH209 → ATEM Production Studio 4K → main recording. The Rane delay may be in here." }
+  ],
+
+  "dante_devices": [
+    { "name": "Y001-bTio1608D", "what": "The Yamaha Tio1608-D in BH208. Primary Leader Clock.", "status": "confirmed",
+      "rx": "1-2 ← its own transmit 1-2 (self-routing). 3-8: orange warnings." },
+    { "name": "Yamaha01V-MY16", "what": "The Yamaha 01V96 in BH209 (Dante card).", "status": "confirmed",
+      "rx": "1-6 ← Tio transmit 1-6." },
+    { "name": "BH209-SalmonAudioRec", "what": "Probably the BH208 Mac labelled BH208-SalmonAudioRec (name mismatch).", "status": "tentative",
+      "rx": "Unknown (an earlier photo hints at a red error on this row)." },
+    { "name": "BH209-01", "what": "Probably a computer in BH209.", "status": "unknown", "rx": "Unknown." },
+    { "name": "BH208-493C-or-PostProduction3", "what": "Probably a post-production computer.", "status": "unknown", "rx": "Unknown." }
+  ],
+
+  "questions": [
+    { "about": "f8", "q": "Zoom F8 inputs 1-6: which mic copy (ORTF/AB, safe/hot) is on each? Are 7-8 the board feed?" },
+    { "about": "tio", "q": "Tio1608-D inputs: which ones get the F8 main mix, and what is on inputs 1-6 (the six channels sent to the 01V96)?" },
+    { "about": "tio", "q": "Which Tio analog outputs feed BH209 (1-2, from the self-routing?), and which ATEM Production Studio 4K audio inputs do they land on?" },
+    { "about": "tio", "q": "Tio receive 3-8 show orange warnings in Dante Controller. What are they subscribed to, and should they be?" },
+    { "about": "ad22s", "q": "Rane AD22S (≈249 ms): which signal does it delay, and is it before or after the ATEM Production Studio 4K? Is it the feed to downstairs?" },
+    { "about": "me60", "q": "Rane ME60 graphic EQ: what is it in line with?" },
+    { "about": "rec", "q": "What device records the ATEM Production Studio 4K program?" },
+    { "about": "v01", "q": "01V96 to ATEM Mini Extreme ISO: which 01V outputs, which cable, which ATEM input?" },
+    { "about": "splitter", "q": "Splitter: ART S8 (owner's memory) or Behringer MS8000 (old diagram)? One splitter, or two in a chain?" },
+    { "about": "mac", "q": "Dante devices: what are BH208-493C-or-PostProduction3 and BH209-01? Is BH209-SalmonAudioRec the Mac labelled BH208-SalmonAudioRec?" },
+    { "about": "tio", "q": "The bottom of the BH208 rack has another Yamaha unit that looks like a Tio. Dante shows only one Tio. Spare, powered off, or something else?" },
+    { "about": "grace", "q": "With the 8PreX retiring: where should the Grace outputs go, and what feeds the BH208 speaker now?" },
+    { "about": "ortf", "q": "The make and model of the four hanging mics." }
+  ],
+
+  "log": [
+    { "date": "2026-10-09", "text": "Walkthrough with photos; this first draft." },
+    { "date": "2026-10-09", "text": "Unplugged: two TRS cables from the 8PreX (probably the BH208 speaker) and two XLR-to-¼\" cables from the Grace m101 outputs." },
+    { "date": "2026-10-09", "text": "Fixed the analog feed to BH209 with XLR-to-¼\" adapters at the Tio1608-D outputs." }
+  ],
+
+  "photos": [
+    { "file": "hall-from-booth.jpg", "caption": "The hall from the booth window. The hanging mics are on the thin cables from the ceiling. People blurred." },
+    { "file": "bh208-rack.jpg", "caption": "BH208: Dante Controller on screen; Zoom H6 on the stand; in the rack, top to bottom: Tio1608-D, the splitter, the Zoom F8 (small screen), two Grace m101s, the red Focusrite 8PreX, and another Yamaha unit." },
+    { "file": "dante-routing.jpg", "caption": "Dante Controller, 2026-10-09: the 01V96 receives Tio transmit 1-6; the Tio routes its own 1-2 back to itself; Tio receive 3-8 have warnings." },
+    { "file": "bh208-wide.jpg", "caption": "BH208, the audio side (rack on the right), with the window onto the hall." },
+    { "file": "bh209-desk.jpg", "caption": "BH209, the video side: the Yamaha 01V96 (left), the multiview monitors, ATEM Software Control, a camera joystick." },
+    { "file": "bh209-rack2.jpg", "caption": "BH209 rack 2: multiview, Furman power, the Rane AD22S delay (≈249 ms), the ATEM Production Studio 4K, the Rane ME60 EQ." },
+    { "file": "legacy-splitter-diagram.jpg", "caption": "The old splitter diagram (8PreX era). Partly out of date: the F8 replaces the 8PreX, and the board feed now comes from the stage patch bay." }
+  ]
+}

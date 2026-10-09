@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Upstairs Signal Flow</title>
+<meta name="description" content="Signal flow for the upstairs rooms above Salmon Recital Hall (BH208 audio, BH209 video): the hanging mics to the recorders, the livestream and the main recording.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#eef0f2; --panel:#ffffff; --ink:#1b2530; --muted:#556371; --line:#d3d9df; --band:#e3e7eb;
+  --tape:#efe3b0; --tape-ink:#2b2615; --accent:#0f7f78; --accent-ink:#ffffff;
+  --mic:#a86200; --lineSig:#0f7f78; --dante:#5a4bd1; --out:#c0392b; --unk:#7b8794;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --cond:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#12181e; --panel:#1b232b; --ink:#e6ebf0; --muted:#98a6b3; --line:#2f3a45; --band:#171f27;
+  --tape:#d9cb8f; --accent:#3cc4ba; --accent-ink:#0b1417;
+  --mic:#f0a43a; --lineSig:#3cc4ba; --dante:#a198ff; --out:#ff6f61; --unk:#8794a1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#12181e; --panel:#1b232b; --ink:#e6ebf0; --muted:#98a6b3; --line:#2f3a45; --band:#171f27;
+  --tape:#d9cb8f; --accent:#3cc4ba; --accent-ink:#0b1417;
+  --mic:#f0a43a; --lineSig:#3cc4ba; --dante:#a198ff; --out:#ff6f61; --unk:#8794a1; color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;color:inherit;touch-action:manipulation}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:max(20px,env(safe-area-inset-top,0px)) 120px;display:grid;gap:34px}
+
+header{display:grid;gap:12px}
+.top{display:flex;gap:10px;align-items:center;justify-content:space-between;font:500 14px var(--sans)}
+.top a{color:var(--muted);text-decoration:none}
+.top a:hover{color:var(--ink)}
+.tape{justify-self:start;font:700 13px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;background:var(--tape);color:var(--tape-ink);padding:6px 10px 5px;border-radius:2px;transform:rotate(-1.2deg)}
+h1{margin:0;font:700 clamp(36px,7.5vw,60px)/.98 var(--cond);letter-spacing:-.01em;text-wrap:balance}
+.lede{margin:0;max-width:62ch;font-size:17px;color:var(--muted)}
+.meta{font:500 13px var(--mono);color:var(--muted)}
+
+section{display:grid;gap:12px}
+h2.sec{margin:0;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+
+/* path buttons */
+.pathbar{display:flex;flex-wrap:wrap;gap:6px}
+.pathbar button{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 13px;min-height:38px;font:600 14px var(--sans);cursor:pointer}
+.pathbar button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pathnote{margin:0;font-size:15px;color:var(--muted);min-height:1.5em}
+
+/* the diagram */
+.diagram{padding:8px 6px}
+.diagram svg{display:block;width:100%;height:auto;font-family:var(--sans)}
+.band rect{fill:var(--band)}
+.band text{font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;fill:var(--muted)}
+.node{cursor:pointer;outline:none}
+.node rect.box{fill:var(--panel);stroke:var(--ink);stroke-width:1.3}
+.node .name{font-weight:600;font-size:11.5px;fill:var(--ink)}
+.node .sub{font-size:9.2px;fill:var(--muted)}
+.node.tentative rect.box{stroke-dasharray:5 3}
+.node.unknown rect.box{stroke:var(--unk);stroke-dasharray:2 3}
+.node.legacy{opacity:.55}
+.node.legacy rect.box{stroke-dasharray:5 3}
+.node.bar rect.box{fill:color-mix(in srgb,var(--dante) 16%,var(--panel));stroke:var(--dante)}
+.node.bar .name{fill:var(--dante);font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.node.end rect.box{fill:var(--ink);stroke:var(--ink)}
+.node.end .name{fill:var(--paper)}
+.node.end .sub{fill:var(--paper);opacity:.75}
+.node:hover rect.box,.node:focus-visible rect.box{stroke:var(--accent);stroke-width:2.2}
+.node.sel rect.box{stroke:var(--accent);stroke-width:2.6}
+.rec rect{fill:#d6342b}.rec text{fill:#fff;font:600 7.5px var(--mono);letter-spacing:.06em}
+.link path.wire{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.link path.hit{fill:none;stroke:transparent;stroke-width:14;cursor:pointer}
+.link.mic .wire{stroke:var(--mic)} .link.line .wire{stroke:var(--lineSig)} .link.dante .wire{stroke:var(--dante)} .link.out .wire{stroke:var(--out)}
+.link.tentative .wire{stroke-dasharray:7 4}
+.link.unknown .wire{stroke:var(--unk);stroke-dasharray:2 4}
+.link.legacy{opacity:.45}.link.legacy .wire{stroke-dasharray:7 4}
+.link.planned .wire{stroke-dasharray:1 5;stroke-width:2.6}
+.link.sel .wire{stroke-width:3.6}
+.tag rect{fill:var(--panel);stroke:var(--line)}
+.tag text{font:500 8.4px var(--mono);fill:var(--muted)}
+svg.dim .node,svg.dim .link,svg.dim .tag{opacity:.16;transition:opacity .15s}
+svg.dim .on{opacity:1}
+svg.dim .node.legacy.on{opacity:.55}
+
+/* legend */
+.legend{display:grid;gap:10px;padding:12px 14px;font-size:14px}
+.legend .row{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.legend .lbl{font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);min-width:56px}
+.legend span.it{display:inline-flex;gap:6px;align-items:center}
+.legend svg{width:34px;height:10px;flex:none}
+
+/* detail sheet */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;pointer-events:none}
+.sheet .inner{pointer-events:auto;width:min(100%,600px);max-height:min(58vh,520px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);padding:14px 16px max(16px,env(safe-area-inset-bottom,0px))}
+.sheet .hd{display:flex;gap:10px;align-items:start;justify-content:space-between}
+.sheet h3{margin:0;font:700 22px/1.15 var(--cond)}
+.sheet .model{margin:2px 0 0;color:var(--muted);font-size:14px}
+.close{border:1px solid var(--line);background:var(--paper);border-radius:8px;min-width:40px;min-height:40px;cursor:pointer;font-size:18px;line-height:1}
+.notes{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.notes li{display:grid;gap:3px;padding:8px 10px;border-left:3px solid var(--line);background:color-mix(in srgb,var(--paper) 60%,var(--panel));border-radius:0 6px 6px 0;font-size:15px}
+.notes li.confirmed{border-left-color:var(--lineSig)} .notes li.tentative{border-left-color:var(--mic)} .notes li.unknown{border-left-color:var(--unk)} .notes li.legacy{border-left-color:var(--unk)} .notes li.planned{border-left-color:var(--dante)}
+.notes small{font:500 11.5px var(--mono);color:var(--muted)}
+.chip{display:inline-block;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid currentColor;vertical-align:middle}
+.chip.confirmed{color:var(--lineSig)} .chip.tentative{color:var(--mic)} .chip.unknown,.chip.legacy{color:var(--unk)} .chip.planned{color:var(--dante)}
+.conns{margin:14px 0 0;display:grid;gap:6px}
+.conns h4{margin:0;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.conns button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:transparent;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14.5px}
+.conns button:hover{border-color:var(--accent)}
+.conns b{font-weight:600}
+
+/* lists */
+.paths{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+.paths .card{padding:12px 14px;display:grid;gap:6px;align-content:start}
+.paths h3{margin:0;font:700 19px/1.15 var(--cond)}
+.paths p{margin:0;font-size:15px;color:var(--muted)}
+.paths button{justify-self:start;border:0;background:var(--accent);color:var(--accent-ink);border-radius:6px;padding:7px 12px;min-height:36px;font:600 14px var(--sans);cursor:pointer}
+.dante{display:grid;gap:8px}
+.dante .card{padding:10px 14px;display:grid;gap:3px}
+.dante code{font:600 14px var(--mono);word-break:break-all}
+.dante p{margin:0;font-size:14.5px;color:var(--muted)}
+ol.qs{margin:0;padding-left:22px;display:grid;gap:8px}
+ol.qs li{padding-left:4px}
+ol.qs button{border:0;background:none;padding:0;font:600 12px var(--mono);color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px;margin-left:4px}
+.photos{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
+.photos figure{margin:0;display:grid;gap:6px;align-content:start}
+.photos img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:#0b0f13;display:block}
+.photos figcaption{font-size:13.5px;color:var(--muted)}
+ul.log{margin:0;padding-left:20px;display:grid;gap:4px;font-size:15px}
+ul.log code{font:500 12.5px var(--mono);color:var(--muted)}
+footer{border-top:1px solid var(--line);padding-top:16px;display:grid;gap:6px;font-size:14px;color:var(--muted)}
+footer p{margin:0;max-width:70ch}
+footer code{font:12px var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top"><a href="../">← Salmon Simulator</a><span class="meta" id="ver"></span></div>
+    <span class="tape">Documentation · first draft</span>
+    <h1 id="title"></h1>
+    <p class="lede" id="about"></p>
+  </header>
+
+  <section aria-labelledby="hFlow">
+    <h2 class="sec" id="hFlow">Signal flow</h2>
+    <div class="pathbar" id="pathbar" role="group" aria-label="Highlight a path"></div>
+    <p class="pathnote" id="pathnote"></p>
+    <div class="card diagram"><svg id="svg" role="group" aria-label="Signal flow diagram: tap a box or a line for details"></svg></div>
+    <div class="card legend" id="legend"></div>
+  </section>
+
+  <section aria-labelledby="hPaths">
+    <h2 class="sec" id="hPaths">The three paths</h2>
+    <div class="paths" id="paths"></div>
+  </section>
+
+  <section aria-labelledby="hQ">
+    <h2 class="sec" id="hQ">Open questions</h2>
+    <ol class="qs" id="questions"></ol>
+  </section>
+
+  <section aria-labelledby="hDante">
+    <h2 class="sec" id="hDante">Dante devices</h2>
+    <div class="dante" id="dante"></div>
+  </section>
+
+  <section aria-labelledby="hPhotos">
+    <h2 class="sec" id="hPhotos">Photos</h2>
+    <div class="photos" id="photos"></div>
+  </section>
+
+  <section aria-labelledby="hLog">
+    <h2 class="sec" id="hLog">Changes</h2>
+    <ul class="log" id="log"></ul>
+  </section>
+
+  <footer>
+    <p>A separate system from the downstairs Salmon setup in the rest of this project. Nothing here is a guess presented as fact: what isn't confirmed is dashed and listed above.</p>
+    <p>Corrections go in <code>tools/upstairs/content/upstairs.json</code> · <a href="https://github.com/adamborecki/salmon/tree/main/tools/upstairs">source on GitHub</a></p>
+  </footer>
+</div>
+
+<div class="sheet" id="sheet" hidden><div class="inner" role="dialog" aria-modal="false" aria-labelledby="dTitle">
+  <div class="hd"><div><h3 id="dTitle"></h3><p class="model" id="dSub"></p></div><button class="close" id="dClose" aria-label="Close">✕</button></div>
+  <ul class="notes" id="dNotes"></ul>
+  <div class="conns" id="dConns"></div>
+</div></div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const DEV = Object.fromEntries(D.devices.map(d => [d.id, d]));
+const W = 420, H = Math.max(...D.rooms.map(r => r.y + r.h)) + 4;
+const nodeH = d => d.h || 48;
+
+$('title').textContent = D.title;
+$('about').textContent = D.about;
+$('ver').textContent = `${D.version} · ${D.updated}`;
+
+// ---- geometry ----
+function ends(l) {
+  const a = DEV[l.from], b = DEV[l.to];
+  const p1 = l.fside === 'right' ? [a.x + a.w, a.y + nodeH(a) / 2] : [a.x + (l.fx ?? .5) * a.w, a.y + nodeH(a)];
+  const p2 = [b.x + (l.tx ?? .5) * b.w, b.y];
+  return [p1, p2];
+}
+function pathD(l) {
+  const [p1, p2] = ends(l);
+  if (!l.via) { const dy = (p2[1] - p1[1]) / 2; return `M${p1} C${p1[0]},${p1[1] + dy} ${p2[0]},${p2[1] - dy} ${p2}`; }
+  const pts = [p1, ...l.via, p2], r = 8; let d = `M${p1}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [a, b, c] = [pts[i - 1], pts[i], pts[i + 1]];
+    const u = (p, q) => { const dx = q[0] - p[0], dy = q[1] - p[1], n = Math.hypot(dx, dy) || 1, k = Math.min(r, n / 2); return [dx / n * k, dy / n * k]; };
+    const [ix, iy] = u(b, a), [ox, oy] = u(b, c);
+    d += ` L${b[0] + ix},${b[1] + iy} Q${b} ${b[0] + ox},${b[1] + oy}`;
+  }
+  return d + ` L${p2}`;
+}
+
+// ---- draw ----
+const svg = $('svg');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+for (const r of D.rooms) el('rect', { x: 2, y: r.y, width: W - 4, height: r.h, rx: 10 }, el('g', { class: 'band' }, svg));
+const linkLayer = el('g', {}, svg), nodeLayer = el('g', {}, svg), tagLayer = el('g', {}, svg), roomLayer = el('g', { class: 'band' }, svg);
+// room names on top, on a band-coloured backing, so wires pass under them
+for (const r of D.rooms) {
+  const t = el('text', { x: 12, y: r.y + 16 }, roomLayer); t.textContent = r.name;
+  const bb = t.getBBox(); roomLayer.insertBefore(el('rect', { x: bb.x - 3, y: bb.y - 1, width: bb.width + 6, height: bb.height + 2, rx: 3 }), t);
+}
+const linkEls = {}, nodeEls = {}, tagEls = {};
+// the network bar first, so wires cross over it
+const order = [...D.devices].sort((a, b) => (b.bar ? 1 : 0) - (a.bar ? 1 : 0));
+for (const d of order) {
+  const g = el('g', { class: `node ${d.status}${d.bar ? ' bar' : ''}${d.end ? ' end' : ''}`, tabindex: 0, role: 'button', 'aria-label': `${d.name}${d.sub ? ', ' + d.sub : ''} (${d.status})`, 'data-id': d.id }, d.bar ? linkLayer : nodeLayer);
+  const hh = nodeH(d);
+  el('rect', { class: 'box', x: d.x, y: d.y, width: d.w, height: hh, rx: d.bar ? 11 : 7 }, g);
+  if (d.bar) { const t = el('text', { class: 'name', x: d.x + d.w * (d.labelAt ?? .5), y: d.y + hh / 2 + 3.5, 'text-anchor': 'middle' }, g); t.textContent = d.name; }
+  else {
+    const t1 = el('text', { class: 'name', x: d.x + 7, y: d.y + (d.sub ? 20 : 28) }, g); t1.textContent = d.name;
+    if (d.sub) { const t2 = el('text', { class: 'sub', x: d.x + 7, y: d.y + 36 }, g); t2.textContent = d.sub; }
+  }
+  if (d.rec) {
+    const b = el('g', { class: 'rec' }, g);
+    el('rect', { x: d.x + d.w - 30, y: d.y - 7, width: 26, height: 12, rx: 3 }, b);
+    el('text', { x: d.x + d.w - 17, y: d.y + 1.8, 'text-anchor': 'middle' }, b).textContent = 'REC';
+  }
+  nodeEls[d.id] = g;
+  if (d.bar) linkLayer.insertBefore(g, linkLayer.firstChild);
+}
+for (const l of D.links) {
+  const g = el('g', { class: `link ${l.kind} ${l.status}`, 'data-id': l.id }, linkLayer);
+  const d = pathD(l);
+  el('path', { class: 'wire', d }, g);
+  const hit = el('path', { class: 'hit', d, tabindex: 0, role: 'button', 'aria-label': `${DEV[l.from].name} to ${DEV[l.to].name}: ${l.label} (${l.status})` }, g);
+  linkEls[l.id] = g;
+  if (l.tag) {
+    const p = hit.getPointAtLength(hit.getTotalLength() * (l.tagAt ?? .5));
+    const tg = el('g', { class: 'tag', 'data-id': l.id }, tagLayer);
+    const tx = el('text', { x: p.x, y: p.y + 3, 'text-anchor': 'middle' }, tg); tx.textContent = l.tag;
+    const bb = tx.getBBox(); el('rect', { x: bb.x - 4, y: bb.y - 1.5, width: bb.width + 8, height: bb.height + 3, rx: 4 }, tg).parentNode.insertBefore(tg.lastChild, tx);
+    if (l.tagVertical) tg.setAttribute('transform', `rotate(-90 ${p.x} ${p.y})`);
+    tagEls[l.id] = tg;
+  }
+}
+// squeeze any text that doesn't fit its box
+for (const d of D.devices) for (const t of nodeEls[d.id].querySelectorAll('text.name,text.sub')) {
+  const room = d.w - 12 - (d.rec && t.classList.contains('name') ? 0 : 0);
+  if (t.getComputedTextLength() > room) { t.setAttribute('textLength', room); t.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+}
+
+// ---- legend ----
+const COLOR = { mic: 'var(--mic)', line: 'var(--lineSig)', dante: 'var(--dante)', out: 'var(--out)' };
+const DASH = { confirmed: '', tentative: '7 4', unknown: '2 4', legacy: '7 4', planned: '1 5' };
+const sample = (stroke, dash, op = 1) => `<svg viewBox="0 0 34 10" aria-hidden="true"><path d="M2 5H32" stroke="${stroke}" stroke-width="2.4" stroke-linecap="round" ${dash ? `stroke-dasharray="${dash}"` : ''} opacity="${op}"/></svg>`;
+const kindRow = h('div', 'row'); kindRow.appendChild(h('span', 'lbl', 'Signal'));
+for (const [k, v] of Object.entries(D.kinds)) { const s = h('span', 'it'); s.innerHTML = sample(COLOR[k], ''); s.append(v); kindRow.appendChild(s); }
+const stRow = h('div', 'row'); stRow.appendChild(h('span', 'lbl', 'Sure?'));
+for (const [k, v] of Object.entries(D.statuses)) { const s = h('span', 'it'); s.title = v; s.innerHTML = sample(k === 'unknown' || k === 'legacy' ? 'var(--unk)' : 'var(--ink)', DASH[k], k === 'legacy' ? .5 : 1); s.append(k); stRow.appendChild(s); }
+const recRow = h('div', 'row'); recRow.appendChild(h('span', 'lbl', 'Badge')); const rs = h('span', 'it'); rs.innerHTML = '<svg viewBox="0 0 34 12" aria-hidden="true" style="height:12px"><rect x="4" y="0" width="26" height="12" rx="3" fill="#d6342b"/><text x="17" y="8.8" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono,monospace" font-size="7.5" font-weight="600">REC</text></svg>'; rs.append('records on its own'); recRow.appendChild(rs);
+$('legend').append(kindRow, stRow, recRow);
+
+// ---- highlighting ----
+let current = null;
+function highlight(linkIds, nodeIds) {
+  for (const g of svg.querySelectorAll('.on')) g.classList.remove('on');
+  svg.classList.toggle('dim', !!linkIds);
+  if (!linkIds) return;
+  const nodes = new Set(nodeIds || []);
+  for (const id of linkIds) { const l = D.links.find(x => x.id === id); linkEls[id]?.classList.add('on'); tagEls[id]?.classList.add('on'); nodes.add(l.from); nodes.add(l.to); }
+  for (const id of nodes) nodeEls[id]?.classList.add('on');
+}
+const pathBtns = [];
+function setPath(i) {
+  pathBtns.forEach((b, j) => b.setAttribute('aria-pressed', String(j === i + 1)));
+  const p = D.paths[i];
+  $('pathnote').textContent = p ? p.text : 'Tap a box or a line for details. Pick a path to follow it.';
+  closeSheet(false);
+  highlight(p ? p.links : null);
+}
+const allBtn = h('button', null, 'Everything'); allBtn.onclick = () => setPath(-1); pathBtns.push(allBtn); $('pathbar').appendChild(allBtn);
+D.paths.forEach((p, i) => { const b = h('button', null, p.name); b.onclick = () => setPath(i); pathBtns.push(b); $('pathbar').appendChild(b); });
+
+// ---- detail sheet ----
+const SRC = D.sources;
+function noteItem(n) {
+  const li = h('li', n.status);
+  li.appendChild(h('span', null, n.text));
+  li.appendChild(h('small', null, [n.status, n.source && SRC[n.source]].filter(Boolean).join(' · ')));
+  return li;
+}
+function openSheet(kind, id) {
+  for (const g of svg.querySelectorAll('.sel')) g.classList.remove('sel');
+  const ul = $('dNotes'), cs = $('dConns'); ul.innerHTML = ''; cs.innerHTML = '';
+  if (kind === 'node') {
+    const d = DEV[id]; current = { kind, id };
+    $('dTitle').textContent = d.name; $('dSub').innerHTML = '';
+    $('dSub').append(...(d.sub ? [d.sub + '  '] : []), h('span', 'chip ' + d.status, d.status));
+    for (const n of d.notes || []) ul.appendChild(noteItem(n));
+    const ls = D.links.filter(l => l.from === id || l.to === id);
+    if (ls.length) {
+      cs.appendChild(h('h4', null, 'Connections'));
+      for (const l of ls) {
+        const b = h('button'); const other = DEV[l.from === id ? l.to : l.from];
+        b.append(l.from === id ? '→ ' : '← ', h('b', null, other.name), ` · ${l.label} `, h('span', 'chip ' + l.status, l.status));
+        b.onclick = () => openSheet('link', l.id); cs.appendChild(b);
+      }
+    }
+    nodeEls[id].classList.add('sel');
+    highlight(ls.map(l => l.id), [id]);
+  } else {
+    const l = D.links.find(x => x.id === id); current = { kind, id };
+    $('dTitle').textContent = `${DEV[l.from].name} → ${DEV[l.to].name}`;
+    $('dSub').innerHTML = ''; $('dSub').append(D.kinds[l.kind] + '  ', h('span', 'chip ' + l.status, l.status));
+    ul.appendChild(noteItem({ text: l.label, status: l.status, source: l.source }));
+    cs.appendChild(h('h4', null, 'Ends'));
+    for (const nid of [l.from, l.to]) { const b = h('button'); b.append(h('b', null, DEV[nid].name), DEV[nid].sub ? ` · ${DEV[nid].sub}` : ''); b.onclick = () => openSheet('node', nid); cs.appendChild(b); }
+    linkEls[id].classList.add('sel');
+    highlight([id]);
+  }
+  pathBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
+  $('pathnote').textContent = '';
+  $('sheet').hidden = false;
+  $('sheet').querySelector('.inner').scrollTop = 0;
+}
+function closeSheet(reset = true) {
+  $('sheet').hidden = true; current = null;
+  for (const g of svg.querySelectorAll('.sel')) g.classList.remove('sel');
+  if (reset) setPath(-1);
+}
+$('dClose').onclick = () => closeSheet();
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
+svg.addEventListener('click', e => {
+  const n = e.target.closest('.node'), l = e.target.closest('.link');
+  if (n) openSheet('node', n.dataset.id); else if (l) openSheet('link', l.dataset.id); else if (!$('sheet').hidden) closeSheet();
+});
+svg.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const n = e.target.closest('.node'), l = e.target.closest('.link');
+  if (n || l) { e.preventDefault(); n ? openSheet('node', n.dataset.id) : openSheet('link', l.dataset.id); }
+});
+
+// ---- the lists ----
+D.paths.forEach((p, i) => {
+  const c = h('div', 'card'); c.append(h('h3', null, p.name), h('p', null, p.text));
+  const b = h('button', null, 'Show on the diagram'); b.onclick = () => { setPath(i); $('hFlow').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); };
+  c.appendChild(b); $('paths').appendChild(c);
+});
+for (const q of D.questions) {
+  const li = h('li', null, q.q + ' ');
+  if (q.about && DEV[q.about]) { const b = h('button', null, DEV[q.about].name); b.onclick = () => openSheet('node', q.about); li.appendChild(b); }
+  $('questions').appendChild(li);
+}
+for (const d of D.dante_devices) {
+  const c = h('div', 'card'); const top = h('div'); top.append(h('code', null, d.name), ' ', h('span', 'chip ' + d.status, d.status));
+  c.append(top, h('p', null, d.what), h('p', null, 'Receives: ' + d.rx)); $('dante').appendChild(c);
+}
+for (const p of D.photos) {
+  const f = h('figure'); const a = h('a'); a.href = 'p/' + p.file; a.target = '_blank'; a.rel = 'noopener';
+  const img = h('img'); img.src = 't/' + p.file; img.alt = p.caption; img.loading = 'lazy'; img.width = 640; img.height = 480;
+  a.appendChild(img); f.append(a, h('figcaption', null, p.caption)); $('photos').appendChild(f);
+}
+for (const e of D.log) { const li = h('li'); li.append(h('code', null, e.date), ' ', e.text); $('log').appendChild(li); }
+setPath(-1);
+</script>
+</body>
+</html>

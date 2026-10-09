@@ -70,6 +70,15 @@ await Promise.all([page.waitForURL(/\/final\/$/), page.tap('a.way[href="final/"]
 ok(!(await page.$eval('#gate', e => e.hidden)) && /"password_sha256":"[0-9a-f]{64}"/.test(await page.content()), 'final level: the gate (only a password hash in the page)');
 ok(await noSideScroll(), 'final level: no sideways scroll');
 
+// the upstairs signal flow: linked from the landing page
+await page.goto(BASE, { waitUntil: 'networkidle' });
+ok(/Upstairs signal flow/.test(await page.textContent('a.way[href="upstairs/"]')), 'landing: the upstairs card');
+await Promise.all([page.waitForURL(/\/upstairs\/$/), page.tap('a.way[href="upstairs/"]')]); await page.waitForLoadState('networkidle');
+ok((await page.$$eval('#svg .node', n => n.length)) > 10, 'upstairs: the diagram draws');
+ok(await noSideScroll(), 'upstairs: no sideways scroll');
+await Promise.all([page.waitForURL(BASE, { timeout: 5000 }).catch(() => {}), page.tap('.top a')]);
+ok(page.url() === BASE, 'upstairs: the back link goes to the landing page');
+
 // anonymized photos are what is served (differs from a plain build of the original, where one exists)
 for (const f of ['walk/p/outside-entry.jpg', 'walk/p/foh-wide.jpg', 'battery-check/p/foh-wide.jpg']) {
   const plain = join(ROOT, 'tools', f.startsWith('walk') ? 'scene-graph-editor' : 'gameplay-slice', 'dist', f.replace(/^[^/]+\//, ''));
