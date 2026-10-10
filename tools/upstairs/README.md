@@ -11,6 +11,7 @@ asked for it on 2026-10-09: "the most important thing is visualizing the signal 
 | `index.html` | The page: an SVG diagram drawn from the content, tap for details, path highlighting, the lists. |
 | `build.py` | Checks the content (ids, statuses, sources, layout bounds, no GPS in photos) and builds `dist/` (gitignored). |
 | `photos/` | Photos from 2026-10-09. **Already anonymized** (people and faces on posters blurred) and re-saved without metadata when they were added, so the public site doesn't run them through `anonymize.py`. New photos need the same treatment before they're committed. |
+| `NEXT_VISIT.md` | A short on-site checklist that answers the open questions. |
 | `test/upstairs.e2e.mjs` | Phone-size check in light and dark: everything drawn, text fits, the detail sheet, a path, the lists, the photos. |
 
 ```bash

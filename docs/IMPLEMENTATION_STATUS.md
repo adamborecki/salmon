@@ -67,6 +67,18 @@ option on the homepage.
   at the bottom of the BH208 rack).
 - The updated splitter diagram they mentioned.
 
+### Next steps
+- On the next visit, `tools/upstairs/NEXT_VISIT.md` is a short checklist (photos and screenshots)
+  that answers most of the open questions.
+- Fold the answers into `content/upstairs.json` and drop the answered questions. Then consider
+  per-port detail (each F8, Tio and splitter channel) once the inputs are known.
+- Later (owner): maybe turn it into a game like downstairs. Not designed yet; nothing in
+  PRODUCT_DESIGN covers upstairs beyond travel cost (section on travel times).
+
+### Sync status
+- The scene graph and the live editor weren't touched this session.
+- The public site deployed from `d8b4cac` (Actions run #20, success, 2026-10-09).
+
 ## Session 3, part 8 (2026-10-08, Cary): Adam's photo as the boss
 - Cary named the first real move: Cary's **"Awesome and Funny Joke"**. It's now first in Cary's
   skill menu, before Wii Shop Theme and Reseat. What it does (a magic hit on Adam, 8 MP, "Adam can't
