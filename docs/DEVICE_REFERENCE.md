@@ -11,6 +11,12 @@ Source: project owner's notes. IDs at the bottom are suggested naming convention
 - **Phenyx Pro PTU-6000** receivers: multiple 8-channel units, up to 24 channels. Per-channel analog out/gain. XLR outs feed X32 local analog inputs. States: power, channel active, output/gain, frequency, signal present.
 - **Handheld transmitters** (Vocal Jazz): single button = power / tap-to-mute. Ch 1-8 black windscreens, ch 9-16 gray, rainbow color order across sets. Rechargeable AA; fresh alkaline for high-stakes gigs. Never put alkalines on the rechargeable charger.
 - **Chargers**: CITYORK AA/AAA NiMH/NiCd, multiple; exact model not critical.
+- **Wireless rack power** (owner, 2026-10-19): one master switch, the **Furman on top** of the rack. New practice from fall 2026: switch it on at the start of the gig and off at the end (earlier crews left it on).
+
+## X32 state for Vocal Jazz (owner, 2026-10-19; the MUS 248 "Vocal Jazz Reset")
+- **Routing:** inputs 1-8, 9-16 and 17-24 on **LOCAL** (the receivers are on the X32's rear panel); **25-32 on AES50** (the stage box) by default.
+- **Every wireless channel at the same gain**, "I think 30 dB" (tentative until checked at the console). **Low cut on** (frequency not given), **no dynamics** (gate and comp off).
+- **Dante multitrack** (owner, 2026-10-19): the X32's **Dante card** (not the USB card) carries the inputs as direct outs (card out n = input n); on the Mac mini, Dante Virtual Soundcard, Logic's audio device set to it first, then one track per input in order; in Dante Controller, X32 to the Mac mini one to one (Ctrl-click the device intersection). Card model and routing page still unconfirmed.
 
 ## Stage-side / Mains Rack
 - **Mackie Mix5**: small mixer at top of rack; analog inputs, accepts phone/playback sources.

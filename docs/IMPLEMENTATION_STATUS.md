@@ -21,6 +21,47 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 5. **New (2026-10-09): the upstairs signal flow** (BH208/BH209), on the site at `upstairs/`. It's a first
    draft with 13 open questions for you (session 4 below).
 
+## Session 5 (2026-10-19, owner + Cary): Vocal Jazz facts for the course checklists
+
+No code in this repo changed. The owner asked for a Vocal Jazz gig checklist and reset in MUS 248
+and Vocal Jazz scenarios in Mixer Lab, "informed by the stuff that's in Salmon". Cary dictated the
+gig. New facts, recorded in `docs/DEVICE_REFERENCE.md` (wireless rack power; the X32 state for
+Vocal Jazz):
+
+- **X32 routing:** inputs 1-24 LOCAL, 25-32 AES50 (stage box) by default.
+- **Same gain on every wireless channel**, about 30 dB (tentative); low cut on; no dynamics.
+- **Wireless rack:** master switch is the Furman on top; on at the start, off at the end (new).
+- **Wedge storage closet is BH 102**; "close the latch fully" at the end.
+- **Timing (Cary):** arrive about 4:30; Singers usually ends about 4:45, sometimes early. Cary gets
+  the wedges out of the closet at 4:45 first, then brings them in while Singers clears. With two
+  engineers, one does batteries and mics and the other the monitors. The game's "4:50, 10 minutes"
+  framing (PRODUCT_DESIGN section 40) is the squeezed version of this, not a contradiction.
+- **Monitors (Cary):** NX3000 on, XLR from the stage box into CH A ("the simplest channel"),
+  speakON from CH A out, daisy-chain the wedges, arc opening toward the mixer, facing the
+  performers. Matches the existing content.
+- **Troubleshooting order (Cary):** signal at the mixer? muted on the mixer? the mic off or muted
+  (tap mutes, hold powers; singers fiddle)? reseat every cable; then X32 routing or Dante. Heard
+  in the mains means the monitor path, not the mixer. Matches `vj-line-check.json`.
+- **Dante multitrack** (optional at the gig, practice for the post-concert recording session):
+  see DEVICE_REFERENCE.
+
+### Where it went
+- MUS 248: `vocal-jazz-gig-checklist` and `vocal-jazz-reset` (live on the course site).
+- Mixer Lab: a new **Chapman gigs** section with "Vocal Jazz in Salmon" (8 scenarios on the full
+  X32) and COB moved into it.
+
+### Needs the owner
+- The gain number (30 dB?) and the low-cut frequency.
+- What "make sure that you can get it over" means for the BH 102 latch.
+- The X32 Dante card's model and its card-output routing page.
+
+### Next steps
+- When the owner confirms them, move the 30 dB / low-cut facts into the game content with a
+  `status` (the line check and a future "reset the desk" level could check them).
+
+### Sync status
+- The scene graph and the live editor weren't touched this session.
+
 ## Session 4 (2026-10-09, owner): the upstairs signal flow (BH208 + BH209)
 
 The owner, from the upstairs rooms: a separate system from the downstairs one, "the most important
