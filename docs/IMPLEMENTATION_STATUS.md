@@ -20,6 +20,27 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 4. The live editor phone pass and the architecture fork (section 84) from session 1 are still open.
 5. **New (2026-10-09): the upstairs signal flow** (BH208/BH209), on the site at `upstairs/`. It's a first
    draft with 13 open questions for you (session 4 below).
+6. **New (2026-10-19): the electroacoustic showcase signal flow** at `showcase/`: one real night's
+   patch, piece by piece, with 12 open questions for you (session 6 below).
+
+## Session 6 (2026-10-19, owner): the electroacoustic showcase signal flow
+
+The owner asked for a signal-flow diagram of the Chapman Faculty Electroacoustic Showcase
+(2026-10-18, in this hall), alongside a gig checklist in MUS 248 and scenarios in Mixer Lab.
+Sources: the crew's debrief dictated in class the next day, the owner's load-in notes (hum and power,
+Thunderbolt, AES50 settings) and photos. Crew names left out; pieces by program number, title, composer.
+
+- **New: `tools/showcase/`**, the upstairs page's code adapted (README there): 23 devices, 23 links,
+  a path per piece (9), 8 "what went wrong" lessons, 12 open questions, 6 gear-only photos (no people,
+  metadata stripped). New status `failed` (the SD8's outputs, which died during Electrostatic Whale;
+  the fix was the performer's cable moved to an X32 local output). New layout options: left-side link
+  ends (`tside`), path `nodes`.
+- **Public site:** built into `showcase/`, with a card on the landing page and a check in `site.e2e.mjs`.
+- **Tested:** `build.py` (content checks) and the public-site build; the page checked by hand in a
+  browser at 375 px (no sideways scroll, a path highlights). The two e2e scripts were **not run**
+  (no Playwright on this machine).
+- **For the owner:** the 12 open questions on the page, above all what the failed SD8 output fed,
+  the show's input list, and the SD8's OUTPUT SELECT / X32 input block for AES50 A 33-40.
 
 ## Session 5 (2026-10-19, owner + Cary): Vocal Jazz facts for the course checklists
 

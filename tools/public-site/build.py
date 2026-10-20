@@ -7,6 +7,7 @@ Builds the public GitHub Pages site into tools/public-site/dist/:
   battery-check/    the gameplay harness (battery-in check)
   final/            the SUPER SECRET FINAL LEVEL (password gate, turn-based battle)
   upstairs/         the upstairs signal flow (BH208 audio + BH209 video): documentation, not a game yet
+  showcase/         the electroacoustic showcase's signal flow (2026-10-18): documentation
 
 People in the photos are anonymized first (tools/public-site/anonymize.py + people.json); the
 builds read the anonymized copies through --photos-overlay, so photos-working/ is never changed.
@@ -51,6 +52,7 @@ def main():
 
     run('tools/final-level/build.py', '--out', os.path.join(DIST, 'final'))      # the SUPER SECRET FINAL LEVEL
     run('tools/upstairs/build.py', '--out', os.path.join(DIST, 'upstairs'))      # BH208/BH209 signal flow
+    run('tools/showcase/build.py', '--out', os.path.join(DIST, 'showcase'))      # the electroacoustic showcase, 2026-10-18
 
     g = json.load(open(os.path.join(ROOT, 'docs', 'scene-graph.json')))
     try:

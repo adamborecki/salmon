@@ -79,6 +79,13 @@ ok(await noSideScroll(), 'upstairs: no sideways scroll');
 await Promise.all([page.waitForURL(BASE, { timeout: 5000 }).catch(() => {}), page.tap('.top a')]);
 ok(page.url() === BASE, 'upstairs: the back link goes to the landing page');
 
+// the showcase signal flow: linked from the landing page
+await page.goto(BASE, { waitUntil: 'networkidle' });
+ok(/Showcase signal flow/.test(await page.textContent('a.way[href="showcase/"]')), 'landing: the showcase card');
+await Promise.all([page.waitForURL(/\/showcase\/$/), page.tap('a.way[href="showcase/"]')]); await page.waitForLoadState('networkidle');
+ok((await page.$$eval('#svg .node', n => n.length)) > 10, 'showcase: the diagram draws');
+ok(await noSideScroll(), 'showcase: no sideways scroll');
+
 // anonymized photos are what is served (differs from a plain build of the original, where one exists)
 for (const f of ['walk/p/outside-entry.jpg', 'walk/p/foh-wide.jpg', 'battery-check/p/foh-wide.jpg']) {
   const plain = join(ROOT, 'tools', f.startsWith('walk') ? 'scene-graph-editor' : 'gameplay-slice', 'dist', f.replace(/^[^/]+\//, ''));

@@ -1,0 +1,1228 @@
+{
+  "title": "Showcase signal flow",
+  "subtitle": "The Chapman Faculty Electroacoustic Showcase, Salmon Recital Hall, 2026-10-18",
+  "version": "v1, first draft",
+  "updated": "2026-10-19",
+  "about": "How each of the nine pieces got from the stage (or the laptop at FOH) to the audience: the X32 with an S32 stage box and an SD8 daisy-chained off it, and a separate 8-channel system for TUNNEL. Built from the crew's debrief the day after, the load-in notes and photos. Every box and line says how sure we are: dashed means not confirmed yet, red means it broke during the show. Tap anything for the details.",
+  "statuses": {
+    "confirmed": "Seen in a photo or said plainly in the debrief",
+    "tentative": "Probably right: a hedged answer (\"I think\"), or an inference",
+    "unknown": "We don't know yet; see the open questions",
+    "failed": "Worked in rehearsal, broke during the show"
+  },
+  "kinds": {
+    "mic": "Mic level (analog)",
+    "line": "Line level (analog)",
+    "aes50": "AES50 (Cat5, digital)",
+    "data": "USB, Thunderbolt or MIDI",
+    "air": "Acoustic: sound through the air or the strings",
+    "video": "Video (HDMI)"
+  },
+  "sources": {
+    "debrief": "The crew's debrief, dictated in class, 2026-10-19",
+    "photos": "Photos from load-in, rehearsal and the show, 2026-10-12 to 2026-10-18",
+    "setup": "The owner's notes from load-in (hum, power, Thunderbolt, AES50 settings), October 2026",
+    "program": "The printed program, 2026-10-18",
+    "salmon-docs": "This project's X32 facts (docs/DEVICE_REFERENCE.md), from the owner's photos of 2026-10-20"
+  },
+  "rooms": [
+    {
+      "id": "stage",
+      "name": "Stage · program number · piece",
+      "y": 0,
+      "h": 226
+    },
+    {
+      "id": "boxes",
+      "name": "Stage boxes · AES50",
+      "y": 234,
+      "h": 120
+    },
+    {
+      "id": "foh",
+      "name": "FOH · house center",
+      "y": 362,
+      "h": 240
+    },
+    {
+      "id": "out",
+      "name": "Speakers, screen, performer",
+      "y": 610,
+      "h": 160
+    }
+  ],
+  "devices": [
+    {
+      "id": "park",
+      "room": "stage",
+      "name": "Park's rig",
+      "sub": "4 · Max + SSL 2+",
+      "status": "confirmed",
+      "x": 8,
+      "y": 30,
+      "w": 92,
+      "notes": [
+        {
+          "text": "I PUNCH PIANOS: self-contained. His own laptop (Windows) running a Max patch, his own SSL 2+ interface, and a MIDI keyboard as a controller. None of it went into our system.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The punches are plain sine waves sent to two speakers lying on the piano's strings; the patch tries to soften each hit and bring out the sustain, with a lot of gain staging and some work on feedback frequencies.",
+          "source": "setup",
+          "status": "confirmed"
+        },
+        {
+          "text": "The Max patch fussed during the concert: red clip lights and distortion inside his rig, before it ever reached ours.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "pspk",
+      "room": "stage",
+      "name": "2 speakers",
+      "sub": "4 · on the strings",
+      "status": "confirmed",
+      "x": 8,
+      "y": 98,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Two small speakers placed face down on the strings of the grand piano, driven by Park's own interface. The strings ring in sympathy.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Visible in the photos, lid open, with the mic stand reaching in.",
+          "source": "photos",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "pmic",
+      "room": "stage",
+      "name": "Piano mic",
+      "sub": "4 · condenser",
+      "status": "confirmed",
+      "x": 8,
+      "y": 166,
+      "w": 92,
+      "notes": [
+        {
+          "text": "One condenser mic inside the grand piano picks up the strings vibrating from his speakers. That mic is what the house heard.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Another account in the debrief says the one mic was in front of the speaker. Both describe one mic near the speakers.",
+          "source": "debrief",
+          "status": "tentative"
+        },
+        {
+          "text": "Condenser: it needs +48 V, switched on from the X32 for its stage box input.",
+          "status": "tentative"
+        },
+        {
+          "text": "Mic model and S32 input number: unknown.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "midikbd",
+      "room": "stage",
+      "name": "MIDI keyboard",
+      "sub": "9 · 5-pin out",
+      "status": "confirmed",
+      "x": 113,
+      "y": 30,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Polycrisis: a small MIDI keyboard on top of the grand piano (on towels), played in alternation with the piano.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Its only output is 5-pin MIDI, so a cheap 5-pin-to-USB-C adapter took it into the laptop.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Two small issues in practice: the sustain pedal being released, and note-off messages.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "kontakt",
+      "room": "stage",
+      "name": "Kontakt laptop",
+      "sub": "9 · 3.5 mm out",
+      "status": "confirmed",
+      "x": 113,
+      "y": 98,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Hidden behind the keyboard, running Kontakt (the sampled piano). It kept running with no added latency while the laptop sat at the lock screen.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Output: the laptop's 3.5 mm headphone jack, adapted straight to XLR, with no DI box. The crew calls it sloppy; the S32 handled it fine.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "bcl",
+      "room": "stage",
+      "name": "Bass clar. mic",
+      "sub": "3 · 8 · on a stand",
+      "status": "confirmed",
+      "x": 113,
+      "y": 166,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Electrostatic Whale (3) and Blood Memory (8): the same bass clarinetist, front and center, with one mic on a stand.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The photo shows a side-address condenser on a boom stand.",
+          "source": "photos",
+          "status": "confirmed"
+        },
+        {
+          "text": "Which stage box and input it used isn't in the notes (S32 is a guess).",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "miller",
+      "room": "stage",
+      "name": "Guitar rig",
+      "sub": "5 · Ableton",
+      "status": "confirmed",
+      "x": 218,
+      "y": 98,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Running Spring: electric guitar through a pedalboard into his own laptop (Ableton) and interface, playing along with a track he made. Mostly self-contained.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "He wore an earpiece for the playback, fed from his own computer.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "His outputs went into the S32 and on to the X32 and the PA (the debrief's words are garbled here).",
+          "source": "debrief",
+          "status": "tentative"
+        },
+        {
+          "text": "The plan was discrete channels, but the inputs planned for him were the ones Park's mic was using in the piece before. Fixed at the last minute.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "lord",
+      "room": "stage",
+      "name": "Scarlett 2i2",
+      "sub": "7 · laptop",
+      "status": "confirmed",
+      "x": 218,
+      "y": 166,
+      "w": 92,
+      "notes": [
+        {
+          "text": "when a tree falls: a laptop and a small MIDI controller (a KORG nanoKONTROL2 in the photo) into a 2-channel Focusrite interface. Its two 1/4\" outputs went into the SD8.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Her laptop also drove the projector over HDMI for the live visuals.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The SD8's outputs had failed in Part I, but its inputs still worked, so this piece was fine.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "pots",
+      "room": "stage",
+      "name": "Flower-pot mic",
+      "sub": "2 · one mic",
+      "status": "confirmed",
+      "x": 323,
+      "y": 98,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Betweenness: one mic on the table of flower pots the performer plays between MalletKAT phrases.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Into the SD8.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "kat",
+      "room": "stage",
+      "name": "Scarlett 18i8",
+      "sub": "2 · MalletKAT",
+      "status": "confirmed",
+      "x": 323,
+      "y": 166,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Betweenness: a MalletKAT KAT Pro whose pads trigger vocal-chop samples on her laptop, plus a motion sensor and a double wind wand. The laptop's Scarlett 18i8 sends a stereo pair.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The stereo output went into the SD8.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "s32",
+      "room": "boxes",
+      "name": "Behringer S32",
+      "sub": "stage box · 32 in, 16 out · AES50 A and B",
+      "status": "confirmed",
+      "x": 8,
+      "y": 258,
+      "w": 290,
+      "notes": [
+        {
+          "text": "The hall's S32, on the AES50 A port of the X32. Remote preamps: gain and +48 V are set from the console.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Its AES50 B port feeds the SD8 (the daisy chain).",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Normally the X32 listens to it on inputs 25-32 (AES50 A 25-32), and S32 OUT 1-16 carry X32 Outputs 1-16.",
+          "source": "salmon-docs",
+          "status": "confirmed"
+        },
+        {
+          "text": "Part of the AES50 Cat5 run is partly unshielded. It may explain some odd noises and faults that took unusually long to troubleshoot this semester.",
+          "source": "debrief",
+          "status": "tentative"
+        }
+      ]
+    },
+    {
+      "id": "sd8",
+      "room": "boxes",
+      "name": "Behringer SD8",
+      "sub": "far side · 8 × 8",
+      "status": "failed",
+      "x": 323,
+      "y": 296,
+      "w": 92,
+      "notes": [
+        {
+          "text": "A second stage box on the other side of the stage, daisy-chained off the S32's AES50 B.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Its outputs stopped working during Part I (Electrostatic Whale). Its inputs kept working for the rest of the show.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Daisy-chained after a 32-input S32, the SD8's inputs arrive at the X32 as AES50 A 33-40, so a block of channels has to be routed to them. Its OUTPUT SELECT switch (1-8, 9-16, 17-24) picks which AES50 outputs reach its 8 XLR outs.",
+          "source": "setup",
+          "status": "tentative"
+        },
+        {
+          "text": "The switch position and the X32 input block used that night: unknown.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "macmini",
+      "room": "foh",
+      "name": "Mac mini",
+      "sub": "SSL 2+ · 4 outs",
+      "status": "confirmed",
+      "x": 8,
+      "y": 388,
+      "w": 120,
+      "notes": [
+        {
+          "text": "The FOH Mac mini with its SSL 2+ (four line outputs) played the electronics for Electrostatic Whale and Blood Memory.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Outputs 1-2 (the track) into X32 AUX IN 1-2. Output 3 or 4 (a mono click) into AUX IN 3 or 4, not a regular channel.",
+          "source": "debrief",
+          "status": "tentative"
+        },
+        {
+          "text": "Blood Memory's track is a drone: no click. It ran in Logic, so two DAWs were open on the Mac at once. On a Mac that's fine; on Windows, sharing one audio driver between two programs is trouble.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Integrations (1) was a stereo track through the X32 to the mains, with video. That it played from this Mac is a guess.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "x32",
+      "room": "foh",
+      "name": "Behringer X32",
+      "sub": "FOH console",
+      "status": "confirmed",
+      "x": 8,
+      "y": 460,
+      "w": 200,
+      "notes": [
+        {
+          "text": "The hall's full-size X32 mixed everything except TUNNEL.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "AES50 A to the S32. Its AES50 A output routing (as photographed 2026-10-20): 1-8 Output 1-8, 9-16 Output 9-16, 17-24 Output 1-8, 25-32 Output 9-16, 33-40 P16 1-8, 41-48 P16 9-16.",
+          "source": "salmon-docs",
+          "status": "confirmed"
+        },
+        {
+          "text": "Mid-show, a local XLR output on its rear panel replaced the dead SD8 output (see the performer's feed).",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The show's input list (which channel each piece used): not recorded.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "tunnel",
+      "room": "foh",
+      "name": "TUNNEL laptop",
+      "sub": "6 · 8 ch + video",
+      "status": "confirmed",
+      "x": 323,
+      "y": 388,
+      "w": 92,
+      "notes": [
+        {
+          "text": "TUNNEL: 8-channel fixed media and video from one laptop at FOH, on its own system. The X32 wasn't in its path.",
+          "source": "debrief",
+          "status": "tentative"
+        },
+        {
+          "text": "Video: a 100-foot HDMI cable from the laptop to the projector.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "macOS speaker setup: Left 1, Right 2, Left Surround 3, Right Surround 4, Center 5, LFE 6, Left Center 7, Right Center 8. Those are software labels, not where each speaker stood.",
+          "source": "setup",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "prex",
+      "room": "foh",
+      "name": "Clarett 8PreX",
+      "sub": "6 · Thunderbolt",
+      "status": "confirmed",
+      "x": 323,
+      "y": 460,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Focusrite Clarett 8PreX on Thunderbolt. Routing inside it is set in Focusrite Control (the original app: Control 2 doesn't support this interface).",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "On the Mac, some security settings had to be lowered before its driver would load.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Thunderbolt doesn't hot-plug: if the 8PreX ever loses power, the whole computer has to be rebooted. Keep its power plug labeled and leave it on.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Eight 1/4\" line outputs, one per speaker.",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "submix",
+      "room": "foh",
+      "name": "Small mixer",
+      "sub": "6 · sub feed",
+      "status": "confirmed",
+      "x": 218,
+      "y": 532,
+      "w": 92,
+      "notes": [
+        {
+          "text": "The sub has only an RCA input, so its signal went through a small mixer: in on a 1/4\"-to-XLR cable, the channel fader and the main level set, and out of the mixer's 2-track RCA output.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Which 8PreX output fed it: unknown.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "hum",
+      "room": "foh",
+      "name": "Hum destroyers",
+      "sub": "6 · Pyle, one per line",
+      "status": "confirmed",
+      "x": 323,
+      "y": 532,
+      "w": 92,
+      "notes": [
+        {
+          "text": "The system buzzed. A Pyle hum destroyer (a ground-loop isolator) on each line fixed it, at the cost of two extra TRS cables per line.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Moving the gear onto one power source didn't fix the buzz first. The Furman M-8X2 filters and protects but doesn't isolate.",
+          "source": "setup",
+          "status": "confirmed"
+        },
+        {
+          "text": "Some signal loss was traced to one of these. Whether that one stayed in for the show: unknown.",
+          "source": "setup",
+          "status": "tentative"
+        }
+      ]
+    },
+    {
+      "id": "mains",
+      "room": "out",
+      "name": "House mains",
+      "sub": "L/R",
+      "status": "confirmed",
+      "x": 8,
+      "y": 638,
+      "w": 96,
+      "notes": [
+        {
+          "text": "Everything but TUNNEL reached the audience through the X32's main L/R and the hall's main speakers.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "The hall's mains path: X32 to the mains rack, a Crown amp and the ceiling mains L/R.",
+          "source": "salmon-docs",
+          "status": "tentative"
+        }
+      ]
+    },
+    {
+      "id": "perf",
+      "room": "out",
+      "name": "Performer feed",
+      "sub": "3 · click + track",
+      "status": "tentative",
+      "x": 112,
+      "y": 638,
+      "w": 96,
+      "notes": [
+        {
+          "text": "Electrostatic Whale has a click. The bass clarinetist heard it (and the track) from a stage output: first through the SD8, then, after the SD8's outputs died, straight from the X32.",
+          "source": "debrief",
+          "status": "tentative"
+        },
+        {
+          "text": "Wedge or earpiece, and which mix bus: unknown.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "sub",
+      "room": "out",
+      "name": "Subwoofer",
+      "sub": "6 · RCA in",
+      "status": "confirmed",
+      "x": 218,
+      "y": 638,
+      "w": 92,
+      "notes": [
+        {
+          "text": "A powered sub in the middle of the STAGEPAS ring. It has an RCA input only (unbalanced: worth suspecting when there's hum).",
+          "source": "setup",
+          "status": "confirmed"
+        }
+      ]
+    },
+    {
+      "id": "stagepas",
+      "room": "out",
+      "name": "STAGEPAS ×4",
+      "sub": "6 · 8 speakers",
+      "status": "confirmed",
+      "x": 323,
+      "y": 638,
+      "w": 92,
+      "notes": [
+        {
+          "text": "Four Yamaha STAGEPAS systems (three 400s and one 600) used only as amplifiers and speakers: eight speakers, each pair's left and right playing a different channel.",
+          "source": "setup",
+          "status": "confirmed"
+        },
+        {
+          "text": "Into the 1/4\" stereo line inputs, set to stereo, not mono: the XLR inputs have no pan knob, so they can't keep left and right apart.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Which speaker stood where (front, sides, rear): unknown.",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "id": "rearproj",
+      "room": "out",
+      "name": "Rear projection",
+      "sub": "1 · 6 · 7 · screen",
+      "status": "confirmed",
+      "x": 323,
+      "y": 706,
+      "w": 92,
+      "notes": [
+        {
+          "text": "The projector sat behind the screen (back projection), so its image had to be flipped in the projector's settings to read correctly from the front.",
+          "source": "debrief",
+          "status": "confirmed"
+        },
+        {
+          "text": "Video for Integrations (1), TUNNEL (6) and when a tree falls (7).",
+          "source": "debrief",
+          "status": "confirmed"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "park-pspk",
+      "from": "park",
+      "to": "pspk",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "label": "Park's SSL 2+ outputs to the two speakers on the strings."
+    },
+    {
+      "id": "pspk-pmic",
+      "from": "pspk",
+      "to": "pmic",
+      "kind": "air",
+      "status": "confirmed",
+      "source": "debrief",
+      "tag": "strings",
+      "label": "The speakers shake the strings; the strings ring; the mic hears the piano, not the speakers directly."
+    },
+    {
+      "id": "pmic-s32",
+      "from": "pmic",
+      "to": "s32",
+      "kind": "mic",
+      "status": "tentative",
+      "tx": 0.15,
+      "label": "Piano mic into the S32 (input number not recorded)."
+    },
+    {
+      "id": "midi-kontakt",
+      "from": "midikbd",
+      "to": "kontakt",
+      "kind": "data",
+      "status": "confirmed",
+      "source": "debrief",
+      "label": "5-pin MIDI out, through a cheap 5-pin-to-USB-C adapter, into the laptop."
+    },
+    {
+      "id": "kontakt-s32",
+      "from": "kontakt",
+      "to": "s32",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.04,
+      "tx": 0.3,
+      "via": [
+        [
+          106,
+          156
+        ],
+        [
+          106,
+          244
+        ]
+      ],
+      "tag": "3.5 mm→XLR",
+      "tagAt": 0.5,
+      "tagVertical": true,
+      "label": "Laptop 3.5 mm out, adapted straight to XLR (no DI box) into the S32."
+    },
+    {
+      "id": "bcl-s32",
+      "from": "bcl",
+      "to": "s32",
+      "kind": "mic",
+      "status": "tentative",
+      "tx": 0.5,
+      "label": "Bass clarinet mic into a stage box: the S32 is a guess."
+    },
+    {
+      "id": "miller-s32",
+      "from": "miller",
+      "to": "s32",
+      "kind": "line",
+      "status": "tentative",
+      "source": "debrief",
+      "fx": 0.04,
+      "tx": 0.72,
+      "via": [
+        [
+          211,
+          156
+        ],
+        [
+          211,
+          244
+        ]
+      ],
+      "label": "His interface's outputs into the S32. The inputs first planned for him clashed with Park's mic; fixed at the last minute."
+    },
+    {
+      "id": "lord-sd8",
+      "from": "lord",
+      "to": "sd8",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.96,
+      "tx": 0.19,
+      "via": [
+        [
+          313,
+          222
+        ],
+        [
+          313,
+          244
+        ],
+        [
+          340.5,
+          244
+        ]
+      ],
+      "label": "Two 1/4\" outputs of her Scarlett 2i2 into SD8 inputs."
+    },
+    {
+      "id": "pots-sd8",
+      "from": "pots",
+      "to": "sd8",
+      "kind": "mic",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.04,
+      "tx": 0.34,
+      "via": [
+        [
+          319,
+          156
+        ],
+        [
+          319,
+          232
+        ],
+        [
+          354.3,
+          232
+        ]
+      ],
+      "label": "The flower-pot mic into the SD8."
+    },
+    {
+      "id": "kat-sd8",
+      "from": "kat",
+      "to": "sd8",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "tx": 0.75,
+      "label": "The Scarlett 18i8's stereo output into two SD8 inputs."
+    },
+    {
+      "id": "s32-sd8",
+      "from": "s32",
+      "to": "sd8",
+      "kind": "aes50",
+      "status": "confirmed",
+      "source": "debrief",
+      "fside": "right",
+      "via": [
+        [
+          310,
+          299
+        ],
+        [
+          310,
+          320
+        ]
+      ],
+      "label": "The daisy chain: a Cat5 cable from the S32's AES50 B to the SD8's AES50 A. Every SD8 input and output rides through the S32.",
+      "fy": 0.85,
+      "tside": "left",
+      "ty": 0.5
+    },
+    {
+      "id": "s32-x32",
+      "from": "s32",
+      "to": "x32",
+      "kind": "aes50",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.55,
+      "tx": 0.82,
+      "tag": "AES50 A",
+      "label": "One Cat5 cable between the S32's AES50 A and the X32's AES50 A carries all the stage inputs to FOH and the mixes back out."
+    },
+    {
+      "id": "mac-x32",
+      "from": "macmini",
+      "to": "x32",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.3,
+      "tx": 0.18,
+      "tag": "AUX IN 1-2",
+      "label": "SSL 2+ outputs 1-2 (the track) into X32 AUX IN 1-2."
+    },
+    {
+      "id": "mac-click",
+      "from": "macmini",
+      "to": "x32",
+      "kind": "line",
+      "status": "tentative",
+      "source": "debrief",
+      "fx": 0.8,
+      "tx": 0.48,
+      "tag": "click",
+      "tagAt": 0.55,
+      "label": "SSL 2+ output 3 or 4 (a mono click) into X32 AUX IN 3 or 4. The click goes to the performer, never the house."
+    },
+    {
+      "id": "x32-mains",
+      "from": "x32",
+      "to": "mains",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.2,
+      "label": "Main L/R to the hall's main speakers."
+    },
+    {
+      "id": "sd8-perf",
+      "from": "sd8",
+      "to": "perf",
+      "kind": "line",
+      "status": "failed",
+      "source": "debrief",
+      "fx": 0.04,
+      "tx": 0.88,
+      "via": [
+        [
+          326.7,
+          350
+        ],
+        [
+          214,
+          350
+        ],
+        [
+          214,
+          620
+        ],
+        [
+          196.5,
+          620
+        ]
+      ],
+      "label": "SD8 OUT to the performer's feed. Worked in rehearsal; the SD8's outputs died during Electrostatic Whale."
+    },
+    {
+      "id": "x32-perf",
+      "from": "x32",
+      "to": "perf",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "fx": 0.72,
+      "tx": 0.4,
+      "tag": "the fix",
+      "tagAt": 0.5,
+      "label": "The fix, mid-piece: pull the performer's cable out of the SD8, plug it into one of the X32's own (local) XLR outputs, and route the same mix to it."
+    },
+    {
+      "id": "tunnel-prex",
+      "from": "tunnel",
+      "to": "prex",
+      "kind": "data",
+      "status": "confirmed",
+      "source": "debrief",
+      "tag": "Thunderbolt",
+      "label": "Thunderbolt from the laptop to the Clarett 8PreX. Never unplug it, never power the 8PreX off while the laptop runs."
+    },
+    {
+      "id": "prex-hum",
+      "from": "prex",
+      "to": "hum",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "tag": "8 × 1/4\"",
+      "label": "Eight 1/4\" line outputs, each through its own hum destroyer."
+    },
+    {
+      "id": "hum-stagepas",
+      "from": "hum",
+      "to": "stagepas",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "label": "TRS into the STAGEPAS stereo line inputs (1/4\", set to stereo)."
+    },
+    {
+      "id": "prex-submix",
+      "from": "prex",
+      "to": "submix",
+      "kind": "line",
+      "status": "tentative",
+      "source": "debrief",
+      "fx": 0.06,
+      "tx": 0.85,
+      "label": "An 8PreX output (which one isn't recorded) on a 1/4\"-to-XLR cable into the small mixer."
+    },
+    {
+      "id": "submix-sub",
+      "from": "submix",
+      "to": "sub",
+      "kind": "line",
+      "status": "confirmed",
+      "source": "debrief",
+      "tag": "RCA",
+      "label": "The small mixer's 2-track RCA output into the sub's RCA input."
+    },
+    {
+      "id": "tunnel-video",
+      "from": "tunnel",
+      "to": "rearproj",
+      "kind": "video",
+      "status": "confirmed",
+      "source": "debrief",
+      "fside": "right",
+      "tx": 0.92,
+      "via": [
+        [
+          418,
+          412
+        ],
+        [
+          418,
+          696
+        ]
+      ],
+      "label": "A 100-foot HDMI cable from the laptop at FOH to the projector behind the screen."
+    }
+  ],
+  "paths": [
+    {
+      "name": "1 Integrations",
+      "links": [
+        "mac-x32",
+        "x32-mains"
+      ],
+      "nodes": [
+        "rearproj"
+      ],
+      "text": "Video on the rear-projection screen and a stereo track straight through the X32 to the mains. Where it played from isn't in the notes; the FOH Mac mini is a guess."
+    },
+    {
+      "name": "2 Betweenness",
+      "links": [
+        "pots-sd8",
+        "kat-sd8",
+        "s32-sd8",
+        "s32-x32",
+        "x32-mains"
+      ],
+      "text": "MalletKAT rig (stereo from a Scarlett 18i8) and one flower-pot mic into the SD8 → AES50 through the S32 → X32 → mains."
+    },
+    {
+      "name": "3 Electrostatic Whale",
+      "links": [
+        "bcl-s32",
+        "s32-x32",
+        "mac-x32",
+        "mac-click",
+        "x32-mains",
+        "s32-sd8",
+        "sd8-perf",
+        "x32-perf"
+      ],
+      "text": "Bass clarinet mic → stage box → X32; the track from the FOH Mac mini on AUX IN 1-2, the click on AUX IN 3 or 4 → the performer only. The SD8 output to the performer died mid-piece: the cable went straight to an X32 local output instead (red: broke; \"the fix\")."
+    },
+    {
+      "name": "4 I PUNCH PIANOS",
+      "links": [
+        "park-pspk",
+        "pspk-pmic",
+        "pmic-s32",
+        "s32-x32",
+        "x32-mains"
+      ],
+      "text": "Park's own laptop and SSL 2+ → two speakers on the piano strings → the strings ring → a condenser in the piano → S32 → X32 → mains."
+    },
+    {
+      "name": "5 Running Spring",
+      "links": [
+        "miller-s32",
+        "s32-x32",
+        "x32-mains"
+      ],
+      "text": "Guitar → pedals → his own laptop and interface (Ableton, earpiece for him) → S32 → X32 → mains. The inputs first planned for him were Park's; fixed at the last minute."
+    },
+    {
+      "name": "6 TUNNEL",
+      "links": [
+        "tunnel-prex",
+        "prex-hum",
+        "hum-stagepas",
+        "prex-submix",
+        "submix-sub",
+        "tunnel-video"
+      ],
+      "text": "Its own system: laptop → Thunderbolt → Clarett 8PreX → 8 line outs → hum destroyers → 4 STAGEPAS (8 speakers); a small mixer → RCA → the sub; 100 ft of HDMI to the projector."
+    },
+    {
+      "name": "7 when a tree falls",
+      "links": [
+        "lord-sd8",
+        "s32-sd8",
+        "s32-x32",
+        "x32-mains"
+      ],
+      "nodes": [
+        "rearproj"
+      ],
+      "text": "Laptop and controller → Scarlett 2i2 → SD8 inputs (still fine after its outputs died) → S32 → X32 → mains. Her laptop's HDMI drove the projector."
+    },
+    {
+      "name": "8 Blood Memory",
+      "links": [
+        "bcl-s32",
+        "s32-x32",
+        "mac-x32",
+        "x32-mains"
+      ],
+      "text": "The same setup as Electrostatic Whale, but the track is a drone: no click. Logic on the same Mac mini, alongside the other DAW."
+    },
+    {
+      "name": "9 Polycrisis",
+      "links": [
+        "midi-kontakt",
+        "kontakt-s32",
+        "s32-x32",
+        "x32-mains"
+      ],
+      "text": "Piano and a MIDI keyboard on top of it → 5-pin to USB-C → laptop running Kontakt → 3.5 mm to XLR (no DI) → S32 → X32 → mains."
+    }
+  ],
+  "lessons": [
+    {
+      "title": "A stage box's outputs died mid-show",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "During Electrostatic Whale the SD8 stopped passing outputs; its inputs kept working all night. The fix took a minute: unplug the performer's cable from the SD8, plug it into a local XLR output on the X32, and route the same mix there. Know which console outputs are free before the show, and have a long XLR ready."
+    },
+    {
+      "title": "Two pieces, one set of inputs",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "Running Spring was meant to be on its own channels, but they were the ones I PUNCH PIANOS was using in the piece before. Caught at the last minute. One input list for the whole show, every piece on it, prevents this."
+    },
+    {
+      "title": "Thunderbolt doesn't hot-plug",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "If the Clarett 8PreX loses power, the laptop has to be rebooted. It also needed lowered security settings and the original Focusrite Control (not Control 2). Label its power, and don't move power cables near it during the show."
+    },
+    {
+      "title": "Hum in the speaker ring",
+      "status": "confirmed",
+      "source": "setup",
+      "text": "Moving everything to one power source didn't stop it; a power conditioner isn't an isolator. Ground-loop isolators (Pyle hum destroyers) on each line did. Watch for one that loses signal, and for the unbalanced RCA into the sub."
+    },
+    {
+      "title": "3.5 mm into an XLR, no DI",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "Polycrisis's laptop went headphone jack → XLR straight into the S32 and was fine. The tidy way is a DI box (or a proper line input): balanced, the right level, and a ground lift if it hums."
+    },
+    {
+      "title": "Two DAWs on one computer",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "Blood Memory's Logic ran next to the other piece's DAW on the Mac mini without trouble. On Windows, two programs sharing one audio driver is asking for it."
+    },
+    {
+      "title": "Max patches fuss",
+      "status": "confirmed",
+      "source": "debrief",
+      "text": "I PUNCH PIANOS clipped inside the performer's own patch during the show. When the distortion is upstream of the console, no fader fixes it: talk to the performer about gain inside their rig."
+    },
+    {
+      "title": "Suspect the cable run",
+      "status": "tentative",
+      "source": "debrief",
+      "text": "Several odd faults this semester took unusually long to find. Part of the AES50 Cat5 run is partly unshielded; bad mics are the other suspect."
+    }
+  ],
+  "questions": [
+    {
+      "about": "perf",
+      "q": "What did the failed SD8 output feed: a wedge or the earpiece? Which X32 local output and mix bus replaced it?"
+    },
+    {
+      "about": "sd8",
+      "q": "Why did the SD8's outputs fail (cable, the OUTPUT SELECT switch, power, the box)? Has it been tested since?"
+    },
+    {
+      "about": "sd8",
+      "q": "The SD8's OUTPUT SELECT position that night, and which X32 input block was routed to AES50 A 33-40."
+    },
+    {
+      "about": "x32",
+      "q": "The show's input list: which X32 channel each piece used."
+    },
+    {
+      "about": "macmini",
+      "q": "Was the click on AUX IN 3 or 4? Where did Integrations' track and video play from, and was the violin live and miked?"
+    },
+    {
+      "about": "bcl",
+      "q": "The bass clarinet mic: model, and S32 or SD8 input?"
+    },
+    {
+      "about": "pmic",
+      "q": "The piano mic for I PUNCH PIANOS: model and input. Was the acoustic piano in Polycrisis miked too?"
+    },
+    {
+      "about": "miller",
+      "q": "Running Spring: which interface and which stage box inputs? Did any of it go to the X32 on discrete channels in the end?"
+    },
+    {
+      "about": "submix",
+      "q": "TUNNEL: which 8PreX output fed the sub's mixer (macOS labels output 6 \"LFE\")?"
+    },
+    {
+      "about": "stagepas",
+      "q": "TUNNEL: which STAGEPAS speaker stood where, and the exact switch label for stereo vs mono on those inputs."
+    },
+    {
+      "about": "hum",
+      "q": "Did every line keep its hum destroyer for the show, including the one that lost signal?"
+    },
+    {
+      "about": "tunnel",
+      "q": "Did the X32 carry anything for TUNNEL (the debrief mentions it once, unclearly)?"
+    }
+  ],
+  "log": [
+    {
+      "date": "2026-10-18",
+      "text": "The concert."
+    },
+    {
+      "date": "2026-10-19",
+      "text": "The crew's debrief in class; this first draft from it, the load-in notes and photos."
+    }
+  ],
+  "photos": [
+    {
+      "file": "s32-rack.jpg",
+      "caption": "The S32 in the stage-side rack: 32 inputs, 16 outputs, AES50 ports on the right."
+    },
+    {
+      "file": "scarlett-18i8-malletkat.jpg",
+      "caption": "Betweenness: the Scarlett 18i8 in front of the MalletKAT KAT Pro."
+    },
+    {
+      "file": "scarlett-2i2-nanokontrol.jpg",
+      "caption": "when a tree falls: a 2-channel Focusrite and a KORG nanoKONTROL2."
+    },
+    {
+      "file": "ssl2plus-max.jpg",
+      "caption": "I PUNCH PIANOS: the performer's SSL 2+, the Max patch on a Windows laptop, the MIDI keyboard."
+    },
+    {
+      "file": "speakers-on-strings.jpg",
+      "caption": "I PUNCH PIANOS: two speakers lying on the strings, the mic reaching into the piano."
+    },
+    {
+      "file": "guitar-rig-cart.jpg",
+      "caption": "Running Spring: laptop (Ableton) and interface on a cart, the pedalboard on the floor."
+    }
+  ]
+}
