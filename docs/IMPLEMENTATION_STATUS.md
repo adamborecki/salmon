@@ -50,10 +50,15 @@ Vocal Jazz):
 - Mixer Lab: a new **Chapman gigs** section with "Vocal Jazz in Salmon" (8 scenarios on the full
   X32) and COB moved into it.
 
+### Answered the next day (2026-10-20, owner, with photos)
+- Gain 30 dB; one card, the X-DANTE; ROUTING input/AES A/card pages; Dante and Logic settings;
+  the BH 102 flush bolt; saved scenes aren't trusted. All in DEVICE_REFERENCE. Photos are in the
+  MUS 248 repo (`content/activities/media/vocal-jazz/`), not copied here.
+- The owner is sending Vocal Jazz stems (for Mixer Lab first).
+
 ### Needs the owner
-- The gain number (30 dB?) and the low-cut frequency.
-- What "make sure that you can get it over" means for the BH 102 latch.
-- The X32 Dante card's model and its card-output routing page.
+- The low-cut frequency (80 Hz recommended for possible low basses; the owner was thinking 100).
+- Whether X32 Output 1 is set to Bus 1.
 
 ### Next steps
 - When the owner confirms them, move the 30 dB / low-cut facts into the game content with a

@@ -14,9 +14,14 @@ Source: project owner's notes. IDs at the bottom are suggested naming convention
 - **Wireless rack power** (owner, 2026-10-19): one master switch, the **Furman on top** of the rack. New practice from fall 2026: switch it on at the start of the gig and off at the end (earlier crews left it on).
 
 ## X32 state for Vocal Jazz (owner, 2026-10-19; the MUS 248 "Vocal Jazz Reset")
-- **Routing:** inputs 1-8, 9-16 and 17-24 on **LOCAL** (the receivers are on the X32's rear panel); **25-32 on AES50** (the stage box) by default.
-- **Every wireless channel at the same gain**, "I think 30 dB" (tentative until checked at the console). **Low cut on** (frequency not given), **no dynamics** (gate and comp off).
-- **Dante multitrack** (owner, 2026-10-19): the X32's **Dante card** (not the USB card) carries the inputs as direct outs (card out n = input n); on the Mac mini, Dante Virtual Soundcard, Logic's audio device set to it first, then one track per input in order; in Dante Controller, X32 to the Mac mini one to one (Ctrl-click the device intersection). Card model and routing page still unconfirmed.
+- **Routing** (owner's photo of ROUTING → INPUT, 2026-10-20): 1-8 **Local 1-8**, 9-16 **Local 9-16**, 17-24 **Local 17-24**, 25-32 **AES50 A25-32**; Aux In = Aux Ins. Connected devices: A = S32, B = none, C = Dante; 48 kHz.
+- **AES50 A outputs** (photo, 2026-10-20): 1-8 Output 1-8, 9-16 Output 9-16 (so S32 OUT 1 = X32 Output 1), 17-24 Output 1-8, 25-32 Output 9-16, 33-40 P16 1-8, 41-48 P16 9-16. Whether Output 1 = Bus 1 isn't in the photos.
+- **Card:** the only card is an **X-DANTE (32 in / 32 out)**. ROUTING → CARD (photo): Local 1-8, 9-16, 17-24, 25-32 (card out n = Local In n).
+- **Scene 01: SALMON-DEFAULT** is loaded and exists, but the owner doesn't trust saved scenes (2026-10-20): check settings by hand.
+- **Channel names follow the mics:** CH 11 is "G yellow" (gray windscreen, yellow ring).
+- **Every wireless channel at 30 dB gain** (owner, confirmed 2026-10-20). **Low cut on**: 80 Hz recommended (the group may have low basses; the owner was thinking 100 Hz; not decided). **No dynamics** (gate and comp off).
+- **Dante multitrack** (owner, 2026-10-19; photos 2026-10-20): Dante Controller transmitter **X32** → receiver **MUS-BH100-MINI** (the FOH Mac mini), one to one (Ctrl-click the device intersection). Logic: Input Device **Dante Virtual Soundcard**, Output Device **External Headphones**, buffer 1024; test session "mic check", 13 tracks on In 1-In 13.
+- **BH 102 closet** (photos, 2026-10-20): a double door; the fixed half has a flush bolt on its top edge. Push that half flush with the frame (no gap at the top), then flip the bolt.
 
 ## Stage-side / Mains Rack
 - **Mackie Mix5**: small mixer at top of rack; analog inputs, accepts phone/playback sources.
