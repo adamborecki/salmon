@@ -300,12 +300,31 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   ok((await page.$$eval('#panel img.inset', i => i.length)) === 2 && /S32 stagebox OUTPUT 1/.test(await page.textContent('#panel')), "rack rear: 'Look closer' shows Cary's NX3000 and S32 photos and Bus 1's path");
   for (const c of ['run', 'link1', 'link2']) await tap(`[data-hook="${c}"]`);
   await walkTo('musician-pov');
-  for (const [c, j] of [['run', 'w1:1'], ['link1', 'w1:2'], ['link1', 'w2:1'], ['link2', 'w2:2'], ['link2', 'w3:1']]) { await tap(`[data-cable="${c}"]`); await tap(`[data-jack="${j}"]`); }
+  // drag a cable from your hands onto a jack (Cary, 2026-11-01); tapping a cable, then a jack, still works
+  const center = sel => page.$eval(sel, e => { e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+  const dragTo = async (from, to) => {
+    const b = await center(to), a = await center(from);
+    await page.mouse.move(...a); await page.mouse.down(); await page.mouse.move(a[0] + 6, a[1] - 12, { steps: 3 });
+    await page.mouse.move(...b, { steps: 10 });
+    ok(await page.$eval(to, e => e.classList.contains('droptarget')) && !(await page.$eval('#dragline', l => l.hidden)), `drag: ${from} over ${to} highlights it, with a cable line`);
+    await page.mouse.up(); await page.waitForTimeout(200);
+  };
+  await dragTo('#hand [data-cable="run"]', '[data-jack="w1:1"]');
+  ok(/Jack 1: Long run/.test(await page.textContent('[data-spotcard="left"]')) && await page.$eval('#dragline', l => l.hidden), 'drag: the run dropped into wedge 1, jack 1');
+  await dragTo('#hand [data-cable="link1"]', '[data-jack="w1:2"]');
+  for (const [c, j] of [['link1', 'w2:1'], ['link2', 'w2:2'], ['link2', 'w3:1']]) { await tap(`[data-cable="${c}"]`); await tap(`[data-jack="${j}"]`); }
   ok((await stepsDone()).join() === 'wedges,cable', 'steps: cabled (it looks plugged in)');
+  ok((await page.$$eval('#panel .umap .wire', w => w.length)) === 3, 'stage: the cables are drawn on the U (the run from the NX3000, two links)');
   await walkTo('monitor-amp-rack-front'); await tap('[data-switch="furman"]'); await tap('[data-switch="nx3000"]');
   ok(await page.$eval('[data-switch="nx3000"]', b => b.getAttribute('aria-pressed') === 'true') && /lights up/.test(await page.textContent('#toast')), 'rack: the Furman, then the NX3000');
   await walkTo('musician-pov'); await tap('[data-a1="bus1"]'); await tap('[data-listen]');
   ok(/Silent: left side, back, right side/.test(await page.textContent('#toast')), 'listen: all three silent (NOTICE)');
+  // the signal test (Cary, 2026-11-01): ride the signal; it stops where the chain really breaks
+  await page.evaluate(() => { window.__sigFast = 4; window.__sigAuto = true; });
+  await tap('[data-sigtest]');
+  ok(!(await page.$eval('#sig', s => s.hidden)) && /You are the signal/.test(await page.textContent('#sigSub')), 'signal test: the ride opens');
+  await tap('#sigGo'); await page.waitForFunction(() => document.querySelector('#sig').hidden, null, { timeout: 15000 });
+  ok(/CH A output\.\.\. and nothing is plugged into it/.test(await page.textContent('#toast')), 'signal test: the signal dies at the empty CH A output (TRACE)');
   await walkTo('monitor-amp-rack-front');
   ok(await page.$eval('.panelrow:nth-of-type(2) .led.sig', () => true).catch(() => false) && /CH A SIGNAL/.test(await page.textContent('#panel')), 'NX3000: the CH A SIGNAL light flickers with Bus 1 (TRACE)');
   await walkTo('monitor-amp-rack-rear'); await tap('[data-unplug="nx3000:B"]'); await tap('[data-cable="run"]'); await tap('[data-jack="nx3000:A"]');
@@ -313,8 +332,15 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   ok(/Playing: left side\. Silent: back, right side/.test(await page.textContent('#toast')), 'listen: only the first wedge plays (the chain dies after it)');
   await tap('[data-reseat="w1:2"]'); ok(/already locked/.test(await page.textContent('#toast')), 'reseat wedge 1 jack 2: already locked');
   await tap('[data-reseat="w2:1"]'); ok(/clicks\. Locked/.test(await page.textContent('#toast')), 'reseat wedge 2 jack 1: it was loose');
-  await tap('[data-listen]'); await page.waitForTimeout(1700);
-  ok(!(await page.$eval('#sheet', s => s.hidden)) && /monitors/i.test(await page.textContent('#dbTitle')), 'all three play: the monitors debrief opens');
+  // the final check by riding the signal: without steering you come off the wire, and it doesn't count
+  await page.evaluate(() => { window.__sigAuto = false; });
+  await tap('[data-sigtest]'); await tap('#sigGo');
+  await page.waitForFunction(() => /Signal lost/.test(document.querySelector('#sigMsg').textContent), null, { timeout: 15000 });
+  ok(/Try again/.test(await page.textContent('#sigGo')) && (await page.$eval('#sheet', s => s.hidden)), "signal test: didn't steer = signal lost, try again (and nothing is verified)");
+  await shot('9-signal-test');
+  await page.evaluate(() => { window.__sigAuto = true; }); await tap('#sigGo');
+  await page.waitForFunction(() => document.querySelector('#sig').hidden, null, { timeout: 15000 }); await page.waitForTimeout(1700);
+  ok(!(await page.$eval('#sheet', s => s.hidden)) && /monitors/i.test(await page.textContent('#dbTitle')), 'signal test: through all three wedges, and the monitors debrief opens');
   const ml = await page.$$eval('#dbList li', ls => ls.map(l => l.textContent));
   ok(/Monitors ready/.test(ml[0]), 'debrief: ' + ml[0]);
   for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(ml.filter(l => l.startsWith(step)).length === 2, `monitors debrief: ${step} for both faults`);

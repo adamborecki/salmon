@@ -271,6 +271,24 @@ button.chip{font:inherit;color:inherit;cursor:pointer}
 .liftbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--warn-hi),var(--sig-hi))}
 #liftTap{width:100%;min-height:96px;font-size:26px;border-radius:14px;background:var(--accent);border-color:var(--accent);color:#fff;user-select:none;-webkit-user-select:none}
 #liftTap:active{transform:scale(.97)}
+/* the signal test (Cary): a ride along the wires */
+.sig{position:fixed;inset:0;z-index:25;background:rgba(8,12,16,.8);display:grid;place-items:center;padding:12px}
+.sigbox{width:min(400px,100%);background:#141a20;color:#d6dde3;border-radius:12px;padding:14px;display:grid;gap:8px;justify-items:center;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.sigbox h2{margin:0;font:600 26px var(--cond);color:#ffe08a}
+.sigbox .fine{color:#aeb9c4;margin:0}
+#sigCanvas{border-radius:8px;touch-action:none;display:block}
+#sigMsg{margin:0;min-height:2.6em;font-size:14px} #sigMsg.bad{color:#ff8a8f} #sigMsg.good{color:#7fe0a0}
+.sigbox .btn.sm{background:transparent;color:#d6dde3;border-color:#3a4652}
+/* dragging a cable to a jack */
+.cablechip,#panel [data-hook]{touch-action:none}
+#dragline{position:fixed;inset:0;width:100vw;height:100vh;z-index:30;pointer-events:none}
+#dragline line{stroke:var(--accent);stroke-width:4;stroke-linecap:round;stroke-dasharray:2 6}
+#dragline circle{fill:var(--accent);stroke:#fff;stroke-width:2}
+#dragline text{font:600 12px var(--mono);fill:var(--ink);paint-order:stroke;stroke:#fff;stroke-width:3px}
+.dragsrc{opacity:.5}
+[data-jack].droptarget{outline:3px solid var(--accent);outline-offset:2px;background:var(--accent);color:#fff}
+body.dragging{user-select:none;-webkit-user-select:none}
+.umap .wire{stroke:var(--accent);stroke-width:2.2;fill:none;stroke-linecap:round}
 .liftbox .timer{font:600 13px var(--mono);color:var(--muted)}
 .strip.idle{opacity:.35}
 .rfdot{width:8px;height:8px;border-radius:50%;background:#26313b;box-shadow:inset 0 0 0 1px #3a4652}
@@ -339,6 +357,12 @@ body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px
   <div class="liftbar" aria-hidden="true"><i id="liftFill"></i></div><div class="timer" id="liftTimer"></div>
   <button class="btn big" id="liftTap">LIFT</button><p id="liftMsg" class="fine" aria-live="polite"></p>
   <button class="btn sm" id="liftCancel">Put it down</button></div></div>
+<div class="sig" id="sig" role="dialog" aria-modal="true" aria-labelledby="sigHead" hidden><div class="sigbox">
+  <h2 id="sigHead">Test signal flow</h2><p id="sigSub" class="fine"></p>
+  <canvas id="sigCanvas" aria-label="The signal's ride along the cables: steer to stay on the wire"></canvas>
+  <p id="sigMsg" aria-live="polite"></p>
+  <div class="row"><button class="btn big" id="sigGo">Go</button><button class="btn sm" id="sigStop">Stop the test</button></div></div></div>
+<svg id="dragline" hidden aria-hidden="true"></svg>
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introHead" hidden>
   <div class="ipage" id="intro1"></div>
   <div class="ipage" id="intro2" hidden></div>
@@ -844,12 +868,12 @@ function monAct(a) {
   for (const e of mgame.log.slice(before)) monLog(e);
   if (a.type === 'cable' && !selCable) selCable = a.cable;
   if (a.type === 'plug') { const c = mgame.cables[a.cable].ends; if (c.a && c.b) selCable = mgame.held.find(x => { const e = mgame.cables[x].ends; return !(e.a && e.b); }) || null; }
-  for (const ev of r.events) if (ev.type === 'listen') { lastListen = Object.fromEntries(ev.result.map(x => [x.spot, ev.source === 'bus1' ? x.playing : null])); }
-  if (a.type !== 'listen' && a.type !== 'hint' && a.type !== 'a1' && a.type !== 'go') lastListen = {};   // anything you change makes the last listen stale
+  for (const ev of r.events) if (ev.type === 'listen' || ev.type === 'signal_test') { lastListen = Object.fromEntries(ev.result.map(x => [x.spot, ev.source === 'bus1' ? x.playing : null])); }
+  if (!['listen', 'signal_test', 'hint', 'a1', 'go'].includes(a.type)) lastListen = {};   // anything you change makes the last listen stale
   render(mgame.scene !== sceneBefore);
   for (const ev of r.events) {
     if (ev.type === 'hint' && mentor) mentorSays(ev.text, `Hint ${ev.level} of ${ev.of}`);
-    else if (ev.text) say(ev.text, ev.type === 'objective-complete' ? 'good' : ev.type === 'hint' ? 'hint' : ev.type === 'listen' ? (ev.result.length && ev.source === 'bus1' && ev.result.every(x => x.playing) ? 'good' : 'bad') : ev.type === 'reseat' && ev.wasLoose ? 'good' : '', 4200);
+    else if (ev.text) say(ev.text, ev.type === 'objective-complete' ? 'good' : ev.type === 'hint' ? 'hint' : ev.type === 'listen' || ev.type === 'signal_test' ? (ev.result.length && (ev.source === 'bus1' || ev.type === 'signal_test') && ev.result.every(x => x.playing) && (ev.type !== 'signal_test' || ev.stop.reason === 'done') ? 'good' : 'bad') : ev.type === 'reseat' && ev.wasLoose ? 'good' : '', 4200);
   }
   if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1500);
   return r;
@@ -860,7 +884,7 @@ function monLog(e) {
     place: `put ${MW[e.wedge] ? MW[e.wedge].label : ''} at ${MS[e.spot] ? MS[e.spot].label.toLowerCase() : ''}`, pick_up: `picked ${MW[e.wedge] ? MW[e.wedge].label : ''} back up`, cable: `took ${MCB[e.cable] ? MCB[e.cable].label : ''} off the hook`,
     plug: `plugged ${MCB[e.cable] ? MCB[e.cable].label : ''} into ${e.jack ? jackName(e.jack) : ''}`, unplug: `unplugged ${e.jack ? jackName(e.jack) : ''}`, reseat: `reseated ${e.jack ? jackName(e.jack) : ''}${e.wasLoose ? ': it was loose' : ''}`,
     switch: `switched the ${e.device === 'furman' ? 'Furman' : 'NX3000'} ${e.to}`, a1: `asked the A1: ${e.play === 'stop' ? 'stop' : `play through ${e.play === 'bus1' ? 'Bus 1' : 'the mains'}`}`,
-    listen: `listened: ${e.result ? e.result.map(x => `${MS[x.spot].label.toLowerCase()} ${x.playing ? '♪' : '–'}`).join(', ') : ''}${e.source !== 'bus1' ? ' (no Bus 1 playback)' : ''}`, hint: `took a hint` }[e.type];
+    listen: `listened: ${e.result ? e.result.map(x => `${MS[x.spot].label.toLowerCase()} ${x.playing ? '♪' : '–'}`).join(', ') : ''}${e.source !== 'bus1' ? ' (no Bus 1 playback)' : ''}`, hint: `took a hint`, signal_test: `rode the signal: ${e.stop && e.stop.reason === 'done' ? 'through all three wedges' : `stopped (${e.stop ? e.stop.reason : ''}), ${e.reached ? e.reached.length : 0} wedge(s) reached`}` }[e.type];
   li.textContent = what || e.type; $('#log').prepend(li);
 }
 const wedgeSVG = () => `<svg class="wedgeico" viewBox="0 0 54 30" aria-hidden="true"><path d="M2 28h50V12L30 2H2z"/></svg>`;
@@ -887,6 +911,14 @@ function jackHTML(j, cable) {
   if (!cable) return `<div class="jack"><button class="btn sm" data-jack="${j}" aria-label="Plug into ${esc(jackName(j))}">${esc(j.startsWith('nx') ? `CH ${j.split(':')[1]}` : `Jack ${j.split(':')[1]}`)}: plug in</button></div>`;
   return `<div class="jack"><span class="tag">${esc(j.startsWith('nx') ? `CH ${j.split(':')[1]}` : `Jack ${j.split(':')[1]}`)}: ${esc(MCB[cable].label.replace('speakON ', ''))}</span><div class="plugged"><button class="btn sm" data-reseat="${j}" aria-label="Reseat ${esc(jackName(j))}">Reseat</button><button class="btn sm" data-unplug="${j}" aria-label="Unplug ${esc(jackName(j))}">Unplug</button></div></div>`;
 }
+// the cables as they lie on the stage, drawn on the U (where the run comes in from the amp is schematic)
+const UPOS = { left: [40, 46], center: [110, 14], right: [180, 46], amp: [6, 34] };
+function uWires() {
+  const at = j => { if (!j) return null; if (j.startsWith('nx3000:')) return UPOS.amp; const s = Object.keys(mgame.spots).find(k => mgame.spots[k] === j.split(':')[0]); return s ? UPOS[s] : null; };
+  return Object.keys(MCB).filter(c => MCB[c] && MCB[c].label).map(c => { const e = mgame.cables[c].ends, a = at(e.a), b = at(e.b); if (!a || !b) return '';
+    return `<path class="wire" data-wire="${c}" d="M${a[0]} ${a[1]} Q${(a[0] + b[0]) / 2} ${Math.max(a[1], b[1]) + 22} ${b[0]} ${b[1]}"/>`; }).join('') +
+    (Object.values(mgame.cables).some(c => Object.values(c.ends).some(j => j && j.startsWith('nx3000:'))) ? '<text x="2" y="26" font-size="8" fill="var(--muted)">NX3000</text>' : '');
+}
 function renderMonPanel(v) {
   const p = $('#panel'), sc = mgame.scene, S = MC.scenes;
   if (sc === S.storage) {
@@ -897,14 +929,14 @@ function renderMonPanel(v) {
     const dot = id => { const sp = v.spots.find(x => x.id === id), heard = lastListen[id]; return sp.heard || heard === true ? 'var(--sig)' : heard === false ? 'var(--bad)' : sp.wedge ? 'var(--ink)' : 'none'; };
     const uSVG = `<svg class="umap" viewBox="0 0 220 96" role="img" aria-label="The wedges in a U that opens toward the mixer"><path d="M50 14 Q110 -6 170 14" fill="none" stroke="var(--line)" stroke-dasharray="3 4"/>
       ${[['left', 40, 46, 60], ['center', 110, 14, 0], ['right', 180, 46, -60]].map(([id, x, y, r]) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M-14 -8h28l-6 14h-16z" fill="${dot(id)}" stroke="var(--ink)" stroke-width="1.4"/></g><text x="${x}" y="${y + 22}" text-anchor="middle" font-size="9" fill="var(--muted)">${esc(MS[id].label)}</text>`).join('')}
-      <text x="110" y="56" text-anchor="middle" font-size="9" fill="var(--muted)">singers</text><text x="110" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">↓ open toward the mixer</text></svg>`;
+      ${uWires()}<text x="110" y="56" text-anchor="middle" font-size="9" fill="var(--muted)">singers</text><text x="110" y="92" text-anchor="middle" font-size="9" fill="var(--muted)">↓ open toward the mixer</text></svg>`;
     p.innerHTML = `<h3>The stage: wedges in a U, facing the singers</h3>${uSVG}<div class="spots">${v.spots.map(sp => {
       const heard = lastListen[sp.id], cls = sp.wedge ? `spot has${sp.heard || heard === true ? ' heard' : heard === false ? ' silent' : ''}` : 'spot';
       return `<div class="${cls}" data-spotcard="${sp.id}"><h4>${esc(sp.label)}</h4>${sp.wedge ? `${wedgeSVG()}<b>${esc(MW[sp.wedge].label)}</b>${heard === true || sp.heard ? '<span class="fine">♪ playing</span>' : heard === false ? '<span class="fine">silent</span>' : ''}
         ${sp.jacks.map(j => jackHTML(j.jack, j.cable)).join('')}<button class="btn sm" data-pickup="${sp.id}">Pick up</button>`
         : `<button class="btn sm talk" data-place="${sp.id}" ${v.carrying.length ? '' : 'disabled'}>Put a wedge here</button>`}</div>`; }).join('')}</div>
-      <div class="row"><button class="btn talk" data-listen>Listen to the wedges</button></div>
-      <p class="fine">A U that opens toward the mixer, each wedge facing the singers. Listening tells you which wedges are playing; ask the A1 for playback first (below).</p>`;
+      <div class="row"><button class="btn talk" data-sigtest>⚡ ${esc(MC.signal_test.label)}</button><button class="btn" data-listen>Listen to the wedges</button></div>
+      <p class="fine">A U that opens toward the mixer, each wedge facing the singers. Drag a cable from your hands onto a jack. ${esc(MC.signal_test.label)}: ride the signal along your cables (the A1 plays the Wii Shop theme through Bus 1). Or just listen.</p>`;
   } else if (sc === S.rack_front) {
     const f = v.front;
     p.innerHTML = `<h3>Monitor Rack: front</h3>
@@ -927,6 +959,7 @@ function renderMonPanel(v) {
   p.querySelectorAll('[data-place]').forEach(b => b.onclick = () => act({ type: 'place', spot: b.dataset.place }));
   p.querySelectorAll('[data-pickup]').forEach(b => b.onclick = () => act({ type: 'pick_up', spot: b.dataset.pickup }));
   p.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => act({ type: 'listen' }));
+  p.querySelectorAll('[data-sigtest]').forEach(b => b.onclick = openSignalTest);
   p.querySelectorAll('[data-switch]').forEach(b => b.onclick = () => act({ type: 'switch', device: b.dataset.switch }));
   p.querySelectorAll('[data-hook]').forEach(b => b.onclick = () => act({ type: 'cable', cable: b.dataset.hook }));
   p.querySelectorAll('[data-unplug]').forEach(b => b.onclick = () => act({ type: 'unplug', jack: b.dataset.unplug }));
@@ -1077,6 +1110,148 @@ function renderTdDock(v) {
   $('#hand').innerHTML = `<div class="carry"><span class="lbl">Carrying</span>${v.carrying.length ? v.carrying.map(() => wedgeSVG()).join('') + ` <span>${v.carrying.length} wedge${v.carrying.length > 1 ? 's' : ''}</span>` : ''}
     ${v.hand.map(id => `<span class="tag">${esc(D[id].label)}</span>`).join('')}${v.held.map(c => `<span class="tag">${esc(MCB[c].label)}</span>`).join('')}${!v.carrying.length && !v.hand.length && !v.held.length ? '<span class="fine">nothing</span>' : ''}</div>`;
   fitDock();
+}
+// ---- drag a cable onto a jack (Cary, 2026-11-01): from your hands, or straight off the hook; tapping still works ----
+let drag = null, swallowClick = 0;
+const dragLayer = () => $('#dragline');
+document.addEventListener('pointerdown', ev => {
+  if (mode !== 'monitors' || ev.button > 0) return;
+  const src = ev.target.closest('#hand .cablechip[data-cable]:not([disabled]), #panel [data-hook]'); if (!src) return;
+  drag = { src, cable: src.dataset.cable || src.dataset.hook, fromHook: !!src.dataset.hook, x0: ev.clientX, y0: ev.clientY, id: ev.pointerId, on: false, over: null };
+});
+document.addEventListener('pointermove', ev => {
+  if (!drag || ev.pointerId !== drag.id) return;
+  if (!drag.on && Math.hypot(ev.clientX - drag.x0, ev.clientY - drag.y0) < 8) return;
+  ev.preventDefault();
+  if (!drag.on) { drag.on = true; document.body.classList.add('dragging'); drag.src.classList.add('dragsrc'); }
+  const r = drag.src.getBoundingClientRect(), L = dragLayer();
+  L.hidden = false;
+  L.innerHTML = `<line x1="${r.left + r.width / 2}" y1="${r.top + r.height / 2}" x2="${ev.clientX}" y2="${ev.clientY}"/><circle cx="${ev.clientX}" cy="${ev.clientY}" r="13"/><text x="${ev.clientX + 18}" y="${ev.clientY - 14}">${esc(MCB[drag.cable].label)}</text>`;
+  const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('[data-jack]') || null;
+  if (t !== drag.over) { drag.over?.classList.remove('droptarget'); t?.classList.add('droptarget'); drag.over = t; }
+  const bottom = innerHeight - ($('#dock').offsetHeight || 0);
+  // scroll near the top, or just above the hands, but only once you linger there (passing through doesn't move the page)
+  const zone = ev.clientY < 70 ? -1 : ev.clientY > bottom - 34 && ev.clientY < bottom ? 1 : 0, now = performance.now();
+  if (zone !== drag.zone) { drag.zone = zone; drag.since = now; } else if (zone && now - drag.since > 300) scrollBy(0, 14 * zone);
+}, { passive: false });
+function endDrag(ev) {
+  if (!drag || ev.pointerId !== drag.id) return;
+  const d = drag; drag = null;
+  if (!d.on) return;                                       // a plain tap: the click handlers do the rest
+  swallowClick = performance.now() + 400;
+  document.body.classList.remove('dragging'); d.src.classList.remove('dragsrc'); d.over?.classList.remove('droptarget'); dragLayer().hidden = true;
+  if (ev.type === 'pointercancel' || !d.over) return;
+  if (d.fromHook && act({ type: 'cable', cable: d.cable }).error) return;
+  act({ type: 'plug', cable: d.cable, jack: d.over.dataset.jack });
+}
+document.addEventListener('pointerup', endDrag); document.addEventListener('pointercancel', endDrag);
+document.addEventListener('click', ev => { if (performance.now() < swallowClick) { ev.stopPropagation(); ev.preventDefault(); swallowClick = 0; } }, true);
+
+// ---- "Test signal flow" (Cary, 2026-11-01): you are the signal. Ride from Bus 1 into the NX3000 and along the real cables,
+// steering to stay on the wire and to hit every connector. The track is meng.signalPath(): where the chain really breaks,
+// the ride stops there. Missing a mark is a failed ride (try again), not a fault in the room.
+const ST = MC.signal_test, TK = ST.track;
+const CABLE_INK = { run: '#2f6fd6', link1: '#9aa4ad', link2: '#c2c9cf' };
+let sig = null;
+function buildTrack(p) {
+  const marks = [], blocks = [], segs = [{ s0: 0, s1: TK.input_px, ink: '#7d4cc2', label: 'Bus 1 → S32 → purple XLR' }];
+  let s = TK.input_px, end = null;
+  for (const st of p.steps.slice(1)) {
+    if (st.kind === 'amp') { blocks.push({ s, kind: 'amp', label: `NX3000 · CH ${st.channel}` }); s += TK.amp_px; }
+    else if (st.kind === 'plug') { marks.push({ s: s + 10, label: jackName(st.jack) }); s += 24; }
+    else if (st.kind === 'cable') { const len = TK.cable_px[st.cable] || 440; segs.push({ s0: s, s1: s + len, ink: CABLE_INK[st.cable] || '#c9d2da', label: MCB[st.cable].label });
+      if (st.dies) { end = s + len * .55; break; } s += len; }
+    else if (st.kind === 'wedge') { blocks.push({ s: s + 4, kind: 'wedge', wedge: st.wedge, label: `${MW[st.wedge].label}${st.spot ? ` · ${MS[st.spot].label.toLowerCase()}` : ''}` }); s += TK.wedge_px; }
+  }
+  if (p.stop.at === 'nx3000') { blocks.push({ s, kind: 'amp', off: true, label: p.stop.reason === 'furman-off' ? 'NX3000 · no power' : 'NX3000 · OFF' }); end = s + 30; }
+  if (end == null) end = s + 40;
+  return { marks, blocks, segs, end, ok: p.stop.reason === 'done', stop: p.stop, reached: p.reached };
+}
+function openSignalTest() {
+  if (mgame.playing !== 'bus1' && act({ type: 'a1', play: 'bus1' }).error) return;
+  const p = meng.signalPath(mgame), c = $('#sigCanvas'), dpr = Math.min(2, devicePixelRatio || 1);
+  const W = Math.min(360, innerWidth - 48), H = Math.round(Math.min(470, innerHeight * .56));
+  c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px';
+  const ph = [Math.random() * 6.28, Math.random() * 6.28];
+  sig = { tr: buildTrack(p), W, H, dpr, ph, s: 0, x: W / 2, target: W / 2, off: 0, run: false, trail: [], passed: 0, keys: {}, last: 0, raf: 0, done: false };
+  $('#sigSub').textContent = ST.how;
+  $('#sigMsg').textContent = 'Drag on the track (or use ← →) to steer. Ready?'; $('#sigMsg').className = '';
+  $('#sigGo').hidden = false; $('#sigGo').textContent = 'Go'; $('#sig').hidden = false; $('#sigGo').focus();
+  drawSig();
+}
+// the wire's x at a distance along the track: a cable lying loose on the floor, straight at first
+function wireX(s) { const { W, ph } = sig, a = Math.min(1, s / 260) * W * .26; return W / 2 + a * (.62 * Math.sin(s / 150 + ph[0]) + .38 * Math.sin(s / 61 + ph[1])); }
+function sigGo() {
+  const t = sig.tr; Object.assign(sig, { s: 0, x: sig.W / 2, target: sig.W / 2, off: 0, trail: [], passed: 0, run: true, done: false, last: performance.now() });
+  t.marks.forEach(m => { m.hit = false; }); t.blocks.forEach(b => { b.hit = false; });
+  $('#sigGo').hidden = true; $('#sigMsg').textContent = ''; $('#sigMsg').className = '';
+  cancelAnimationFrame(sig.raf); sig.raf = requestAnimationFrame(sigTick);
+}
+function sigFail(why) {
+  sig.run = false; $('#sigMsg').textContent = `⚡ Signal lost: ${why}. The signal didn't make it, so this run doesn't count.`; $('#sigMsg').className = 'bad';
+  $('#sigGo').hidden = false; $('#sigGo').textContent = 'Try again'; $('#sigGo').focus(); drawSig();
+}
+function sigFinish() {
+  sig.run = false; sig.done = true; drawSig();
+  const t = sig.tr; $('#sigMsg').textContent = t.ok ? `♪ ${MC.playback.label} in all three wedges: the signal made it to the end of the chain.` : `The signal stops here. ${meng.stopText(mgame)}`;
+  $('#sigMsg').className = t.ok ? 'good' : 'bad';
+  setTimeout(() => { if (!sig || !sig.done) return; closeSignalTest(); act({ type: 'signal_test' }); }, window.__sigFast ? 400 : 1700);
+}
+function closeSignalTest() { if (!sig) return; cancelAnimationFrame(sig.raf); sig = null; $('#sig').hidden = true; }
+function sigTick(now) {
+  if (!sig || !sig.run) return;
+  const dt = Math.min(.05, (now - sig.last) / 1000); sig.last = now;
+  const v = TK.speed_px_s * (window.__sigFast || 1) * Math.min(1.25, 1 + sig.s / 6000), prev = sig.s;
+  sig.s += v * dt;
+  if (window.__sigAuto) sig.target = wireX(sig.s + 6);
+  const k = (sig.keys.left ? -1 : 0) + (sig.keys.right ? 1 : 0); if (k) sig.target = Math.max(8, Math.min(sig.W - 8, sig.target + k * 340 * dt));
+  const step = 720 * dt * (window.__sigFast || 1); sig.x += Math.max(-step, Math.min(step, sig.target - sig.x));
+  sig.trail.push([sig.s, sig.x]); if (sig.trail.length > 40) sig.trail.shift();
+  const t = sig.tr;
+  for (const m of t.marks) if (!m.hit && prev < m.s && sig.s >= m.s) {           // the mark: the speakON's pins
+    if (Math.abs(sig.x - wireX(m.s)) > TK.pin_half_px) { sig.missed = m; return sigFail(`missed the connector at ${m.label}`); }
+    m.hit = true; sig.passed++;
+  }
+  for (const b of t.blocks) if (!b.hit && sig.s >= b.s) b.hit = true;
+  if (sig.s >= t.end) return sigFinish();
+  if (Math.abs(sig.x - wireX(sig.s)) > TK.wire_half_px) { sig.off += dt; if (sig.off > TK.grace_s) return sigFail('you came off the wire'); } else sig.off = 0;
+  drawSig(); sig.raf = requestAnimationFrame(sigTick);
+}
+function drawSig() {
+  const { W, H, dpr, tr: t } = sig, g = $('#sigCanvas').getContext('2d'), dotY = H * .78, Y = s => dotY - (s - sig.s);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H); g.fillStyle = '#0b0f13'; g.fillRect(0, 0, W, H);
+  const lo = Math.max(0, sig.s - dotY - 10), hi = Math.min(t.end, sig.s + dotY + 10);
+  // the wire, segment by segment, in each cable's colour
+  for (const sg of [...t.segs, { s0: 0, s1: t.end, ink: '#5b6670' }].reverse()) {
+    const a = Math.max(lo, sg.s0), b = Math.min(hi, sg.s1); if (a >= b) continue;
+    g.beginPath(); for (let s = a; s <= b; s += 6) g.lineTo(wireX(s), Y(s)); g.lineTo(wireX(b), Y(b));
+    g.lineCap = 'round'; g.strokeStyle = sg.ink + '40'; g.lineWidth = TK.wire_half_px * 2; g.stroke(); g.strokeStyle = sg.ink; g.lineWidth = 4; g.stroke();
+  }
+  g.font = '600 11px ui-monospace, Menlo, monospace'; g.textBaseline = 'middle';
+  for (const sg of t.segs) if (Y(sg.s0) > 0 && Y(sg.s0) < H) { const x = wireX(sg.s0 + 30), r = x < W / 2; g.fillStyle = sg.ink; g.textAlign = r ? 'left' : 'right'; g.fillText(sg.label, r ? x + 30 : x - 30, Y(sg.s0 + 30)); }
+  for (const b of t.blocks) { const y = Y(b.s), x = wireX(b.s); if (y < -30 || y > H + 30) continue;
+    if (b.kind === 'amp') { g.fillStyle = b.off ? '#4a1f22' : '#1d2730'; g.strokeStyle = b.off ? '#d8323c' : '#3cc4ba'; g.lineWidth = 2; g.fillRect(16, y - 26, W - 32, 36); g.strokeRect(16, y - 26, W - 32, 36);
+      g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(b.label, W / 2, y - 8); }
+    else { g.fillStyle = b.hit ? '#2f9e50' : '#26313b'; g.beginPath(); g.moveTo(x - 30, y + 10); g.lineTo(x + 30, y + 10); g.lineTo(x + 22, y - 14); g.lineTo(x - 22, y - 14); g.closePath(); g.fill();
+      g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(b.hit ? '♪ ' + b.label : b.label, x, y + 24); } }
+  for (const m of t.marks) { const y = Y(m.s), x = wireX(m.s); if (y < -10 || y > H + 10) continue;
+    g.fillStyle = m.hit ? '#3cc4ba' : sig.missed === m ? '#d8323c' : '#f0c419';
+    g.fillRect(x - TK.pin_half_px - 4, y - 7, 4, 14); g.fillRect(x + TK.pin_half_px, y - 7, 4, 14); g.fillRect(x - TK.pin_half_px - 4, y - 1, 2 * TK.pin_half_px + 8, 2); }
+  { const y = Y(t.end), x = wireX(t.end); if (y > -20 && y < H + 20) { g.fillStyle = t.ok ? '#2f9e50' : '#d8323c'; g.textAlign = 'center'; g.font = '700 16px ui-monospace, Menlo, monospace';
+    g.fillText(t.ok ? '✓ END OF THE CHAIN' : '✕', x, y - 16); } }
+  // you, the signal, with a short trail
+  g.lineWidth = 3; g.strokeStyle = 'rgba(255,224,138,.45)'; g.beginPath(); for (const [s, x] of sig.trail) g.lineTo(x, Y(s)); g.stroke();
+  g.fillStyle = '#ffe08a'; g.shadowColor = '#ffe08a'; g.shadowBlur = 16; g.beginPath(); g.arc(sig.x, dotY, 8, 0, 6.29); g.fill(); g.shadowBlur = 0;
+  g.textAlign = 'left'; g.font = '600 11px ui-monospace, Menlo, monospace'; g.fillStyle = '#aeb9c4';
+  g.fillText(`connectors ${sig.passed}/${t.marks.length}   wedges ${t.blocks.filter(b => b.kind === 'wedge' && b.hit).length}`, 10, 14);
+}
+{
+  const c = $('#sigCanvas'), aim = ev => { if (!sig) return; const r = c.getBoundingClientRect(); sig.target = Math.max(8, Math.min(sig.W - 8, ev.clientX - r.left)); };
+  c.addEventListener('pointerdown', ev => { c.setPointerCapture(ev.pointerId); aim(ev); });
+  c.addEventListener('pointermove', ev => { if (ev.buttons || ev.pointerType === 'touch') aim(ev); });
+  addEventListener('keydown', ev => { if (!sig) return; const k = { ArrowLeft: 'left', a: 'left', ArrowRight: 'right', d: 'right' }[ev.key]; if (k) { sig.keys[k] = true; ev.preventDefault(); } if (ev.key === 'Escape') closeSignalTest(); });
+  addEventListener('keyup', ev => { if (!sig) return; const k = { ArrowLeft: 'left', a: 'left', ArrowRight: 'right', d: 'right' }[ev.key]; if (k) sig.keys[k] = false; });
+  $('#sigGo').onclick = sigGo; $('#sigStop').onclick = closeSignalTest;
 }
 // the lift (Cary's idea): tap fast, or press Space, to fill the bar before it drains; two at once is harder
 let liftT = null;
