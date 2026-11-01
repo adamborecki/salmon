@@ -23,6 +23,48 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 6. **New (2026-10-19): the electroacoustic showcase signal flow** at `showcase/`: one real night's
    patch, piece by piece, with 12 open questions for you (session 6 below).
 
+## Session 7 (2026-11-01, Cary): the teardown level and the secret clues
+
+Cary asked for a "teardown" level and a clue in every level that leads to the final level's password.
+
+### What changed
+- **New: `teardown-engine.js`, `content/vj-teardown.json`, `test/teardown.test.mjs`** (part 3 of the
+  gameplay slice, after the line check; README there). The end of the night (PRODUCT_DESIGN section 70):
+  - Mics: batteries out, rechargeables on the charger, alkalines in the battery bin, the mic in the drawer.
+    "Stow the rest" takes over after three, then the drawer gets counted.
+  - The wireless rack's Furman off. On the Monitor Rack, the NX3000 off first, then its Furman.
+  - The speakON cables back on the hook, and the wedges back in the closet (the lift minigame again).
+  - Lock up BH 102: push the fixed half flush, flip the bolt, close the other half, then tug the door.
+  - Three seeded faults:
+    - a mic left on stage and still on: count, then the receivers' RF lights show which one;
+    - alkaline cells in one mic;
+    - a gap at the top of the door's fixed half, so the bolt misses.
+  - The missing mic and the door each get NOTICE / TRACE / ACT / VERIFY in the debrief.
+- **Harness:** a fourth mode with its own level card and mentor, `#TD-12345`, "Jump to teardown",
+  and "After the concert: teardown →" on the line check's debrief. The lift minigame now takes a
+  callback. The top bar reads "to out the door" and counts finished steps ("x/6 done").
+- **Secret clues:** a `secret_clue` (1-4 of 4) in each level's content. It shows in the debrief once
+  that level is complete, and the browser remembers it (`localStorage` `salmon-clues`). The clues are
+  riddles, and the password itself is still never written in the repo; together they give it away,
+  as Cary asked. The final level's gate now says "every level ends with a secret clue" and shows how
+  many you've found.
+
+### Tested
+- `teardown.test.mjs` 12/12. Mutation checks: 7 of 8 rule breaks are caught. The one that isn't
+  (bolt-in without flush) can't happen, because push needs the bolt up.
+- `harness.e2e.mjs`: a teardown playthrough by tapping on TD-48216, which has all three faults (see below).
+
+### Needs Cary (all marked `tentative` / `unknown` in `vj-teardown.json`)
+- When does the concert end, and when does the crew have to be out (9:00 PM and 15 minutes are placeholders)?
+- The real order of teardown. Is it the amp first, then the Monitor Rack's Furman? Do you never pull a speakON with the amp on?
+- Where do used alkalines go (the battery bin is a guess)? Do batteries always come out before a mic goes in the drawer?
+- Who collects the mics from the singers (here they come back to the chair)? Does a mic left on stage really happen?
+- Does the X32 get reset or switched off at the end? It's left alone here (a later "reset the desk" level).
+- How does the other half of the BH 102 door lock (a key?)?
+
+### Sync status
+- The scene graph and the live editor weren't touched.
+
 ## Session 6 (2026-10-19, owner): the electroacoustic showcase signal flow
 
 The owner asked for a signal-flow diagram of the Chapman Faculty Electroacoustic Showcase

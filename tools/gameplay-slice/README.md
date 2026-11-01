@@ -39,6 +39,7 @@ and principle 4.10), as small as it can be while still being real:
 | `line-engine.js`, `content/vj-line-check.json` | Part 2, the line check (below): the same style of engine and content; the mics' labels and colours come from the battery-in content. |
 | `monitor-engine.js`, `content/vj-monitors.json` | Part 0, the monitors (below): wedges out, cabled, powered, proved. Walk distances come from the scene graph. |
 | `test/monitor.test.mjs` | `node --test tools/gameplay-slice/test/monitor.test.mjs`: the monitors' rules. |
+| `teardown-engine.js`, `content/vj-teardown.json`, `test/teardown.test.mjs` | Part 3, teardown (below): the end of the night, the same style of engine and content. |
 | `test/line.test.mjs` | `node --test tools/gameplay-slice/test/line.test.mjs`: the line check's rules. |
 | `test/harness.e2e.mjs` | Plays the whole slice by tapping, at iPhone size: the title card, the battery-in check, then the line check (and a direct `#LC-` link). |
 
@@ -65,6 +66,7 @@ python3 tools/gameplay-slice/build.py
 node --test tools/gameplay-slice/test/engine.test.mjs     # engine rules
 node --test tools/gameplay-slice/test/line.test.mjs       # line check rules
 node --test tools/gameplay-slice/test/monitor.test.mjs    # monitors rules
+node --test tools/gameplay-slice/test/teardown.test.mjs   # teardown rules
 node tools/gameplay-slice/test/harness.e2e.mjs            # full playthrough on a touch phone (Playwright)
 ```
 
@@ -189,3 +191,27 @@ line" (after 3 by hand) does the same routine and stops at the first wrong meter
 who can't hear themselves. The debrief scores NOTICE / TRACE / ACT / VERIFY per fault, plus
 instructions that changed a mic that didn't need it and sends left too low. The send steps, the
 -10 dB start and when it feeds back are game simplifications, labelled tentative in the content.
+
+## Teardown (part 3) and the secret clues
+
+Cary, 2026-11-01. After the line check's debrief, "After the concert: teardown →" (or `#TD-12345`, or
+the Instructor view's "Jump to teardown") starts the end of the night at 9:00 PM (tentative), with its
+own mentor. PRODUCT_DESIGN section 70: the safety-critical steps are required.
+
+- **Mics:** at the mic drawer, for each: batteries out (it says what cells they are), the cells on the
+  charger or in the battery bin, the mic in the drawer. After three, "Stow the rest" does the others and
+  stops on alkaline cells (they must never go on the rechargeable charger). "Count the drawer".
+- **Faults (seeded):** a mic left on stage, still on (count, then the receivers' RF lights show which
+  one; switching the wireless rack off first loses that clue); alkalines in one mic; a gap at the top of
+  the closet door's fixed half, so the flush bolt misses (the tug fails). The missing mic and the door
+  get the full NOTICE / TRACE / ACT / VERIFY in the debrief.
+- **Racks:** the wireless rack's Furman off; the Monitor Rack's NX3000, then its Furman (pulling a
+  speakON with the amp on is flagged). The speakON cables go back on the hook, the wedges (the lift
+  minigame again) back in the closet, then lock up BH 102: close the fixed half, push it flush, flip
+  the bolt, close the other half, and tug. The door counts only when a tug holds after the last change.
+
+**Secret clues:** each level's content has a `secret_clue` (1 of 4 to 4 of 4), shown in that level's
+debrief once it's complete and remembered in this browser (`localStorage` `salmon-clues`). Together they
+point to the final level's password; the password itself is never written in the repo. The final level's
+gate shows how many clues you've found (same site, same storage).
+
