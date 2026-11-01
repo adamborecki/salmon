@@ -208,3 +208,22 @@ test('a longer charge waits through the middle rounds; going down while charging
   g = fill(g, () => ({ type: 'defend' })).g;
   assert.equal(P(g, 'cary').charging, null); assert.ok(!g.pending.cary);
 });
+
+test("Adam's Vibe Code: Protectors (Cary, 2026-11-01): three robots take the party's hits until they're down", () => {
+  const vc = C.boss.moves.find(m => m.id === 'vibe-code');
+  assert.deepEqual([vc.kind, vc.count], ['summon', 3]);
+  const coder = battle({ ...C, boss: { ...C.boss, moves: [vc] } });
+  const fill = (g, cmd) => { const ev = []; for (const id of ids) { if (g.pending[id] || P(g, id).hp <= 0 || g.outcome) continue; const r = coder.choose(g, id, cmd(id)); g = r.game; ev.push(...r.events); } return { g, ev }; };
+  let { g, ev } = fill(coder.start('FL-11'), () => ({ type: 'defend' }));
+  assert.ok(ev.some(e => e.type === 'summon') && g.boss.bots.length === 3 && g.boss.bots.every(x => x.hp === vc.bot_hp), 'three fresh robots');
+  const hp = g.boss.hp;
+  ({ g, ev } = fill(g, id => id === 'morgan' ? { type: 'skill', skill: 'guitar-axe-shred' } : { type: 'attack' }));
+  const hits = ev.filter(e => e.type === 'damage' && e.from !== 'boss');
+  assert.ok(hits.length >= 3 && hits.slice(0, 3).every(e => /^bot\d$/.test(e.target)), 'the first hits land on the robots, not Adam');
+  assert.ok(ev.some(e => e.type === 'bot-down'), 'a robot goes down');
+  assert.equal(hp - g.boss.hp, hits.filter(e => e.target === 'adam').reduce((s, e) => s + e.amount, 0), 'Adam only takes what gets past them');
+  // he never codes new ones while any still stands
+  let guard = coder.start('FL-12'); guard = fill(guard, () => ({ type: 'defend' })).g;
+  const r = fill(guard, () => ({ type: 'defend' }));
+  assert.ok(!r.ev.some(e => e.type === 'summon') && r.ev.some(e => /admires his robots/.test(e.text || '')), 'no new robots while the first ones stand');
+});

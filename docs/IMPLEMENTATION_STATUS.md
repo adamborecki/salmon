@@ -39,7 +39,16 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
   - getting knocked out or muted while charging loses it.
   Its power went up to 5.2 because it costs two turns.
 - What each move does, its cost and its line are placeholders (`status` on each) until Cary says.
-- Tested: `battle.test.mjs` 15/15 (the three moves, charging, and a longer charge with a knockout).
+- **Adam's new move, Vibe Code: Protectors** (Cary: "he vibe codes a lot"): he summons three little robots
+  (45 HP each, drawn under his photo).
+  - While any robot stands, the party's hits land on the first robot instead of him.
+  - He only codes new ones once they're all down.
+  - Balance, over 500 simulated fights with the simple test strategy: wins went from 98% to 99%, and
+    fights got about a round longer (8.4 to 9.6 rounds).
+  - The final-level e2e's losing seed moved from FL-18 to FL-33 (the new move reshuffled the dice).
+  - Robot HP, how often he codes them, and the line are placeholders.
+- Tested: `battle.test.mjs` 16/16 (the three moves, charging, a longer charge with a knockout, and the robots).
+  `final.e2e.mjs` also plays FL-44, where Adam opens with the robots: four attacks all land on them.
   `final.e2e.mjs` checks the Shred button, and charges the MiliCARY through the menus on a phone. Mutation checks: 5 of 5 caught.
 
 ## Session 7, part 2 (2026-11-01, Cary): drag to plug, and "Test signal flow" in the monitors

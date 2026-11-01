@@ -258,6 +258,18 @@
     "kind": "phys",
     "power": 1.9,
     "text": "\"Rehearsal starts in one minute.\""
+   },
+   {
+    "id": "vibe-code",
+    "name": "Vibe Code: Protectors",
+    "weight": 2,
+    "target": "self",
+    "kind": "summon",
+    "count": 3,
+    "bot_hp": 45,
+    "bot_name": "Protector-bot",
+    "text": "\"Build me three little robots to guard me.\" Three vibe-coded protectors boot up and line up in front of him!",
+    "status": "Cary, 2026-11-01: Adam vibe codes a lot, so one of his moves summons three little robots that defend him. While any stands, the party's hits land on the first robot instead of Adam; he only codes new ones when none are left. Robot HP (45), how often he does it (weight 2) and the line are the agent's placeholders."
    }
   ],
   "phase2_at": 0.5,

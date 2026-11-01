@@ -23,7 +23,7 @@ export function battle(content) {
     const ids = content.party.map(p => p.id), order = opts.order && opts.order.length === ids.length && ids.every(i => opts.order.includes(i)) ? opts.order : ids;
     const party = order.map(i => content.party.find(p => p.id === i)).map(p => ({ id: p.id, name: (opts.names && opts.names[p.id]) || p.name, player: !!p.player, hp: p.hp, maxHp: p.hp, mp: p.mp, maxMp: p.mp, atk: p.atk, def: p.def, mag: p.mag, spd: p.spd,
       skills: p.skills.slice(), silenced: 0, buff: null, guard: false, charging: null }));
-    const boss = { id: B.id, name: B.name, hp: B.hp, maxHp: B.hp, atk: B.atk, def: B.def, mag: B.mag, spd: B.spd, debuff: null, exposed: null, phase: 1 };
+    const boss = { id: B.id, name: B.name, hp: B.hp, maxHp: B.hp, atk: B.atk, def: B.def, mag: B.mag, spd: B.spd, debuff: null, exposed: null, phase: 1, bots: [] };
     return { v: 1, content: content.id, seed, rng: hashSeed(seed), round: 1, party, boss, items: Object.fromEntries(Object.entries(IT).map(([k, v]) => [k, v.count])),
       pending: {}, log: [], outcome: null };
   }
@@ -77,11 +77,19 @@ export function battle(content) {
     return dmg;
   }
 
+  // the party's hits on Adam: while any of his vibe-coded protectors stands, the first one takes the hit instead
+  function hitBoss(g, raw, events, from) {
+    const bot = g.boss.bots.find(x => x.hp > 0);
+    if (!bot) return hit(g, g.boss, raw, events, from);
+    const d = hit(g, bot, raw, events, from);
+    if (bot.hp <= 0) events.push({ type: 'bot-down', target: bot.id, left: g.boss.bots.filter(x => x.hp > 0).length });
+    return d;
+  }
   function act(g, actor, events) {
     if (actor === 'boss') return bossAct(g, events);
     const p = member(g, actor); if (p.hp <= 0) return;
     const c = g.pending[actor], b = g.boss;
-    if (c.type === 'attack') { events.push({ type: 'act', actor, text: `${p.name} attacks!` }); hit(g, b, (atkOf(p) * 2 - bossDef(b)) * variance(g), events, actor); }
+    if (c.type === 'attack') { events.push({ type: 'act', actor, text: `${p.name} attacks!` }); hitBoss(g, (atkOf(p) * 2 - bossDef(b)) * variance(g), events, actor); }
     else if (c.type === 'defend') events.push({ type: 'act', actor, text: `${p.name} braces.` });
     else if (c.type === 'wait') events.push({ type: 'act', actor, charging: true, text: `${p.name} is still charging ${SK[p.charging.skill].name}...` });
     else if (c.type === 'skill') {
@@ -96,8 +104,8 @@ export function battle(content) {
       events.push({ type: 'act', actor, skill: c.skill, text: say(s.text, { user: p.name, target: t ? t.name : '' }) });
       if (s.kind === 'heal') for (const m of standing(g)) { const h = Math.round(s.power + p.mag * 0.3); m.hp = Math.min(m.maxHp, m.hp + h); events.push({ type: 'heal', target: m.id, amount: h }); }
       else if (s.kind === 'cleanse') { const tt = t && t.hp > 0 ? t : p; tt.silenced = 0; const h = Math.round(s.power); tt.hp = Math.min(tt.maxHp, tt.hp + h); events.push({ type: 'heal', target: tt.id, amount: h, cleansed: true }); }
-      else if (s.kind === 'multi') for (let k = 0; k < s.hits && b.hp > 0; k++) hit(g, b, (atkOf(p) * 2 - bossDef(b)) * s.power * variance(g), events, actor);
-      else if (s.kind === 'magic') hit(g, b, (p.mag * 2 - bossDef(b)) * s.power * variance(g) / 2, events, actor);
+      else if (s.kind === 'multi') for (let k = 0; k < s.hits && b.hp > 0; k++) hitBoss(g, (atkOf(p) * 2 - bossDef(b)) * s.power * variance(g), events, actor);
+      else if (s.kind === 'magic') hitBoss(g, (p.mag * 2 - bossDef(b)) * s.power * variance(g) / 2, events, actor);
       else if (s.kind === 'expose') { b.exposed = { mult: s.power, rounds: s.rounds }; events.push({ type: 'expose', target: 'boss' }); }
       else if (s.kind === 'buff') for (const m of standing(g)) { m.buff = { mult: s.power, rounds: s.rounds }; events.push({ type: 'buff', target: m.id }); }
       else if (s.kind === 'debuff') { b.debuff = { mult: s.power, rounds: s.rounds }; events.push({ type: 'debuff', target: 'boss' }); }
@@ -114,9 +122,14 @@ export function battle(content) {
 
   function bossAct(g, events) {
     const b = g.boss; if (b.hp <= 0) return;
-    const pool = B.moves.filter(m => !m.phase || m.phase <= b.phase), total = pool.reduce((s, m) => s + m.weight, 0);
+    const pool = B.moves.filter(m => (!m.phase || m.phase <= b.phase) && (m.kind !== 'summon' || !b.bots.some(x => x.hp > 0))), total = pool.reduce((s, m) => s + m.weight, 0);
+    if (!pool.length) { events.push({ type: 'act', actor: 'boss', text: `${b.name} admires his robots.` }); return; }
     let r = next(g) * total, mv = pool[0]; for (const m of pool) { r -= m.weight; if (r < 0) { mv = m; break; } }
     events.push({ type: 'act', actor: 'boss', move: mv.id, text: `${b.name}: ${mv.name}! ${mv.text}` });
+    if (mv.kind === 'summon') {                         // Vibe Code: Protectors (Cary): fresh robots in front of him
+      b.bots = Array.from({ length: mv.count }, (_, i) => ({ id: `bot${i + 1}`, name: `${mv.bot_name} ${i + 1}`, hp: mv.bot_hp, maxHp: mv.bot_hp }));
+      events.push({ type: 'summon', bots: clone(b.bots) }); return;
+    }
     const targets = mv.target === 'party' ? standing(g) : [standing(g)[Math.floor(next(g) * standing(g).length)]];
     for (const t of targets) {
       if (mv.kind === 'silence') { t.silenced = mv.rounds; events.push({ type: 'silence', target: t.id }); }

@@ -1,5 +1,5 @@
 // End-to-end: the SUPER SECRET FINAL LEVEL on a phone: the gate (wrong, then right), the intro (your name, your
-// mentor leads), and a whole fight played through the menus (FL-1 is a win, FL-18 a loss for this strategy). Reduced motion keeps it quick.
+// mentor leads), and a whole fight played through the menus (FL-1 is a win, FL-33 a loss for this strategy). Reduced motion keeps it quick.
 // Run from the repo root after `python3 tools/final-level/build.py`:  node tools/final-level/test/final.e2e.mjs
 import { createRequire } from 'node:module';
 import { execSync } from 'node:child_process';
@@ -79,12 +79,12 @@ await tap('#again');
 ok(!(await page.$eval('#battle', e => e.hidden)) && (await page.$eval('#end', e => e.hidden)), 'FIGHT AGAIN starts a new fight');
 
 // the unlock lasts for the browser session: a reload skips the password
-await page.goto(BASE + '?again=1#FL-18', { waitUntil: 'networkidle' });   // a real reload, not just a hash change
+await page.goto(BASE + '?again=1#FL-33', { waitUntil: 'networkidle' });   // a real reload, not just a hash change
 ok(await page.$eval('#gate', e => e.hidden) && !(await page.$eval('#intro', e => e.hidden)), 'reload: already unlocked this session');
 ok((await page.$eval('[data-lead="morgan"]', b => b.getAttribute('aria-pressed'))) === 'true' && !(await page.$eval('#fight', b => b.disabled)), 'reload: your mentor is remembered');
 await tap('#fight'); await fight();
 end = await page.textContent('#end');
-ok(/GAME OVER/.test(end) && /Back to the battery-in check/.test(end), 'FL-18: this strategy loses, and the game says so');
+ok(/GAME OVER/.test(end) && /Back to the battery-in check/.test(end), 'FL-33: this strategy loses, and the game says so');
 // Call in the MiliCARY takes a turn to charge (Cary, 2026-11-01): pick it, and Cary is busy until it lands
 await page.goto(BASE + '?again=2#FL-30', { waitUntil: 'networkidle' }); await tap('#fight');
 const turn = async () => { for (let n = 0; n < 200; n++) { if (!(await page.evaluate(() => window.__finalLevel.busy())) && !(await page.$eval('#menu', m => m.hidden))) return page.evaluate(() => { const g = window.__finalLevel.state(); return g.party.find(p => p.hp > 0 && !g.pending[p.id]).id; }); await page.waitForTimeout(50); } throw new Error('no menu'); };
@@ -99,6 +99,18 @@ const hp0 = await page.evaluate(() => window.__finalLevel.state().boss.hp), seen
 for (let k = 0; k < 3; k++) { const id = await turn(); seen.push(id); await tap('[data-c="defend"]'); }
 await turn();
 ok(!seen.includes('cary') && (await page.evaluate(() => window.__finalLevel.state().boss.hp)) < hp0 && !/CHARGING/.test(await page.textContent('[data-pm="cary"]')), 'the menu skips Cary, the MiliCARY lands, and Cary is back for round 3');
+// Adam's Vibe Code: Protectors (Cary, 2026-11-01): FL-44 opens with three robots; they take the hits first
+await page.goto(BASE + '?again=3#FL-44', { waitUntil: 'networkidle' }); await tap('#fight');
+for (let k = 0; k < 4; k++) { await turn(); await tap('[data-c="defend"]'); }
+await turn();
+ok((await page.$$eval('#bots .bot', b => b.length)) === 3 && (await page.evaluate(() => window.__finalLevel.state().boss.bots.length)) === 3, 'Adam vibe codes three little robots, drawn in front of him');
+if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/final-robots.png` });
+const adam0 = await page.evaluate(() => window.__finalLevel.state().boss.hp);
+for (let k = 0; k < 4; k++) { await turn(); await tap('[data-c="attack"]'); }
+await turn();
+const st = await page.evaluate(() => window.__finalLevel.state());
+ok(st.boss.bots.some(x => x.hp < x.maxHp) && st.boss.hp === adam0, 'four attacks all hit the robots; Adam is untouched');
+ok((await page.$$eval('#bots .bot', b => b.length)) === st.boss.bots.filter(x => x.hp > 0).length, 'the robots on screen match the ones still standing');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
 await browser.close(); server.close();
 console.log(failures ? `${failures} FAILED` : 'ALL PASS'); process.exit(failures ? 1 : 0);
