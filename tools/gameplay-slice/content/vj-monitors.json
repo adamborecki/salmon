@@ -17,8 +17,9 @@
   "switch_s": 2,
   "ask_s": 3,
   "listen_s": 4,
-  "status": "tentative: walking time comes from the scene graph's distance_m between photos; speeds, and the seconds per action, are placeholders Reseating a connector (unplug, push, twist) 4 s.",
-  "reseat_s": 4
+  "status": "tentative: walking time comes from the scene graph's distance_m between photos; speeds, and the seconds per action, are placeholders Reseating a connector (unplug, push, twist) 4 s. The signal test takes 8 s of game time (tentative).",
+  "reseat_s": 4,
+  "test_s": 8
  },
  "scenes": {
   "start": "foh-wide",
@@ -315,5 +316,25 @@
   "of": 4,
   "text": "It starts with R and ends with D.",
   "status": "Cary, 2026-11-01: each level gives a clue toward the final level's password. The clues are riddles: the password itself is never written in the repo."
- }
+ },
+ "signal_test": {
+  "label": "Test signal flow",
+  "how": "You are the signal. Ride from Bus 1 into the NX3000 and along the real cables, wedge to wedge: steer to stay on the wire and hit each connector. Miss and the signal drops out; try again.",
+  "track": {
+   "speed_px_s": 170,
+   "wire_half_px": 22,
+   "pin_half_px": 17,
+   "grace_s": 0.35,
+   "cable_px": {
+    "run": 760,
+    "link1": 440,
+    "link2": 440
+   },
+   "input_px": 240,
+   "amp_px": 90,
+   "wedge_px": 80
+  },
+  "status": "Cary, 2026-11-01: a 'test signal flow' action that plays like snake or a little race: the player is the signal and flows through the wires, and if it doesn't hit the mark the signal doesn't go. The track follows the real cabling; where the real chain breaks, the ride stops there. Missing a mark is a failed ride (retry), not a fault in the room. Numbers are the agent's (tentative)."
+ },
+ "drag_status": "Cary, 2026-11-01: cabling is click and drag: drag a cable from your hands (or off the hook) onto a jack. Tap a cable, then a jack, still works."
 }

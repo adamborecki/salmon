@@ -241,3 +241,70 @@ test('no soft-locks: after random actions, the same recovery always completes', 
     assert.equal(eng.view(g).complete, true, `trial ${trial} did not recover`);
   }
 });
+
+// ---- the signal test (Cary, 2026-11-01): the player rides the signal along the real chain ----
+test('signal path: Bus 1 → CH A → the run → wedge → links, in order; it stops where the chain really stops', () => {
+  let g = setUp(fresh());
+  let p = eng.signalPath(g);
+  assert.deepEqual(p.reached, ['w1', 'w2', 'w3']); assert.equal(p.stop.reason, 'done');
+  assert.deepEqual(p.steps.map(s => s.kind), ['input', 'amp', 'plug', 'cable', 'plug', 'wedge', 'plug', 'cable', 'plug', 'wedge', 'plug', 'cable', 'plug', 'wedge']);
+  assert.match(p.steps[0].label, /S32/);
+  // the amp off: nothing comes out
+  let off = run(walk(g, SC.rack_front), { type: 'switch', device: 'furman' }).g;
+  assert.equal(eng.signalPath(off).stop.reason, 'furman-off'); assert.deepEqual(eng.signalPath(off).reached, []);
+  // the run in Channel B: CH A's output is empty
+  const b = eng.signalPath(setUp(eng.start('MN-T', { faults: ['run-in-ch-b'] })));
+  assert.deepEqual([b.stop.reason, b.stop.at, b.reached.length], ['empty', 'nx3000:A', 0]);
+  // a loose plug: you can tell which cable it died in, not which end
+  const l = eng.signalPath(setUp(eng.start('MN-T', { faults: ['loose-speakon'], looseAt: 4 })));
+  assert.deepEqual([l.stop.reason, l.stop.cable, l.reached], ['loose', 'link1', ['w1']]);
+  // a missing link: the chain ends at the wedge's empty jack
+  g = walk(g, SC.stage); g = run(g, { type: 'unplug', jack: 'w2:2' }).g;
+  p = eng.signalPath(g); assert.deepEqual([p.stop.reason, p.stop.at, p.reached], ['empty', 'w2:2', ['w1', 'w2']]);
+});
+
+test('the signal test: on stage with Bus 1 playing; it counts as hearing the wedges, and its stop is a TRACE', () => {
+  let g = setUp(eng.start('MN-T', { faults: ['run-in-ch-b'] }));
+  assert.equal(eng.act(g, { type: 'signal_test' }).error.code, 'no-playback');
+  assert.equal(eng.act(walk(g, SC.rack_front), { type: 'signal_test' }).error.code, 'not-here');
+  let r = run(g, { type: 'a1', play: 'bus1' }, { type: 'signal_test' }); g = r.g;
+  const ev = r.events.find(e => e.type === 'signal_test');
+  assert.match(ev.text, /CH A output\.\.\. and nothing is plugged into it/);
+  assert.equal(eng.act(g, { type: 'hint' }).events[0].about, 'run-in-ch-b', 'the silent wedges it heard count, like listening');
+  g = walk(g, SC.rack_rear); g = run(g, { type: 'unplug', jack: 'nx3000:B' }, { type: 'plug', cable: 'run', jack: 'nx3000:A' }).g;
+  g = walk(g, SC.stage); r = run(g, { type: 'signal_test' }); g = r.g;
+  assert.match(r.events.find(e => e.type === 'signal_test').text, /all 3 wedges/);
+  assert.ok(eng.view(g).complete, 'a full ride verifies all three');
+  const d = eng.debrief(g);
+  assert.deepEqual(d.loops['run-in-ch-b'], { notice: true, trace: true, act: true, verify: true });
+  assert.match(d.lines.join('\n'), /the signal test showed where it stopped \(the CH A output was empty\)/);
+});
+
+test('the signal path always agrees with which wedges actually play (random states)', () => {
+  const R = (() => { let s = 99; return () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648; })();
+  const jacks = ['nx3000:A', 'nx3000:B', 'w1:1', 'w1:2', 'w2:1', 'w2:2', 'w3:1', 'w3:2'], pick = a => a[Math.floor(R() * a.length)];
+  let checked = 0;
+  for (let trial = 0; trial < 60; trial++) {
+    let g = setUp(eng.start('SP-' + trial));
+    g = run(g, { type: 'a1', play: 'bus1' }).g;
+    for (let i = 0; i < 25; i++) {
+      const a = pick([{ type: 'unplug', jack: pick(jacks) }, { type: 'plug', cable: pick(['run', 'link1', 'link2']), jack: pick(jacks) }, { type: 'reseat', jack: pick(jacks) },
+        { type: 'go', scene: pick([SC.stage, SC.rack_rear]) }, { type: 'go', scene: pick([SC.rack_front, SC.stage]) }, { type: 'switch', device: pick(['furman', 'nx3000']) }]);
+      g = eng.act(g, a).game;
+      const p = eng.signalPath(g), sound = ['w1', 'w2', 'w3'].filter(w => eng.sounding(g, w));
+      assert.deepEqual([...p.reached].sort(), sound, `trial ${trial} step ${i}: ${JSON.stringify(p.stop)}`); checked++;
+    }
+  }
+  assert.ok(checked > 1000);
+});
+
+test('the signal test on a loose plug: it names the cable it died in; reseat, ride again = the full loop', () => {
+  let g = setUp(eng.start('MN-T', { faults: ['loose-speakon'], looseAt: 4 }));
+  let r = run(g, { type: 'a1', play: 'bus1' }, { type: 'signal_test' }); g = r.g;
+  assert.match(r.events.at(-1).text, /dies somewhere in speakON link 1: the cable or one of its two plugs/);
+  assert.deepEqual(r.events.at(-1).result.map(x => x.playing), [true, false, false]);
+  g = run(g, { type: 'reseat', jack: 'w2:1' }, { type: 'signal_test' }).g;
+  const d = eng.debrief(g);
+  assert.deepEqual(d.loops['loose-speakon'], { notice: true, trace: true, act: true, verify: true });
+  assert.match(d.lines.join('\n'), /the signal test showed where it stopped \(in speakON link 1\)/);
+});

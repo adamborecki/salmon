@@ -11,6 +11,7 @@
 // Actions: go {scene} · take {count: 1|2, fails} (wedges, at the storage closet; `fails` = failed lifts, from the
 //          page's strength minigame) · place {spot} · pick_up {spot} · cable {cable} (off the hook) · plug {cable, jack}
 //          · unplug {jack} · reseat {jack} (unplug, push, twist until it locks) · switch {device: furman|nx3000} · a1 {play: bus1|mains|stop} · listen · hint
+//          · signal_test (on stage, with Bus 1 playing: follow the signal along the real chain; the page's minigame is the ride, signalPath(g) its track)
 //
 // Key rule (section 3): a wedge counts only when heard playing Bus 1 playback after the last change to the
 // monitor chain (any cable, wedge or power change). Signal: Bus 1 -> the NX3000's CH A input -> CH A output ->
@@ -57,6 +58,42 @@ export function monitorEngine(content, graph) {
   const heard = (g, w) => g.evidence.some(e => e.kind === 'wedge' && e.wedge === w && e.playing && e.seq > (g.chainChanged || 0));
   const placedAll = g => SPOTS.every(s => g.spots[s]);
   const complete = g => placedAll(g) && SPOTS.every(s => heard(g, g.spots[s]));
+  // the signal's route from Bus 1, as it really is: into CH A, out of the CH A output, along each cable and through
+  // each wedge (its two jacks are wired together), until it reaches the end of the chain or something stops it.
+  // A loose plug passes nothing, but from outside you can only tell which cable (or its plugs) it died in.
+  function signalPath(g) {
+    const steps = [{ kind: 'input', label: R.bus1_path }], reached = [], stop = (at, reason, extra = {}) => ({ steps, reached, stop: { at, reason, ...extra } });
+    if (!powered(g)) return stop('nx3000', g.rack.furman !== 'on' ? 'furman-off' : 'amp-off');
+    steps.push({ kind: 'amp', channel: R.nx3000.bus1_input });
+    let jack = LIVE;
+    for (let guard = 0; guard <= WIDS.length; guard++) {
+      const c = CIDS.find(x => Object.values(g.cables[x].ends).includes(jack));
+      if (!c) return stop(jack, reached.length === SPOTS.length ? 'done' : 'empty');
+      const ends = g.cables[c].ends, near = ends.a === jack ? 'a' : 'b', farEnd = near === 'a' ? 'b' : 'a', far = ends[farEnd];
+      const loose = e => !!(g.loose && g.loose.cable === c && g.loose.end === e);
+      steps.push({ kind: 'plug', jack, cable: c });
+      if (loose(near) || loose(farEnd)) { steps.push({ kind: 'cable', cable: c, dies: true }); return stop(c, 'loose', { cable: c, from: jack }); }
+      steps.push({ kind: 'cable', cable: c });
+      if (!far) return stop(c, 'dangling', { cable: c });
+      steps.push({ kind: 'plug', jack: far, cable: c });
+      const [dev, k] = far.split(':');
+      if (!W[dev] || reached.includes(dev)) return stop(far, 'not-a-wedge');
+      reached.push(dev); steps.push({ kind: 'wedge', wedge: dev, spot: wedgeSpot(g, dev) });
+      jack = `${dev}:${+k === 1 ? 2 : 1}`;
+    }
+    return stop(jack, 'not-a-wedge');
+  }
+  const stopText = (p) => {
+    const s = p.stop, lab = c => CB[c].label;
+    const T = { 'furman-off': () => "The Furman is off, so the NX3000 has no power: the signal goes in and nothing comes out.",
+      'amp-off': () => "The NX3000 is off: the signal goes into CH A and nothing comes out.",
+      done: () => `The signal made it through all ${p.reached.length} wedges.`,
+      empty: () => s.at === LIVE ? "Out of the NX3000's CH A output... and nothing is plugged into it. Dead end." : `${p.reached.length} wedge${p.reached.length === 1 ? '' : 's'} in, then ${jackLabel(s.at)}: nothing plugged in. Dead end.`,
+      dangling: () => `Along ${lab(s.cable)}... and its far end isn't plugged into anything.`,
+      loose: () => `The signal dies somewhere in ${lab(s.cable)}: the cable or one of its two plugs.`,
+      'not-a-wedge': () => `The chain loops back on itself at ${jackLabel(s.at)}.` };
+    return T[s.reason]();
+  };
   const faultActive = (g, i) => {
     const F = FBY[g.faults[i].id];
     if (F.type === 'loose') return !!g.loose || g.plugs < g.faults[i].at;     // still to happen, or happened and not reseated
@@ -196,6 +233,17 @@ export function monitorEngine(content, graph) {
           : `${res.filter(x => x.playing).length ? `Playing: ${res.filter(x => x.playing).map(x => SP[x.spot].label.toLowerCase()).join(', ')}. ` : ''}Silent: ${res.filter(x => !x.playing).map(x => SP[x.spot].label.toLowerCase()).join(', ')}.` });
         break;
       }
+      case 'signal_test': {                            // ride the signal along the chain (the page's minigame); it hears what you'd hear, and shows where it stopped
+        if (g.scene !== SC.stage) return fail('not-here', 'test from the stage, where you can hear the wedges');
+        if (g.playing !== 'bus1') return fail('no-playback', 'ask the A1 to play the Wii Shop theme through Bus 1 first');
+        g.t += C.test_s;
+        const p = signalPath(g), res = SPOTS.filter(s => g.spots[s]).map(s => ({ spot: s, wedge: g.spots[s], playing: sounding(g, g.spots[s]) }));
+        for (const x of res) g.evidence.push({ seq: entry.seq, kind: 'wedge', wedge: x.wedge, spot: x.spot, playing: x.playing, source: 'bus1' });
+        g.evidence.push({ seq: entry.seq, kind: 'path', stop: p.stop, reached: p.reached });
+        Object.assign(entry, { source: 'bus1', result: res, stop: p.stop, reached: p.reached });
+        events.push({ type: 'signal_test', source: 'bus1', result: res, stop: p.stop, reached: p.reached, text: stopText(p) });
+        break;
+      }
       case 'hint': {
         const k = hintKey(g); if (!k) return fail('no-hint', 'Nothing needs a hint right now.');
         const hs = k.fault ? FBY[k.fault].hints : H[k.key], used = g.hints[k.fault || k.key] || 0;
@@ -264,6 +312,7 @@ export function monitorEngine(content, graph) {
     };
   }
 
+  const heardBy = e => e.type === 'listen' || e.type === 'signal_test';
   function debrief(g) {
     const L = g.log, at = e => clockText(toSec(C.start) + e.t), lines = [], loops = {};
     const done = complete(g);
@@ -274,17 +323,17 @@ export function monitorEngine(content, graph) {
       if (loose && !looseE) { lines.push(`🧠 ${F.label}: it didn't come up this time (you hadn't made that connection yet).`); loops[gf.id] = null; return; }
       const say = t => t.replace(/\{jack\}/g, looseE ? jackLabel(looseE.jack) : '');
       const actE = L.find(e => e.fixedFault === gf.id), actSeq = actE ? actE.seq : Infinity;
-      const noticeE = L.find(e => e.seq < actSeq && e.type === 'listen' && e.source === 'bus1' && e.result.some(x => !x.playing));
+      const noticeE = L.find(e => e.seq < actSeq && heardBy(e) && e.source === 'bus1' && e.result.some(x => !x.playing));
       const ns = noticeE ? noticeE.seq : Infinity;
       const traceE = loose
-        ? L.find(e => e.seq < actSeq && e.seq > ns && ((e.type === 'listen' && e.source === 'bus1' && e.result.some(x => x.playing) && e.result.some(x => !x.playing))
-          || (e.type === 'reseat' && !e.wasLoose) || g.evidence.some(x => x.seq === e.seq && x.kind === 'amp-front' && x.powered && x.playing === 'bus1')))
-        : L.find(e => e.seq < actSeq && ((e.type === 'go' && e.scene === SC.rack_rear && e.seq > ns)
+        ? L.find(e => e.seq < actSeq && ((e.type === 'signal_test' && e.seq >= ns && e.stop.reason === 'loose') || (e.seq > ns && ((heardBy(e) && e.source === 'bus1' && e.result.some(x => x.playing) && e.result.some(x => !x.playing))
+          || (e.type === 'reseat' && !e.wasLoose) || g.evidence.some(x => x.seq === e.seq && x.kind === 'amp-front' && x.powered && x.playing === 'bus1')))))
+        : L.find(e => e.seq < actSeq && ((e.type === 'signal_test' && e.seq >= ns && e.stop.reason === 'empty' && e.stop.at === LIVE) || (e.type === 'go' && e.scene === SC.rack_rear && e.seq > ns)
         || (e.seq > ns && g.evidence.some(x => x.seq === e.seq && x.kind === 'amp-front' && x.powered && x.playing === 'bus1'))));
-      const verifyE = actE && done ? L.find(e => e.seq > actSeq && e.type === 'listen' && e.source === 'bus1' && e.result.length === SPOTS.length && e.result.every(x => x.playing)) : null;
+      const verifyE = actE && done ? L.find(e => e.seq > actSeq && heardBy(e) && e.source === 'bus1' && e.result.length === SPOTS.length && e.result.every(x => x.playing)) : null;
       lines.push(`🧠 What failed: ${say(F.debrief.failed)}`);
-      lines.push(noticeE ? `  NOTICE ✓ ${at(noticeE)}: with the Wii Shop theme going through Bus 1, ${noticeE.result.every(x => !x.playing) ? 'the wedges were silent' : `${noticeE.result.filter(x => !x.playing).length} wedge(s) were silent`}.` : actE ? `  NOTICE ✗ you ${loose ? 'reseated it' : 'moved it'} before hearing the problem (that counts as luck, not a check).` : '  NOTICE ✗ not yet.');
-      lines.push(traceE ? `  TRACE ✓ ${at(traceE)}: ${traceE.type === 'go' ? 'you looked at the rack rear: which output the run was in' : traceE.type === 'listen' ? 'some wedges played and some didn\'t, which put the problem at or before the first silent one'
+      lines.push(noticeE ? `  NOTICE ✓ ${at(noticeE)}: ${noticeE.type === 'signal_test' ? 'in the signal test, ' : ''}with the Wii Shop theme going through Bus 1, ${noticeE.result.every(x => !x.playing) ? 'the wedges were silent' : `${noticeE.result.filter(x => !x.playing).length} wedge(s) were silent`}.` : actE ? `  NOTICE ✗ you ${loose ? 'reseated it' : 'moved it'} before hearing the problem (that counts as luck, not a check).` : '  NOTICE ✗ not yet.');
+      lines.push(traceE ? `  TRACE ✓ ${at(traceE)}: ${traceE.type === 'signal_test' ? `the signal test showed where it stopped (${traceE.stop.reason === 'loose' ? `in ${CB[traceE.stop.cable].label}` : 'the CH A output was empty'})` : traceE.type === 'go' ? 'you looked at the rack rear: which output the run was in' : traceE.type === 'listen' ? 'some wedges played and some didn\'t, which put the problem at or before the first silent one'
           : traceE.type === 'reseat' ? 'you worked along the signal flow, reseating connections' : 'you looked at the NX3000: the CH A SIGNAL light moved with the playback'}.`
         : actE ? `  TRACE ✗ you ${loose ? 'went straight to the right plug' : 'moved the cable'} before narrowing it down (${loose ? 'which wedges play, the amp lights, the chain in order' : 'its SIGNAL lights, or the rear'}).` : '  TRACE ✗ not yet.');
       if (loose) { const n = L.filter(e => e.type === 'reseat' || (e.type === 'unplug' && e.wasLoose)).filter(e => e.seq > looseE.seq && e.seq <= actSeq).length; if (actE && n > 1) lines.push(`  (${n} connectors reseated to find it: going along the whole signal flow works, it just takes time.)`); }
@@ -305,5 +354,5 @@ export function monitorEngine(content, graph) {
     return { ready: done, loops, intoB: intoB.length, earlyAmp: !!early, lifts: lifts.length, failedLifts: fails, actions: L.length, gameSeconds: g.t, lines };
   }
 
-  return { start, act, view, debrief, joined: (g, j) => [...joined(g, j)], sounding: (g, w) => sounding(g, w) };
+  return { start, act, view, debrief, signalPath: g => signalPath(g), stopText: g => stopText(signalPath(g)), joined: (g, j) => [...joined(g, j)], sounding: (g, w) => sounding(g, w) };
 }
