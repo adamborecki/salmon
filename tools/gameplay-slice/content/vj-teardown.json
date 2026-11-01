@@ -1,0 +1,163 @@
+{
+  "id": "vj-teardown",
+  "title": "Teardown: put the hall back",
+  "about": "The end of the night after Vocal Jazz (Cary, 2026-11-01: a teardown level; PRODUCT_DESIGN section 70). Every mic back in the drawer with its batteries out (rechargeables on the charger), the wireless rack off, the Monitor Rack off, the speakON cables back on the hook, the wedges back in the storage closet (BH 102), and the closet door latched. Section 70: the safety-critical steps are required (amps handled safely, the wireless rack shut down, batteries sorted, no alkalines on the rechargeable charger).",
+  "status": "first playable pass; values marked tentative or unknown are placeholders, not room facts",
+  "clock": {
+    "start": "21:00:00",
+    "out_by": "21:15:00",
+    "status": "unknown: when the concert ends and when the crew has to be out. 9:00 PM and a 15-minute target are placeholders (tentative). Walking times come from the scene graph; speeds and seconds per action are copied from the monitors level (tentative).",
+    "walk_m_per_s": 1.3,
+    "carry_m_per_s": { "1": 1.0, "2": 0.7 },
+    "unload_s": 6,
+    "cells_s": 3,
+    "stow_s": 3,
+    "take_s": 3,
+    "plug_s": 3,
+    "switch_s": 2,
+    "hang_s": 4,
+    "door_s": 3,
+    "count_s": 5,
+    "look_s": 3
+  },
+  "scenes": {
+    "start": "foh-wide",
+    "drawer": "foh-mic-drawer",
+    "wireless_rack": "foh-rack",
+    "receivers": "foh-rack-closeup",
+    "stage": "musician-pov",
+    "rack_front": "monitor-amp-rack-front",
+    "rack_rear": "monitor-amp-rack-rear",
+    "door": "storage-entry",
+    "storage": "storage-closet",
+    "status": "the same photos as the other levels. storage-entry shows the closet's double door (open in the photo); the owner names the closet BH 102 (2026-10-19)."
+  },
+  "mics": {
+    "start": "chair",
+    "start_status": "tentative: after the concert the mics come back to the chair left of FOH (as in the battery-in check). Who collects them from the singers isn't recorded.",
+    "cells": { "rechargeable": "NiMH rechargeable AA", "alkaline": "alkaline AA (not rechargeable)" },
+    "cells_status": "DEVICE_REFERENCE (owner): rechargeable AA, fresh alkaline for high-stakes gigs; never put alkalines on the rechargeable charger.",
+    "storage_status": "Cary, 2026-10-02: mics live in the mic drawer, the charger is on top of the mic cabinet, spare batteries in a bin near the FOH computer. 'Batteries out of the mic before it goes in the drawer' and 'alkalines go in the battery bin' are tentative (ask Cary)."
+  },
+  "places": {
+    "bin": { "label": "Battery bin (by the FOH computer)", "reachable_from": ["foh-wide", "x32-top", "foh-rack", "foh-rack-closeup", "foh-right-side", "foh-mic-drawer"], "status": "Cary, 2026-10-02: the spare battery bin is near the FOH computer. Reachable from all of FOH here (tentative)." }
+  },
+  "wireless": {
+    "label": "Wireless rack Furman (top of the rack)",
+    "start": "on",
+    "status": "owner, 2026-10-19: the Furman on top of the wireless rack is its one master switch; on at the start of the gig, off at the end (new practice from fall 2026)."
+  },
+  "rack": {
+    "start": { "furman": "on", "nx3000": "on" },
+    "order_off": ["nx3000", "furman"],
+    "status": "Cary, 2026-10-08: power up the Furman, then the NX3000. Powering down in the reverse order (the amp first, then the Furman) and 'amp off before you pull a speaker cable' are standard practice, tentative for this room (ask Cary)."
+  },
+  "start_chain": {
+    "spots": { "left": "w1", "center": "w2", "right": "w3" },
+    "cables": { "run": ["nx3000:A", "w1:1"], "link1": ["w1:2", "w2:1"], "link2": ["w2:2", "w3:1"] },
+    "status": "the monitors level's finished state: the long run from CH A to the first wedge, daisy-chained. Wedge, spot and cable ids and labels come from vj-monitors.json."
+  },
+  "carry": { "max_wedges": 2, "max_mics": 2, "status": "wedges: Cary, 2026-10-08 (two then one); the lift minigame is the monitors level's. Two mics in hand is the battery-in check's rule." },
+  "door": {
+    "label": "BH 102 closet door",
+    "how": "A double door. The fixed half has a flush bolt on its top edge: push that half flush with the frame (no gap at the top), then flip the bolt.",
+    "status": "owner, 2026-10-20 (photos): the BH 102 flush bolt; 'close the latch fully' at the end (owner, 2026-10-19). How the active half locks (key or not) isn't recorded: here, closing it after the bolt is enough (tentative)."
+  },
+  "faults": [
+    {
+      "id": "mic-left-on-stage",
+      "label": "A mic left on stage, still on",
+      "chance": 0.75,
+      "status": "agent's scenario (tentative): a common end-of-night miss, and it uses the receivers (RF still showing) to trace it. Cary to confirm it happens.",
+      "hints": [
+        { "level": 1, "kind": "concept", "text": "Count before you call it done. How many mics should be in the drawer?" },
+        { "level": 2, "kind": "location", "text": "The receivers in the wireless rack still show which mics are on. A mic that's on and not on the chair is somewhere in the hall." },
+        { "level": 3, "kind": "direct", "text": "{mic} is still on the stage, switched on. Go and get it, then stow it like the others." }
+      ],
+      "debrief": { "failed": "{mic} was left on the stage, still switched on.", "act": "you brought {mic} back from the stage." }
+    },
+    {
+      "id": "alkaline-cells",
+      "label": "Alkaline cells in a mic",
+      "chance": 0.6,
+      "status": "DEVICE_REFERENCE (owner): fresh alkalines go in for high-stakes gigs, and alkalines must never go on the rechargeable charger (PRODUCT_DESIGN section 70: safety-critical). Which mic had them is random; where used alkalines go (the battery bin) is tentative.",
+      "hints": [
+        { "level": 1, "kind": "concept", "text": "Read the cells before they go anywhere. Not every AA is rechargeable." },
+        { "level": 2, "kind": "location", "text": "The charger only takes rechargeables. Anything else goes in the battery bin by the FOH computer." },
+        { "level": 3, "kind": "direct", "text": "{mic} had alkaline cells: put them in the battery bin, not on the charger." }
+      ],
+      "debrief": { "failed": "{mic} had alkaline cells, which must never go on the rechargeable charger.", "act": "the alkalines went in the battery bin." }
+    },
+    {
+      "id": "door-gap",
+      "label": "The fixed half of the closet door isn't flush",
+      "chance": 0.7,
+      "status": "owner, 2026-10-20: push the fixed half flush (no gap at the top) before flipping the bolt. A gap at the top as the fault is the agent's (tentative).",
+      "hints": [
+        { "level": 1, "kind": "concept", "text": "Flipped isn't latched. Did you check the door actually holds?" },
+        { "level": 2, "kind": "location", "text": "Look at the top of the fixed half: is it flush with the frame, or is there a gap?" },
+        { "level": 3, "kind": "direct", "text": "Unflip the bolt, push the fixed half flush with the frame, flip the bolt again, close the door and give it a tug." }
+      ],
+      "debrief": { "failed": "the fixed half of the BH 102 door had a gap at the top, so the flush bolt missed its hole.", "act": "you pushed the fixed half flush and flipped the bolt again." }
+    }
+  ],
+  "hints": {
+    "mics": [
+      { "level": 1, "kind": "concept", "text": "Mics first: they're the small, expensive things that walk away." },
+      { "level": 2, "kind": "location", "text": "The mic drawer at FOH: the charger is right on top of it." },
+      { "level": 3, "kind": "direct", "text": "For each mic: batteries out, the cells on the charger, the mic in the drawer. After three, \"Stow the rest\" does it for you." }
+    ],
+    "wireless": [
+      { "level": 1, "kind": "concept", "text": "The wireless receivers stay on until someone turns them off." },
+      { "level": 2, "kind": "location", "text": "The wireless rack at FOH: its master switch is the Furman on top." },
+      { "level": 3, "kind": "direct", "text": "Switch the Furman on top of the wireless rack off." }
+    ],
+    "amp": [
+      { "level": 1, "kind": "concept", "text": "Before anyone pulls a speaker cable, what should be off?" },
+      { "level": 2, "kind": "location", "text": "The Monitor Rack front: the NX3000 first, then the Furman. The reverse of switching on." },
+      { "level": 3, "kind": "direct", "text": "At the Monitor Rack front: NX3000 off, then the Furman off." }
+    ],
+    "cables": [
+      { "level": 1, "kind": "concept", "text": "The speakON cables live somewhere specific. Where did they come from?" },
+      { "level": 2, "kind": "location", "text": "Unplug them at the wedges and at the NX3000's CH A output, then hang them on the hook on the Monitor Rack (round the back)." },
+      { "level": 3, "kind": "direct", "text": "Unplug the run and both links at both ends, then hang all three on the hook at the rack rear." }
+    ],
+    "wedges": [
+      { "level": 1, "kind": "concept", "text": "The wedges don't live on the stage." },
+      { "level": 2, "kind": "location", "text": "The storage closet (BH 102): through the crossroads, to the right. Two at a time if you can lift them." },
+      { "level": 3, "kind": "direct", "text": "Pick up the unplugged wedges, carry them to the storage closet and put them away." }
+    ],
+    "door": [
+      { "level": 1, "kind": "concept", "text": "The closet has to be locked up at the end, fully." },
+      { "level": 2, "kind": "location", "text": "The BH 102 door: a double door with a flush bolt on top of the fixed half." },
+      { "level": 3, "kind": "direct", "text": "Push the fixed half flush with the frame, flip the bolt, close the other half, then tug the door to check it holds." }
+    ]
+  },
+  "objective": {
+    "label": "Teardown: the hall put back",
+    "goal": "Every mic in the drawer with its batteries out, the cells sorted, both racks off, the cables on the hook, the wedges in the closet, and the closet door proved latched.",
+    "status": "the door counts only when tugged and held after the last change to it (section 3: done isn't verified)"
+  },
+  "procedure": {
+    "steps": [
+      { "id": "mics", "short": "Mics", "text": "Every mic: batteries out, the cells sorted (rechargeables on the charger), the mic in the drawer." },
+      { "id": "wireless", "short": "Wireless", "text": "The wireless rack's Furman off." },
+      { "id": "amp", "short": "Amp off", "text": "Monitor Rack front: the NX3000, then the Furman." },
+      { "id": "cables", "short": "Cables", "text": "Unplug the speakON cables and hang them on the hook." },
+      { "id": "wedges", "short": "Wedges", "text": "The three wedges back in the storage closet." },
+      { "id": "door", "short": "Door", "text": "Lock up BH 102: fixed half flush, bolt, close, tug." }
+    ],
+    "status": "the order is the agent's (tentative): mics first, the amp off before any speaker cable, the door last. Cary to confirm the real order."
+  },
+  "skip": {
+    "label": "Stow the rest",
+    "after_by_hand": 3,
+    "does": "for the mics on the chair, in channel order: batteries out, rechargeables on the charger, the mic in the drawer, at the same game time; it stops when it opens a mic with alkaline cells and leaves those cells in your hand.",
+    "status": "PRODUCT_DESIGN 4.10, as in the battery-in check"
+  },
+  "secret_clue": {
+    "n": 4, "of": 4,
+    "text": "A vinyl LP is one. So is what the Dante multitrack makes, and what the red button starts.",
+    "status": "Cary, 2026-11-01: each level gives a clue toward the final level's password. The clues are riddles: the password itself is never written in the repo."
+  }
+}
