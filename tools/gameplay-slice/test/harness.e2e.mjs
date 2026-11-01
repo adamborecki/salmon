@@ -328,5 +328,75 @@ ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
   ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'monitors: no sideways scroll');
   await ctx2.close();
 }
+// teardown (Cary, 2026-11-01): TD-48216 has all three faults: Mic 12 left on stage, alkalines in Mic 9, a gap at the closet door
+{
+  const ctx3 = await browser.newContext({ ...devices['iPhone 13'] });
+  page = await ctx3.newPage(); page.on('pageerror', e => errs.push(e.message));
+  await page.goto(BASE + '#TD-48216', { waitUntil: 'networkidle' });
+  const G = await page.evaluate(() => JSON.parse(document.getElementById('graphData').textContent));   // the slice's own scenes and links
+  ok(/Teardown/.test(await page.textContent('#levelHead')) && await page.$eval('#levelGo', b => b.disabled), 'teardown: its own level card and mentor pick');
+  await tap('#intro3 [data-mentor="morgan"]'); await tap('#levelGo');
+  ok(/concert's over/.test(await page.textContent('#mentor')) && /15:00 to out the door/.test(await page.textContent('#due')), 'teardown: 9:00 PM, 15 minutes to get out');
+  async function walkTo(to) {
+    for (let guard = 0; guard < 20; guard++) {
+      const cur = await page.evaluate(() => document.body.dataset.scene);
+      if (cur === to) return;
+      const prev = { [cur]: null }, q = [cur], next = x => [...G.edges.filter(e => e.from === x).map(e => [e.to, e.kind === 'closeup' ? 'hot' : 'walk']), ...G.edges.filter(e => e.to === x && e.kind === 'closeup').map(e => [e.from, 'back'])];
+      while (q.length) { const x = q.shift(); for (const [n, how] of next(x)) if (!(n in prev)) { prev[n] = [x, how]; q.push(n); } }
+      let step = to; while (prev[step][0] !== cur) step = prev[step][0];
+      const how = prev[step][1];
+      if (how === 'walk') await tap(`#walks [data-walk="${step}"]`);
+      else if (how === 'hot') await tapHot(await page.evaluate(id => document.querySelector(`#hot polygon[data-to="${id}"]`).getAttribute('aria-label'), step));
+      else await tapBack();
+      await page.waitForTimeout(120);
+    }
+    throw new Error('could not walk to ' + to);
+  }
+  const lift = async n => { await tap(`[data-lift="${n}"]`); for (let i = 0; i < 80 && !(await page.$eval('#lift', l => l.hidden)); i++) await page.tap('#liftTap'); };
+  const toast = () => page.textContent('#toast');
+  await walkTo('foh-mic-drawer');
+  ok((await page.$$eval('#panel .mlist li', l => l.length)) === 15, 'drawer: 15 mics on the chair (one is missing)');
+  await shot('10-teardown-drawer');
+  for (const id of ['handheld-01', 'handheld-02', 'handheld-03']) { await tap(`[data-unload="${id}"]`); await tap(`[data-cells="${id}"][data-to="charger"]`); await tap(`[data-stow="${id}"]`); }
+  await tap('[data-rest]');
+  ok(/Stopped at Mic 9/.test(await toast()) && /alkaline/.test(await page.textContent('#panel .mlist li.alk')), 'Stow the rest: stops at Mic 9, alkaline cells');
+  await tap('[data-cells="handheld-09"][data-to="bin"]'); await tap('[data-stow="handheld-09"]');
+  await tap('[data-rest]');
+  ok(/14 of 16|15 of 16/.test(await toast()) && /missing/.test(await toast()), 'the rest stowed: the count comes up short (NOTICE)');
+  await walkTo('foh-rack-closeup');
+  ok(/CH 12/.test(await toast()) && (await page.$$eval('#panel .rfgrid .led.on', l => l.length)) === 1, 'receivers: RF on CH 12 only (TRACE)');
+  await walkTo('musician-pov'); await tap('[data-takemic="handheld-12"]');
+  ok(/still switched on/.test(await toast()), 'stage: Mic 12 on the floor, still on (ACT)');
+  await walkTo('foh-mic-drawer');
+  await tap('[data-unload="handheld-12"]'); await tap('[data-cells="handheld-12"][data-to="charger"]'); await tap('[data-stow="handheld-12"]'); await tap('[data-count]');
+  ok(/16 of 16 in the drawer/.test(await toast()) && (await stepsDone()).join() === 'mics', 'counted again: 16 of 16 (VERIFY); mics done');
+  await walkTo('foh-rack'); await tap('[data-switch="wireless"]');
+  await walkTo('monitor-amp-rack-front'); await tap('[data-switch="nx3000"]'); await tap('[data-switch="furman"]');
+  ok((await stepsDone()).join() === 'mics,wireless,amp', 'both racks off, the amp first');
+  await walkTo('monitor-amp-rack-rear'); await tap('[data-unplug="nx3000:A"]');
+  await walkTo('musician-pov'); for (const j of ['w1:1', 'w1:2', 'w2:1', 'w2:2', 'w3:1']) await tap(`[data-unplug="${j}"]`);
+  await lift(2); await walkTo('storage-closet'); await tap('[data-putaway]');
+  await walkTo('musician-pov'); await lift(1); await walkTo('storage-closet'); await tap('[data-putaway]');
+  await walkTo('monitor-amp-rack-rear'); for (const c of ['run', 'link1', 'link2']) await tap(`[data-hang="${c}"]`);
+  ok((await stepsDone()).join() === 'mics,wireless,amp,cables,wedges', 'cables on the hook, wedges in the closet');
+  await walkTo('storage-entry');
+  await shot('10-teardown-door');
+  for (const d of ['close_fixed', 'bolt', 'close', 'tug']) await tap(`[data-door="${d}"]`);
+  ok(/swing open/.test(await toast()), 'door: bolted and closed, but the tug opens it (NOTICE)');
+  await tap('[data-door="look"]'); ok(/gap at the top/.test(await toast()), 'door: a gap at the top of the fixed half (TRACE)');
+  for (const d of ['bolt', 'push', 'bolt', 'close', 'tug']) await tap(`[data-door="${d}"]`);
+  await page.waitForTimeout(1800);
+  ok(!(await page.$eval('#sheet', s => s.hidden)) && /teardown/i.test(await page.textContent('#dbTitle')), 'it holds: the teardown debrief opens');
+  const tl = await page.$$eval('#dbList li', ls => ls.map(l => l.textContent));
+  ok(/put back/.test(tl[0]), 'teardown debrief: ' + tl[0]);
+  for (const step of ['NOTICE ✓', 'TRACE ✓', 'ACT ✓', 'VERIFY ✓']) ok(tl.filter(l => l.startsWith(step)).length === 2, `teardown debrief: ${step} for the missing mic and the door`);
+  ok(tl.some(l => /Secret clue 4 of 4/.test(l)) && tl.some(l => /1 of 4 clues found/.test(l)), 'teardown: secret clue 4 of 4, and how many are found');
+  ok(await page.$eval('#lineBtn', b => b.hidden), 'teardown is the last level: no "On to" button');
+  ok((await page.evaluate(() => localStorage.getItem('salmon-clues'))) === '[4]', 'the clue is remembered in this browser (salmon-clues)');
+  ok(!(await page.content()).includes('final-battle'), 'the page never carries the final level\'s content');
+  ok((await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth])).reduce((a, b) => a - b) <= 0, 'teardown: no sideways scroll');
+  await shot('10-teardown-debrief');
+  await ctx3.close();
+}
 await browser.close(); server.close();
 console.log(failures ? `${failures} FAILED` : 'ALL PASS'); process.exit(failures ? 1 : 0);

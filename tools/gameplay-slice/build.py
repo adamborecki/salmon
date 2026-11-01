@@ -65,11 +65,19 @@ def main():
     for k, scene in mon['scenes'].items():
         if k != 'status' and scene not in SCENES:
             sys.exit(f'monitors content refers to scene {scene!r}, which the harness does not include')
-    page = tpl.replace('__CONTENT__', dump(content)).replace('__GRAPH__', dump(sub)).replace('__LINE__', dump(line)).replace('__MON__', dump(mon))
+    td = json.load(open(os.path.join(HERE, 'content', 'vj-teardown.json')))
+    for k, scene in td['scenes'].items():
+        if k != 'status' and scene not in SCENES:
+            sys.exit(f'teardown content refers to scene {scene!r}, which the harness does not include')
+    for scene in td['places']['bin']['reachable_from']:
+        if scene not in SCENES:
+            sys.exit(f'teardown content refers to scene {scene!r}, which the harness does not include')
+    page = (tpl.replace('__CONTENT__', dump(content)).replace('__GRAPH__', dump(sub)).replace('__LINE__', dump(line))
+            .replace('__MON__', dump(mon)).replace('__TD__', dump(td)))
     os.makedirs(os.path.join(out, 'p'), exist_ok=True)
     open(os.path.join(out, 'index.html'), 'w').write(page)
     open(os.path.join(out, 'local.html'), 'w').write('<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body>\n' + page + '\n</body></html>')
-    for js in ('engine.js', 'line-engine.js', 'monitor-engine.js'):
+    for js in ('engine.js', 'line-engine.js', 'monitor-engine.js', 'teardown-engine.js'):
         shutil.copy(os.path.join(HERE, js), os.path.join(out, js))
     for k in SCENES:
         src = os.path.join(ROOT, 'photos-working', graph['nodes'][k]['file'])

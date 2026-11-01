@@ -209,6 +209,19 @@ button.chip{font:inherit;color:inherit;cursor:pointer}
 .chip[data-s="ringing"]{border-color:var(--bad)} .chip[data-s="ringing"] i{color:var(--bad)}
 .steps.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .steps.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.steps.six{grid-template-columns:repeat(6,minmax(0,1fr))}
+/* teardown: the mic list at the drawer, the receivers' RF lights, the closet door */
+.mlist{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.mlist li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:13px}
+.mlist li b{font:600 12px var(--mono);min-width:3.2em}
+.mlist li .st{flex:1;min-width:8em;color:var(--muted);font-size:12px}
+.mlist li.alk{border-color:var(--warn)} .mlist li.done{opacity:.55}
+.mlist .btn.sm{min-height:32px;padding:3px 8px;font-size:12px}
+.rfgrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.rfgrid span{display:grid;justify-items:center;gap:2px;font:600 10.5px var(--mono);color:#aeb9c4}
+.doorsvg{display:block;width:100%;max-width:240px;margin:0 auto}
+.carry .tag,.hook .tag{font:600 11px var(--mono);border:1px solid var(--line);border-radius:4px;padding:3px 6px;background:var(--paper)}
+.dl li.clue{background:#141a20;color:#ffe08a;border-radius:6px;padding:8px 10px;font:600 13px/1.45 var(--mono)}
 /* walking between photos: arrows from the scene graph (direction and distance), placed like the editor does */
 .warrow{position:absolute;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;background:none;border:0;padding:0;cursor:pointer;color:#fff;z-index:2}
 .warrow svg{width:38px;height:38px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
@@ -292,7 +305,7 @@ body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px
 <header class="bar"><div class="bar-in">
   <div class="clockbox"><div class="clock" id="clock" aria-live="off">4:50:00<small>PM</small></div><div class="left" id="due">Rehearsal 5:00:00 PM</div><div class="tbar" id="tbar"><i id="tfill"></i></div><span class="delta" id="delta"></span></div>
   <span class="sp"></span>
-  <div class="score" aria-label="mics verified"><b id="score">0/16</b><small>verified</small></div>
+  <div class="score" aria-label="progress"><b id="score">0/16</b><small id="scoreWhat">verified</small></div>
   <button class="btn hintbtn" id="hintBtn">Hint</button>
 </div></header>
 <div class="wrap">
@@ -314,7 +327,7 @@ body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px
     <div class="card" id="chair"></div>
     <div class="card">
       <details id="logBox"><summary>Activity</summary><ol class="log" id="log"></ol></details>
-      <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button><button class="btn" id="lineJump">Jump to the line check</button><button class="btn" id="monJump">Jump to the monitors</button></div></details>
+      <details><summary>Instructor view</summary><pre class="dbg" id="dbg"></pre><div class="row" style="margin-top:8px"><button class="btn" id="newBtn">New scenario</button><button class="btn" id="lineJump">Jump to the line check</button><button class="btn" id="monJump">Jump to the monitors</button><button class="btn" id="tdJump">Jump to teardown</button></div></details>
     </div>
   </div>
 </div>
@@ -336,10 +349,12 @@ body.linemode .toast{position:fixed;top:auto;bottom:calc(var(--dockh,0px) + 10px
 <script type="application/json" id="graphData">__GRAPH__</script>
 <script type="application/json" id="lineData">__LINE__</script>
 <script type="application/json" id="monData">__MON__</script>
+<script type="application/json" id="tdData">__TD__</script>
 <script type="module">
 import { engine } from './engine.js';
 import { lineEngine } from './line-engine.js';
 import { monitorEngine } from './monitor-engine.js';
+import { teardownEngine } from './teardown-engine.js';
 const content = JSON.parse(document.getElementById('contentData').textContent);
 const G = JSON.parse(document.getElementById('graphData').textContent);
 const eng = engine(content);
@@ -347,6 +362,8 @@ const LC = JSON.parse(document.getElementById('lineData').textContent);
 const leng = lineEngine(LC, content.devices);
 const MC = JSON.parse(document.getElementById('monData').textContent);
 const meng = monitorEngine(MC, G);
+const TC = JSON.parse(document.getElementById('tdData').textContent);
+const teng = teardownEngine(TC, G, content.devices, MC);
 const $ = s => document.querySelector(s);
 const D = content.devices, SKIP = content.skip.label, CHAIR = content.places.chair.label;
 const ROLE = { musician: 'for a musician', spare: 'spare, kept at FOH' };
@@ -369,14 +386,15 @@ const mmss = s => `${Math.floor(s / 60)}:${two(Math.floor(s % 60))}`;
 let game, trail = [], toastT = null, lastT = 0, activeHand = 0, mentorT = null;
 let mode = 'battery', lgame = null, sel = null;   // the line check: its game and the singer the dock is on
 let mgame = null, selCable = null, lastListen = {};   // the monitors: its game, the cable you're about to plug, what you last heard
+let tgame = null;                                   // teardown: its game
 let job = 'mics';                                  // which job you took at 4:50 (Cary: the mics and the monitors happen at the same time)
-const curScene = () => mode === 'line' ? lgame.scene : mode === 'monitors' ? mgame.scene : game.scene;
-const curView = () => mode === 'line' ? leng.view(lgame) : mode === 'monitors' ? meng.view(mgame) : eng.view(game);
+const curScene = () => mode === 'line' ? lgame.scene : mode === 'monitors' ? mgame.scene : mode === 'teardown' ? tgame.scene : game.scene;
+const curView = () => mode === 'line' ? leng.view(lgame) : mode === 'monitors' ? meng.view(mgame) : mode === 'teardown' ? teng.view(tgame) : eng.view(game);
 // each level has its own mentor (Cary, 2026-10-08), one of content.intro.crew, remembered per level in this
 // browser as a convenience; `mentor` is the current level's. 'salmon-mentor-last' is for the final level.
-const LEVEL = () => mode === 'line' ? 'line' : mode === 'monitors' ? 'monitors' : 'mics';
+const LEVEL = () => mode === 'line' ? 'line' : mode === 'monitors' ? 'monitors' : mode === 'teardown' ? 'teardown' : 'mics';
 const mentors = {};
-for (const l of ['mics', 'monitors', 'line']) {
+for (const l of ['mics', 'monitors', 'line', 'teardown']) {
   let m = null; try { m = localStorage.getItem('salmon-mentor-' + l) || (l === 'mics' ? localStorage.getItem('salmon-mentor') : null); } catch (e) {}
   mentors[l] = content.intro.crew.includes(m) ? m : null;
 }
@@ -388,7 +406,7 @@ function setMentor(l, m) {
 }
 const newSeed = () => 'VJ-' + String(Math.floor(10000 + Math.random() * 89999));
 function boot(seed, intro = false) {
-  game = eng.start(seed); trail = []; lastT = 0; activeHand = 0; mode = 'battery'; lgame = null; mgame = null; document.body.classList.remove('linemode', 'monmode');
+  game = eng.start(seed); trail = []; lastT = 0; activeHand = 0; mode = 'battery'; lgame = null; mgame = null; tgame = null; document.body.classList.remove('linemode', 'monmode', 'tdmode');
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = false;
   render(true); syncMentor();
   if (intro) showIntro(); else showLevelCard();
@@ -396,7 +414,8 @@ function boot(seed, intro = false) {
 const GREETING = '4:50 PM. Rehearsal at 5:00. Batteries into the wireless mics, then check each one here at FOH before it goes to the stage.';
 const LGREETING = 'The mics are on stage. First the wedges: play the Wii Shop theme through Bus 1. Then go down the line from black / red: each singer says something while you watch their meter, then ask if they can hear themselves in the wedge.';
 const MGREETING = "You're on monitors; the crew has the mics. The wedges are in the storage closet, and the speakON cables hang on the hook on the Monitor Rack. Three wedges out, the long run from the NX3000 (Channel A) to the first one, daisy-chain the rest, the Furman then the NX3000, then have the A1 play the Wii Shop theme through Bus 1.";
-const greet = () => { const t = mode === 'line' ? LGREETING : mode === 'monitors' ? MGREETING : GREETING; mentor ? mentorSays(t, 'Tap me for a hint whenever you get stuck.') : say(t, 'hint', 6500); };
+const TGREETING = "9:00 PM. The concert's over and the hall's yours. Put it all back: the mics in the drawer (count them), the racks off, the wedges in the closet, and lock up.";
+const greet = () => { const t = mode === 'line' ? LGREETING : mode === 'monitors' ? MGREETING : mode === 'teardown' ? TGREETING : GREETING; mentor ? mentorSays(t, 'Tap me for a hint whenever you get stuck.') : say(t, 'hint', 6500); };
 // a speech bubble from the mentor, just above the hands; tap it to close
 function mentorSays(text, foot = '') {
   const I = content.intro, m = $('#mentor');
@@ -428,7 +447,7 @@ function showIntro() {
 }
 // the level card: which level this is, pick its mentor (each level has its own), how it plays, Let's go
 function showLevelCard() {
-  const I = content.intro, lv = LEVEL(), L = I.levels[lv], brief = { mics: I.brief, monitors: I.brief_monitors, line: I.brief_line }[lv];
+  const I = content.intro, lv = LEVEL(), L = I.levels[lv], brief = { mics: I.brief, monitors: I.brief_monitors, line: I.brief_line, teardown: I.brief_teardown }[lv];
   const mins = Math.round(WINDOW / 60), n = Object.values(D).filter(d => d.type === 'wireless-handheld').length, fill = t => esc(t).replace(/\{minutes\}/g, mins).replace(/\{mics\}/g, n);
   $('#intro3').innerHTML = `<p class="pickhint">${esc(L.sub)}</p><h1 class="oh" style="font-size:clamp(40px,12vw,64px)" id="levelHead">${esc(L.title)}</h1>
     <div class="crew" role="group" aria-label="${esc(I.level_mentor_prompt)}">${I.crew.map(c => `<figure><button data-mentor="${c}" aria-pressed="${mentors[lv] ? c === mentors[lv] : 'mixed'}"><img src="p/${c}.jpg" alt=""><figcaption>${esc(I.crew_names[c])}</figcaption></button></figure>`).join('')}</div>
@@ -440,7 +459,7 @@ function showLevelCard() {
     $('#levelGo').disabled = false; renderHintBtn();
   });
   $('#levelGo').onclick = () => { if (!mentors[lv]) return; syncMentor(); renderHintBtn(); $('#intro').hidden = true; document.body.style.overflow = ''; greet(); };
-  $('#intro').style.setProperty('--introbg', `url(p/${{ mics: 'foh-mic-drawer', monitors: 'musician-pov', line: 'x32-top' }[lv]}.jpg)`);
+  $('#intro').style.setProperty('--introbg', `url(p/${{ mics: 'foh-mic-drawer', monitors: 'musician-pov', line: 'x32-top', teardown: 'storage-entry' }[lv]}.jpg)`);
   $('#intro1').hidden = true; $('#intro2').hidden = true; $('#intro3').hidden = false; $('#intro').hidden = false;
   document.body.style.overflow = 'hidden';
   ($('#levelGo').disabled ? $('#intro3 [data-mentor]') : $('#levelGo')).focus();
@@ -448,6 +467,7 @@ function showLevelCard() {
 function act(a) {
   if (mode === 'line') return lineAct(a);
   if (mode === 'monitors') return monAct(a);
+  if (mode === 'teardown') return tdAct(a);
   const r = eng.act(game, a);
   if (r.error) { say(r.error.message, 'bad'); return r; }
   if (a.type !== 'hint') { clearTimeout(mentorT); $('#mentor').hidden = true; }   // read it, then on with the job
@@ -517,18 +537,19 @@ function lcdSVG(l) {
 }
 
 // the clock bar: game time against the rehearsal, the "+2s" per action, the count done
-function renderBar(clock, readyBy, t, done, of) {
-  const left = WINDOW - t, tone = left <= 0 ? ' over' : left <= WINDOW * .3 ? ' late' : '';
-  const clk = $('#clock'), [hms, ampm] = clock.split(' '); clk.innerHTML = `${esc(hms)}<small>${esc(ampm || '')}</small>`; clk.className = 'clock' + tone; clk.title = 'Rehearsal ' + readyBy;
-  $('#due').innerHTML = left > 0 ? `<b>${mmss(left)}</b> to rehearsal` : `<b>${mmss(-left)}</b> late for rehearsal`;
-  $('#tbar').className = 'tbar' + tone; $('#tfill').style.transform = `scaleX(${Math.max(0, left) / WINDOW})`;
+function renderBar(clock, readyBy, t, done, of, win = WINDOW, what = 'rehearsal', unit = 'verified') {
+  const left = win - t, tone = left <= 0 ? ' over' : left <= win * .3 ? ' late' : '';
+  const clk = $('#clock'), [hms, ampm] = clock.split(' '); clk.innerHTML = `${esc(hms)}<small>${esc(ampm || '')}</small>`; clk.className = 'clock' + tone; clk.title = (what === 'rehearsal' ? 'Rehearsal ' : 'Out by ') + readyBy;
+  $('#due').innerHTML = left > 0 ? `<b>${mmss(left)}</b> to ${what}` : `<b>${mmss(-left)}</b> ${what === 'rehearsal' ? 'late for rehearsal' : `past ${what}`}`;
+  $('#tbar').className = 'tbar' + tone; $('#tfill').style.transform = `scaleX(${Math.max(0, left) / win})`;
   if (t > lastT) { const d = $('#delta'); d.textContent = `+${t - lastT}s`; d.classList.remove('go'); void d.offsetWidth; d.classList.add('go'); }
   lastT = t;
-  $('#score').textContent = `${done}/${of}`;
+  $('#score').textContent = `${done}/${of}`; $('#scoreWhat').textContent = unit;
 }
 function render(sceneChanged) {
   if (mode === 'line') return renderLine(sceneChanged);
   if (mode === 'monitors') return renderMon(sceneChanged);
+  if (mode === 'teardown') return renderTd(sceneChanged);
   const v = eng.view(game);
   renderBar(v.clock, v.readyBy, game.t, v.objective.verified, v.objective.of);
   renderHintBtn(v);
@@ -541,7 +562,7 @@ function render(sceneChanged) {
     Object.entries(v.debug.reach).map(([m, r]) => `${m}: ${r.map(x => `${x.point} ${x.signal ? (x.passesOn === false ? 'sound, not sent' : 'ok') : '-'}`).join(' > ')}`).join('\n');
   snapshot();
 }
-function snapshot() { try { window.claude?.hot?.snapshot?.(() => ({ game, trail, mode, lgame, sel, mgame })); } catch (e) {} }
+function snapshot() { try { window.claude?.hot?.snapshot?.(() => ({ game, trail, mode, lgame, sel, mgame, tgame })); } catch (e) {} }
 function renderHintBtn(v = curView()) {
   const b = $('#hintBtn'), face = mentor ? `<img src="p/${mentor}.jpg" alt="">` : '';
   b.innerHTML = v.hintsLeft ? `${face}${mentor ? 'Ask' : 'Hint'} ${v.hintsLeft}` : `${face}No hints`; b.disabled = !v.hintsLeft;
@@ -564,7 +585,7 @@ function renderStage() {
     return `<div class="hlabel" style="left:${cx}%;top:${cy}%">${PLACE[e.to]}</div>`; }).join('');
   $('#hot').querySelectorAll('.hot').forEach(p => { const go = () => goTo(kids[+p.dataset.i].to); p.onclick = go; p.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } }; });
   // walking (the monitors only): arrows from the graph's walk and turn links, where the editor would put them
-  const walks = mode !== 'monitors' ? [] : G.edges.filter(e => e.from === id && e.kind !== 'closeup' && G.nodes[e.to]);
+  const walks = !['monitors', 'teardown'].includes(mode) ? [] : G.edges.filter(e => e.from === id && e.kind !== 'closeup' && G.nodes[e.to]);
   const ang = e => { const a = e.dir_degrees ?? e.turn_degrees ?? 0; return ((a + 540) % 360) - 180; };
   let last = -999; const placed = walks.map(e => ({ e, a: ang(e) })).sort((p, q) => p.a - q.a).map(p => { p.a = Math.max(p.a, last + 32); last = p.a; return p; });
   $('#walks').innerHTML = placed.map(({ e, a }, i) => { const r = a * Math.PI / 180, l = e.icon_x ?? 50 + 38 * Math.sin(r), t = e.icon_y ?? 50 - 30 * Math.cos(r), rot = Math.abs(a) > 135 ? 180 : a;
@@ -654,11 +675,24 @@ function pulse(point, signal) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { bar.style.height = '70%'; setTimeout(() => { bar.style.height = '0'; }, 1200); return; }
   bar.animate([{ height: '0%' }, { height: '72%', offset: .12 }, { height: '58%', offset: .3 }, { height: '80%', offset: .45 }, { height: '62%', offset: .62 }, { height: '75%', offset: .75 }, { height: '0%' }], { duration: 1500, easing: 'ease-out' });
 }
+// the secret clues (Cary, 2026-11-01): one at the end of each level, toward the final level's password
+const CLUES = { battery: content.secret_clue, monitors: MC.secret_clue, line: LC.secret_clue, teardown: TC.secret_clue };
+function foundClues() { try { return JSON.parse(localStorage.getItem('salmon-clues') || '[]').filter(n => Number.isInteger(n)); } catch (e) { return []; } }
+function foundClue(n) { const f = foundClues(); if (!f.includes(n)) f.push(n); try { localStorage.setItem('salmon-clues', JSON.stringify(f.sort())); } catch (e) {} found.add(n); }
+const found = new Set(foundClues());
+function clueLines() {
+  const all = Object.values(CLUES).sort((a, b) => a.n - b.n), have = all.filter(c => found.has(c.n));
+  return have.map(c => `<li class="clue">🔐 Secret clue ${c.n} of ${c.of}: ${esc(c.text)}</li>`).join('') +
+    `<li class="clue">${have.length === all.length ? 'All four clues. You know what to do: the SUPER SECRET FINAL LEVEL is waiting.' : `${have.length} of ${all.length} clues found. Finish the other levels for the rest.`}</li>`;
+}
 function showDebrief() {
-  const d = mode === 'line' ? leng.debrief(lgame) : mode === 'monitors' ? meng.debrief(mgame) : eng.debrief(game);
-  $('#dbTitle').textContent = mode === 'line' ? 'Debrief: line check' : mode === 'monitors' ? 'Debrief: monitors' : 'Debrief: battery-in check';
-  $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${esc(l.trim())}</li>`).join('');
-  $('#lineBtn').hidden = !((mode === 'battery' && game.completedAt) || (mode === 'monitors' && mgame.completedAt));
+  const d = mode === 'line' ? leng.debrief(lgame) : mode === 'monitors' ? meng.debrief(mgame) : mode === 'teardown' ? teng.debrief(tgame) : eng.debrief(game);
+  $('#dbTitle').textContent = mode === 'line' ? 'Debrief: line check' : mode === 'monitors' ? 'Debrief: monitors' : mode === 'teardown' ? 'Debrief: teardown' : 'Debrief: battery-in check';
+  const won = { battery: game && game.completedAt, monitors: mgame && mgame.completedAt, line: lgame && lgame.completedAt, teardown: tgame && tgame.completedAt }[mode];
+  if (won) foundClue(CLUES[mode].n);
+  $('#dbList').innerHTML = d.lines.map(l => `<li class="${l.startsWith('  ') ? 'sub' : ''}">${esc(l.trim())}</li>`).join('') + (won ? clueLines() : '');
+  $('#lineBtn').hidden = !won || mode === 'teardown';
+  $('#lineBtn').textContent = mode === 'line' ? 'After the concert: teardown →' : 'On to the line check →';
   $('#sheet').hidden = false; ($('#lineBtn').hidden ? $('#againBtn') : $('#lineBtn')).focus();
 }
 // ---- the line check (line-engine.js, content/vj-line-check.json): the A1 at the X32, the singers on stage ----
@@ -671,7 +705,7 @@ function lineupFromBattery() {
   return hs.filter(id => D[id].role === 'musician').map(id => ok(id) ? id : spares.shift()).filter(Boolean);
 }
 function startLine(seed, opts = {}) {
-  mode = 'line'; document.body.classList.remove('monmode'); document.body.classList.add('linemode'); lgame = leng.start(seed, opts); sel = leng.view(lgame).next; trail = ['foh-wide']; lastT = lgame.t;
+  mode = 'line'; document.body.classList.remove('monmode', 'tdmode'); document.body.classList.add('linemode'); lgame = leng.start(seed, opts); sel = leng.view(lgame).next; trail = ['foh-wide']; lastT = lgame.t;
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
   render(true); syncMentor();
   showLevelCard();
@@ -795,7 +829,7 @@ const monSeed = () => game && /^VJ-\d+$/.test(game.seed) ? 'MN-' + game.seed.sli
 const MW = MC.wedges, MS = MC.spots, MCB = MC.cables;
 const jackName = j => j.startsWith('nx3000:') ? `CH ${j.split(':')[1]}` : `${MW[j.split(':')[0]].label}, jack ${j.split(':')[1]}`;
 function startMonitors(seed) {
-  mode = 'monitors'; document.body.classList.remove('linemode'); document.body.classList.add('monmode');
+  mode = 'monitors'; document.body.classList.remove('linemode', 'tdmode'); document.body.classList.add('monmode');
   mgame = meng.start(seed); selCable = null; lastListen = {}; trail = []; lastT = mgame.t;
   $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
   render(true); syncMentor();
@@ -917,9 +951,136 @@ function renderMonDock(v) {
   $('#hand').querySelectorAll('[data-a1]').forEach(b => b.onclick = () => act({ type: 'a1', play: b.dataset.a1 }));
   fitDock();
 }
+// ---- teardown (teardown-engine.js, content/vj-teardown.json): the end of the night, put the hall back ----
+const TD_WINDOW = toSec(TC.clock.out_by) - toSec(TC.clock.start), TS = TC.scenes;
+const tdSeed = () => { const s = [tgame, lgame, mgame, game].map(x => x && x.seed).find(x => /^[A-Z]{2}-\d+$/.test(x || '')); return 'TD-' + (s ? s.slice(3) : String(Math.floor(10000 + Math.random() * 89999))); };
+function startTeardown(seed, opts = {}) {
+  mode = 'teardown'; document.body.classList.remove('linemode', 'monmode'); document.body.classList.add('tdmode');
+  tgame = teng.start(seed, opts); trail = []; lastT = tgame.t;
+  $('#log').innerHTML = ''; $('#sheet').hidden = true; $('#chair').hidden = true;
+  render(true); syncMentor();
+  showLevelCard();
+}
+function tdAct(a) {
+  const r = teng.act(tgame, a);
+  if (r.error) { say(r.error.message, 'bad'); return r; }
+  if (a.type !== 'hint') { clearTimeout(mentorT); $('#mentor').hidden = true; }
+  const before = tgame.log.length, sceneBefore = tgame.scene;
+  tgame = r.game;
+  for (const e of tgame.log.slice(before)) tdLog(e);
+  render(tgame.scene !== sceneBefore);
+  for (const ev of r.events) {
+    if (ev.type === 'hint' && mentor) mentorSays(ev.text, `Hint ${ev.level} of ${ev.of}`);
+    else if (ev.text) say(ev.text, ev.type === 'objective-complete' || (ev.type === 'tug' && ev.held) ? 'good' : ev.type === 'hint' ? 'hint'
+      : ['hot', 'rest-stopped'].includes(ev.type) || (ev.type === 'tug' && !ev.held) || (ev.type === 'cells' && ev.alk === (ev.to === 'charger')) || (ev.type === 'unloaded' && ev.alk) || (ev.type === 'count' && ev.n < ev.of) ? 'bad' : '', 4200);
+  }
+  if (r.events.some(ev => ev.type === 'objective-complete')) setTimeout(showDebrief, 1500);
+  return r;
+}
+function tdLog(e) {
+  const L = e.device && D[e.device] ? D[e.device].label : '', li = document.createElement('li');
+  const what = { go: `${e.carrying ? `carried ${e.carrying} wedge${e.carrying > 1 ? 's' : ''} to` : 'went to'} ${PLACE[e.scene] || e.scene} (${e.seconds} s)`,
+    unload: `${L}: batteries out${e.wasOn ? ' (it was on)' : ''}${e.alk ? ', alkaline' : ''}`, cells: `${L}'s cells ${e.to === 'bin' ? 'in the bin' : 'on the charger'}`, stow: `${L} in the drawer`,
+    rest: `${TC.skip.label}: ${e.stowed ? e.stowed.length : 0} stowed${e.stoppedAt ? `, stopped at ${D[e.stoppedAt].label}` : ''}`, count: `counted the drawer: ${e.n}`,
+    take_mic: `picked up ${L} from the stage`, switch: `switched ${e.device === 'wireless' ? 'the wireless rack' : e.device === 'furman' ? 'the Furman' : 'the NX3000'} ${e.to}`,
+    unplug: `unplugged ${e.jack ? jackName(e.jack) : ''}${e.hot ? ' (amp on!)' : ''}`, hang: `hung ${MCB[e.cable] ? MCB[e.cable].label : ''} on the hook`,
+    lift: `lifted ${e.count} wedge${e.count > 1 ? 's' : ''}${e.fails ? ` (${e.fails} failed)` : ''}`, put_away: `put ${e.count} wedge${e.count > 1 ? 's' : ''} in the closet`,
+    door: `door: ${{ close_fixed: 'closed the fixed half', push: 'pushed the fixed half flush', bolt: e.to ? 'flipped the bolt' : 'unflipped the bolt', close: 'closed the other half', open: 'opened it', look: 'looked at the top', tug: e.held ? 'tugged: it held' : 'tugged: it opened' }[e.do] || e.do}`, hint: 'took a hint' }[e.type];
+  li.textContent = what || e.type; $('#log').prepend(li);
+}
+function renderTd(sceneChanged) {
+  const v = teng.view(tgame);
+  renderBar(v.clock, v.outBy, tgame.t, v.doneCount, v.steps.length, TD_WINDOW, 'out the door', 'done');
+  renderHintBtn(v);
+  $('#obj').innerHTML = `<h2>${esc(TC.objective.label)} <span class="fine">${v.doneCount} of ${v.steps.length} done</span></h2><p class="fine">${esc(TC.objective.goal)}</p>
+    <div class="chips" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="chip" data-s="${v.inDrawer === v.of ? 'verified' : 'not-checked'}"><b>Drawer</b><i>${v.inDrawer}/${v.of}</i></div>
+    <div class="chip" data-s="${v.wedgesHome === v.wedgesOf ? 'verified' : 'not-checked'}"><b>Wedges in</b><i>${v.wedgesHome}/${v.wedgesOf}</i></div>
+    <div class="chip" data-s="${v.hook.length === 3 ? 'verified' : 'not-checked'}"><b>On the hook</b><i>${v.hook.length}/3</i></div></div>`;
+  if (sceneChanged) renderStage();
+  const nxt = v.steps.find(st => !st.done);
+  $('#steps').innerHTML = `<p class="now">${v.complete ? 'The hall is put back. Good night!' : `Next: ${esc(nxt.short)}`}</p>
+    <ol class="steps six" aria-label="Teardown">${v.steps.map(st => `<li class="${st.done ? 'done' : ''}${nxt && st.id === nxt.id ? ' cur' : ''}" data-step="${st.id}" title="${esc(st.text)}"><span>${esc(st.short)}</span></li>`).join('')}</ol>
+    ${nxt ? `<p class="stepnow">${esc(nxt.text)}</p>` : ''}
+    <details class="tips"><summary>Tips</summary><p class="fine">The mic drawer is in the mic cabinet at FOH (the charger is on top). The wireless rack's Furman is at FOH too. The Monitor Rack is at the stage-side racks; the storage closet (BH 102) is through the crossroads, to the right.</p><p class="fine">Count before you call it done: the receivers show which mics are still on. Read the cells: never alkalines on the charger. The amp goes off before any speaker cable comes out.</p></details>`;
+  renderTdPanel(v); renderTdDock(v);
+  $('#dbg').textContent = `seed ${v.debug.seed} (teardown)\n` + (v.debug.faults.map(f => `fault: ${f.id}${f.device ? ` (${f.device})` : ''}${f.active ? '' : ', fixed'}`).join('\n') || 'no faults') +
+    `\ndoor: ${JSON.stringify(v.debug.door)}\nrack: ${JSON.stringify(v.debug.rack)} wireless: ${v.debug.wireless}`;
+  snapshot();
+}
+const CELL = { in: 'batteries in', hand: 'cells in your hand', charger: 'cells on the charger', bin: 'cells in the bin' };
+function renderTdPanel(v) {
+  const p = $('#panel'), sc = tgame.scene, ch = n => String(n).padStart(2, '0');
+  if (sc === TS.drawer) {
+    const need = v.mics.filter(m => m.at !== 'stage' && (m.at !== 'drawer' || m.cells === 'hand' || (m.alk === true && m.cells === 'charger') || (m.alk === false && m.cells === 'bin')));
+    const left = v.mics.filter(m => ['chair', 'hand'].includes(m.at)).length;
+    p.innerHTML = `<h3>Mic drawer and charger</h3><p>${v.inDrawer} of ${v.of} in the drawer. ${left ? `${left} to go (on the chair${v.hand.length ? ' and in your hand' : ''}).` : ''}</p>
+      <div class="row"><button class="btn talk" data-count>Count the drawer</button><button class="btn" data-rest ${v.byHand >= TC.skip.after_by_hand && left ? '' : 'disabled'}>${esc(TC.skip.label)}${v.byHand < TC.skip.after_by_hand ? ` (after ${TC.skip.after_by_hand - v.byHand} more)` : ''}</button></div>
+      <ul class="mlist">${need.map(m => {
+        const btn = m.cells === 'in' ? `<button class="btn sm talk" data-unload="${m.id}">Batteries out</button>`
+          : m.cells === 'hand' ? `<button class="btn sm" data-cells="${m.id}" data-to="charger">On the charger</button><button class="btn sm" data-cells="${m.id}" data-to="bin">In the battery bin</button>`
+          : m.at !== 'drawer' ? `<button class="btn sm talk" data-stow="${m.id}">In the drawer</button>`
+          : `<button class="btn sm" data-cells="${m.id}" data-to="${m.cells === 'charger' ? 'bin' : 'charger'}">Move them to the ${m.cells === 'charger' ? 'bin' : 'charger'}</button>`;
+        return `<li class="${m.alk ? 'alk' : ''}"><b>CH ${ch(m.channel)}</b><span class="st">${esc(m.label.replace(/^Mic \d+ /, ''))}: ${m.at === 'hand' ? 'in your hand, ' : m.at === 'drawer' ? 'in the drawer, ' : ''}${CELL[m.cells]}${m.alk === null ? '' : m.alk ? ' (alkaline)' : ' (rechargeable)'}${m.on ? ', on' : ''}</span>${btn}</li>`; }).join('') || '<li class="done">Nothing left here.</li>'}</ul>
+      <p class="fine">Batteries out, the cells on the charger (rechargeables only: alkalines go in the battery bin by the FOH computer), then the mic in the drawer. The chair is right here.</p>`;
+  } else if (sc === TS.wireless_rack) {
+    p.innerHTML = `<h3>Wireless rack</h3><div class="panelrow"><b>FURMAN (TOP)</b><span class="sp"></span><span><i class="led${v.wireless === 'on' ? ' on' : ''}"></i>POWER</span><button class="btn sm rocker" data-switch="wireless" aria-pressed="${v.wireless === 'on'}">${v.wireless === 'on' ? 'ON' : 'OFF'}</button></div>
+      <p class="fine">One master switch for the whole rack: on at the start of the gig, off at the end. Tap the receivers on the photo to see their lights.</p>`;
+  } else if (sc === TS.receivers) {
+    p.innerHTML = `<h3>Receivers: RF lights</h3><div class="panelrow"><div class="rfgrid" style="width:100%">${v.mics.map(m => `<span><i class="led${v.rf && v.rf.includes(m.id) ? ' on' : ''}"></i>${ch(m.channel)}</span>`).join('')}</div></div>
+      <p class="fine">${v.wireless !== 'on' ? 'Dark: the wireless rack is off.' : 'An RF light means that mic is switched on and in range, wherever it is.'}</p>`;
+  } else if (sc === TS.stage) {
+    const free = v.spots.filter(sp => sp.wedge && sp.jacks.every(j => !j.cable)).length, stray = v.mics.filter(m => m.at === 'stage');
+    p.innerHTML = `<h3>The stage</h3>${stray.length ? `<ul class="mlist">${stray.map(m => `<li class="alk"><b>CH ${ch(m.channel)}</b><span class="st">${esc(m.label)}, on the floor by a stand${m.on ? ', still on' : ''}</span><button class="btn sm talk" data-takemic="${m.id}">Pick it up</button></li>`).join('')}</ul>` : ''}
+      <div class="spots">${v.spots.map(sp => `<div class="spot${sp.wedge ? ' has' : ''}"><h4>${esc(sp.label)}</h4>${sp.wedge ? `${wedgeSVG()}<b>${esc(MW[sp.wedge].label)}</b>${sp.jacks.map(j => j.cable
+        ? `<div class="jack"><span class="tag">Jack ${j.jack.split(':')[1]}: ${esc(MCB[j.cable].label.replace('speakON ', ''))}</span><button class="btn sm" data-unplug="${j.jack}" aria-label="Unplug ${esc(jackName(j.jack))}">Unplug</button></div>` : `<div class="jack"><span class="fine">Jack ${j.jack.split(':')[1]}: empty</span></div>`).join('')}` : '<span class="fine">empty</span>'}</div>`).join('')}</div>
+      <div class="row"><button class="btn talk" data-lift="1" ${free && v.carrying.length < 2 ? '' : 'disabled'}>Lift one</button><button class="btn talk" data-lift="2" ${free >= 2 && !v.carrying.length ? '' : 'disabled'}>Lift two</button></div>
+      <p class="fine">A wedge lifts once both its jacks are empty. Amp off before you unplug anything.</p>`;
+  } else if (sc === TS.rack_front) {
+    const f = v.front;
+    p.innerHTML = `<h3>Monitor Rack: front</h3>
+      <div class="panelrow"><b>FURMAN M-8Lx</b><span class="sp"></span><span><i class="led${f.furman === 'on' ? ' on' : ''}"></i>POWER</span><button class="btn sm rocker" data-switch="furman" aria-pressed="${f.furman === 'on'}">${f.furman === 'on' ? 'ON' : 'OFF'}</button></div>
+      <div class="panelrow"><b>NX3000</b><span class="sp"></span><span><i class="led${f.powerLed ? ' on' : ''}"></i>POWER</span><button class="btn sm rocker" data-switch="nx3000" aria-pressed="${f.nx3000 === 'on'}">${f.nx3000 === 'on' ? 'ON' : 'OFF'}</button></div>
+      <p class="fine">Off is the reverse of on: the NX3000, then the Furman.</p>`;
+  } else if (sc === TS.rack_rear) {
+    p.innerHTML = `<h3>Monitor Rack: rear</h3>
+      <div class="spots" style="grid-template-columns:repeat(2,minmax(0,1fr))">${v.amp.map(o => `<div class="spot has"><h4>CH ${o.channel} speakON</h4>${o.cable ? `<div class="jack"><span class="tag">${esc(MCB[o.cable].label.replace('speakON ', ''))}</span><button class="btn sm" data-unplug="${o.jack}">Unplug</button></div>` : '<span class="fine">empty</span>'}</div>`).join('')}</div>
+      <h3>The hook</h3><div class="hook">${v.hook.map(c => `<span class="tag">✓ ${esc(MCB[c].label)}</span>`).join('')}${v.held.map(c => `<button class="btn sm talk" data-hang="${c}">Hang the ${esc(MCB[c].label)}</button>`).join('')}${!v.hook.length && !v.held.length ? '<span class="fine">Empty: the cables are still out.</span>' : ''}</div>`;
+  } else if (sc === TS.door) {
+    const d = v.door;
+    const svg = `<svg class="doorsvg" viewBox="0 0 200 120" role="img" aria-label="The closet door: fixed half ${d.fixed}, other half ${d.active}"><rect x="10" y="8" width="180" height="108" fill="none" stroke="var(--line)" stroke-width="3"/>
+      <g transform="${d.fixed === 'open' ? 'translate(12 10) skewY(18) scale(.45 1)' : d.fixed === 'gap' ? 'translate(14 14)' : 'translate(12 10)'}"><rect width="86" height="104" fill="var(--paper)" stroke="var(--ink)"/><rect x="30" y="${d.bolt ? 2 : -6}" width="8" height="10" fill="${d.bolt ? 'var(--sig)' : 'var(--muted)'}"/></g>
+      <g transform="${d.active === 'open' ? 'translate(188 10) skewY(-18) scale(-.45 1)' : 'translate(102 10)'}"><rect width="86" height="104" fill="var(--paper)" stroke="var(--ink)"/><circle cx="10" cy="56" r="3" fill="var(--ink)"/></g></svg>`;
+    const b = (k, t, on) => `<button class="btn sm${k === 'tug' ? ' talk' : ''}" data-door="${k}" ${on ? '' : 'disabled'}>${t}</button>`;
+    p.innerHTML = `<h3>${esc(TC.door.label)}</h3>${svg}<div class="row" style="flex-wrap:wrap">
+      ${b('close_fixed', 'Close the fixed half', d.fixed === 'open' && d.active === 'open')}${b('look', 'Look at the top', true)}${b('push', 'Push it flush', d.fixed !== 'open' && !d.bolt && d.active === 'open')}
+      ${b('bolt', d.bolt ? 'Unflip the bolt' : 'Flip the flush bolt', d.fixed !== 'open' && d.active === 'open')}${b(d.active === 'open' ? 'close' : 'open', d.active === 'open' ? 'Close the other half' : 'Open the door', d.active === 'closed' || d.fixed !== 'open')}${b('tug', 'Tug the door', d.active === 'closed')}</div>
+      <p class="fine">${esc(TC.door.how)} The closet is through the door.</p>`;
+  } else if (sc === TS.storage) {
+    p.innerHTML = `<h3>Storage closet (BH 102)</h3><p>${v.wedgesHome} of ${v.wedgesOf} wedges home. You're carrying ${v.carrying.length}.</p>
+      <div class="row"><button class="btn talk" data-putaway ${v.carrying.length ? '' : 'disabled'}>Put ${v.carrying.length === 2 ? 'them' : 'it'} away</button></div>`;
+  } else {
+    const dir = { 'foh-wide': 'FOH. The mic cabinet is to the right; the wireless rack is here too. The stage and the closet are out in the hall.', 'foh-right-side': 'The mic cabinet: tap the drawer.',
+      'x32-top': 'The X32. Leave it as it is (resetting the desk is not part of this level yet).', 'center-wide': 'The hall. The crossroads is ahead, FOH behind you.',
+      crossroads: 'The crossroads: the storage closet to the right, the stage-side racks to the left, the stage ahead.', 'racks-front-wide': 'The stage-side racks. Tap the Monitor Rack on the photo.',
+      'racks-rear-wide': 'Behind the racks. Tap the Monitor Rack to see its back.' }[sc] || 'Keep walking: follow the arrows on the photo.';
+    p.innerHTML = `<h3>${esc(PLACE[sc] || sc)}</h3><p>${dir}</p>`;
+  }
+  const on = (sel, f) => p.querySelectorAll(sel).forEach(b => b.onclick = () => f(b.dataset));
+  on('[data-count]', () => act({ type: 'count' })); on('[data-rest]', () => act({ type: 'rest' }));
+  on('[data-unload]', d => act({ type: 'unload', device: d.unload })); on('[data-cells]', d => act({ type: 'cells', device: d.cells, to: d.to })); on('[data-stow]', d => act({ type: 'stow', device: d.stow }));
+  on('[data-switch]', d => act({ type: 'switch', device: d.switch })); on('[data-unplug]', d => act({ type: 'unplug', jack: d.unplug }));
+  on('[data-hang]', d => act({ type: 'hang', cable: d.hang })); on('[data-takemic]', d => act({ type: 'take_mic', device: d.takemic }));
+  on('[data-lift]', d => startLift(+d.lift, fails => act({ type: 'lift', count: +d.lift, fails })));
+  on('[data-putaway]', () => act({ type: 'put_away' })); on('[data-door]', d => act({ type: 'door', do: d.door }));
+}
+function renderTdDock(v) {
+  $('#hand').innerHTML = `<div class="carry"><span class="lbl">Carrying</span>${v.carrying.length ? v.carrying.map(() => wedgeSVG()).join('') + ` <span>${v.carrying.length} wedge${v.carrying.length > 1 ? 's' : ''}</span>` : ''}
+    ${v.hand.map(id => `<span class="tag">${esc(D[id].label)}</span>`).join('')}${v.held.map(c => `<span class="tag">${esc(MCB[c].label)}</span>`).join('')}${!v.carrying.length && !v.hand.length && !v.held.length ? '<span class="fine">nothing</span>' : ''}</div>`;
+  fitDock();
+}
 // the lift (Cary's idea): tap fast, or press Space, to fill the bar before it drains; two at once is harder
 let liftT = null;
-function startLift(n) {
+function startLift(n, done = fails => act({ type: 'take', count: n, fails })) {
   const L = MC.carry.lift, k = n === 2 ? L.two : L.one; let power = 0, fails = 0, end = 0, lastTick = 0;
   const box = $('#lift'), fill = $('#liftFill'), tmr = $('#liftTimer');
   $('#liftHead').textContent = n === 2 ? 'Lift two!' : 'Lift!';
@@ -932,7 +1093,7 @@ function startLift(n) {
     const now = performance.now(); power = Math.max(0, power - k.decay_per_s * (now - lastTick) / 1000); lastTick = now; draw();
     if (now > end) { fails++; $('#liftMsg').textContent = `Oof, too heavy. Again! (${fails} failed)`; begin(); }
   };
-  const tap = () => { if (!liftT) return; power += k.gain; draw(); if (power >= 100) { close(); act({ type: 'take', count: n, fails }); } };
+  const tap = () => { if (!liftT) return; power += k.gain; draw(); if (power >= 100) { close(); done(fails); } };
   const key = ev => { if (ev.code === 'Space' || ev.key === ' ') { ev.preventDefault(); tap(); } };
   $('#liftTap').onclick = tap; $('#liftTap').onpointerdown = null;
   $('#liftCancel').onclick = close;
@@ -941,7 +1102,8 @@ function startLift(n) {
   liftT = setInterval(tick, 50);
 }
 $('#monJump').onclick = () => startMonitors(monSeed());
-$('#lineBtn').onclick = () => mode === 'monitors' ? startLine(lineSeed(), { t: mgame.t, wedgeChecked: true }) : startLine(lineSeed(), { t: game.t, lineup: lineupFromBattery() });
+$('#tdJump').onclick = () => startTeardown(tdSeed());
+$('#lineBtn').onclick = () => mode === 'line' ? startTeardown(tdSeed(), {}) : mode === 'monitors' ? startLine(lineSeed(), { t: mgame.t, wedgeChecked: true }) : startLine(lineSeed(), { t: game.t, lineup: lineupFromBattery() });
 $('#lineJump').onclick = () => startLine(lineSeed());
 
 $('#hintBtn').onclick = () => act({ type: 'hint' });
@@ -958,14 +1120,17 @@ $('#intro').onclick = ev => { if (ev.target.closest('#intro1') && !ev.target.clo
 const hashSeed = /^#VJ-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;
 const hashLine = /^#LC-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;   // straight to the line check
 const hashMon = /^#MN-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;    // straight to the monitors
+const hashTd = /^#TD-\d{1,8}$/.test(location.hash) ? location.hash.slice(1) : null;     // straight to teardown
 const start = data => {
   if (data && data.game && data.game.content === content.id && data.game.v === 4) {
     game = data.game; trail = data.trail || [];
     if (data.mode === 'line' && data.lgame && data.lgame.v === 2) { mode = 'line'; lgame = data.lgame; sel = data.sel; $('#chair').hidden = true; document.body.classList.add('linemode'); }
+    if (data.mode === 'teardown' && data.tgame && data.tgame.v === 1) { mode = 'teardown'; tgame = data.tgame; $('#chair').hidden = true; document.body.classList.add('tdmode'); }
     if (data.mode === 'monitors' && data.mgame && data.mgame.v === 1) { mode = 'monitors'; mgame = data.mgame; $('#chair').hidden = true; document.body.classList.add('monmode'); }
     syncMentor(); render(true);
   } else if (hashLine) { game = eng.start(newSeed()); startLine(hashLine); }
   else if (hashMon) { game = eng.start(newSeed()); startMonitors(hashMon); }
+  else if (hashTd) { game = eng.start(newSeed()); startTeardown(hashTd); }
   else boot(hashSeed || newSeed(), true);
 };
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});

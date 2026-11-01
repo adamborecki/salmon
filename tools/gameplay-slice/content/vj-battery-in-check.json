@@ -48,6 +48,10 @@
    "line": {
     "title": "The line check",
     "sub": "Every singer, every wedge"
+   },
+   "teardown": {
+    "title": "Teardown",
+    "sub": "The end of the night: put the hall back"
    }
   },
   "level_mentor_prompt": "Pick your mentor for this level",
@@ -55,7 +59,13 @@
    "First the wedges: play the Wii Shop theme through Bus 1 and listen.",
    "Then down the line from black / red: each singer says something while you watch their meter, then tells you if they can hear themselves in the wedge.",
    "You can't touch the mics on stage: ask the singer, or send the A2."
-  ]
+  ],
+  "brief_teardown": [
+   "Every mic back in the drawer: batteries out, rechargeables on the charger (never alkalines), and count them.",
+   "The wireless rack off. The Monitor Rack off, the amp first, before anyone pulls a speaker cable.",
+   "The speakON cables back on the hook, the wedges back in the storage closet, and lock up: give the door a tug."
+  ],
+  "teardown_status": "Cary, 2026-11-01: a teardown level after the line check (the concert happens in between, offstage). Brief wording is the agent's (tentative)."
  },
  "clock": {
   "start": "16:50:00",
@@ -846,5 +856,11 @@
   ],
   "does": "for the remaining mics in channel order, the same routine as by hand, carrying up to two at a time (take them, batteries in, switch on, then at the X32 for each: talk into it, put it on the chair), costing the same game time; set-aside mics are skipped; it stops at the first mic whose X32 input shows no signal, and leaves it (and any unchecked partner) in your hands at the X32",
   "status": "PRODUCT_DESIGN 4.10 (owner, 2026-09-27); 3 by hand is from the brief"
+ },
+ "secret_clue": {
+  "n": 1,
+  "of": 4,
+  "text": "It's six letters long.",
+  "status": "Cary, 2026-11-01: each level gives a clue toward the final level's password. The clues are riddles: the password itself is never written in the repo."
  }
 }
