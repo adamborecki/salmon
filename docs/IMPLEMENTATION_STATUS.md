@@ -23,6 +23,36 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 6. **New (2026-10-19): the electroacoustic showcase signal flow** at `showcase/`: one real night's
    patch, piece by piece, with 12 open questions for you (session 6 below).
 
+## Session 7, part 2 (2026-11-01, Cary): drag to plug, and "Test signal flow" in the monitors
+
+Cary: "make the cable connecting to the monitors a click and drag feature", plus a "test signal flow"
+action that "plays like snake or like a little race thing... the player is the signal and flows through
+the wires but if it doesn't hit the mark then the signal flow doesn't go".
+
+### What changed
+- **Drag to plug:** drag a cable from the dock (or straight off the hook) onto a jack. Tapping still works.
+  The page scrolls if you hold a drag at the top, or just above the dock. The cables are drawn on the U map.
+- **Test signal flow:** a canvas ride. You steer the signal along a wiggly wire and through each connector's
+  pins. The track is the real chain, from the new `signalPath(g)` in `monitor-engine.js`.
+  - Finishing the ride runs the new `signal_test` action. It works like listening (evidence for every
+    wedge) and also records where the signal stopped. The debrief counts it for NOTICE, TRACE and VERIFY.
+  - Missing a pin, or coming off the wire, is a failed ride: retry. Nothing is recorded.
+  - A loose plug only shows which cable the signal died in, so finding the end is still a reseat job,
+    as in Cary's real story.
+
+### Tested
+- `monitor.test.mjs` 18/18. That includes a property test: over 1,500 random states, the path's
+  wedges equal the wedges that actually play. Mutation checks: 5 of 5 caught.
+- `harness.e2e.mjs`:
+  - two plugs by mouse drag;
+  - the ride stopping at the empty CH A output;
+  - a ride without steering, which fails ("signal lost");
+  - a full ride, which verifies the wedges and opens the debrief.
+
+### Needs Cary
+- Feel: is the ride too easy or too hard on a phone (speed, wire width, pin width)? Snake-style turns
+  instead of steering are possible if this doesn't feel right.
+
 ## Session 7 (2026-11-01, Cary): the teardown level and the secret clues
 
 Cary asked for a "teardown" level and a clue in every level that leads to the final level's password.

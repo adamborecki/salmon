@@ -192,6 +192,27 @@ who can't hear themselves. The debrief scores NOTICE / TRACE / ACT / VERIFY per 
 instructions that changed a mic that didn't need it and sends left too low. The send steps, the
 -10 dB start and when it feeds back are game simplifications, labelled tentative in the content.
 
+## Drag to plug, and "Test signal flow" (monitors)
+
+Cary, 2026-11-01. **Cabling is click and drag:** drag a cable from your hands (the dock) onto a jack, or drag
+one straight off the hook at the rack rear onto a CH output. Tap a cable, then a jack, still works. The
+cables you've run are drawn on the U.
+
+**Test signal flow** (on stage) is a minigame where you are the signal. The A1 plays the Wii Shop theme
+through Bus 1, and you ride it: into the NX3000, out of CH A, and along the real cables, wedge to wedge.
+Drag on the track, or use ← → (or A / D), to stay on the wire and hit every connector.
+- **The track is the real chain** (`monitorEngine.signalPath(g)`). Where the chain really breaks, the
+  ride stops there:
+  - the amp off: nothing comes out;
+  - the run in Channel B: the CH A output is empty;
+  - a loose plug: the signal dies "somewhere in link 1", which tells you the cable but not which end.
+- **A finished ride** is the engine's `signal_test` action. It counts as hearing the wedges (NOTICE and
+  VERIFY), and where it stopped counts as TRACE in the debrief.
+- **Falling off the wire or missing a connector** is a failed ride: try again. It's not a fault in the
+  room, and nothing gets verified.
+- **Numbers** (speed, wire and pin widths, segment lengths) are in `vj-monitors.json` `signal_test.track`
+  (tentative). Test hooks: `window.__sigAuto` steers perfectly, and `window.__sigFast` speeds the ride up.
+
 ## Teardown (part 3) and the secret clues
 
 Cary, 2026-11-01. After the line check's debrief, "After the concert: teardown →" (or `#TD-12345`, or
