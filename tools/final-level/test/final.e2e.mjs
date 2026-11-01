@@ -85,6 +85,20 @@ ok((await page.$eval('[data-lead="morgan"]', b => b.getAttribute('aria-pressed')
 await tap('#fight'); await fight();
 end = await page.textContent('#end');
 ok(/GAME OVER/.test(end) && /Back to the battery-in check/.test(end), 'FL-18: this strategy loses, and the game says so');
+// Call in the MiliCARY takes a turn to charge (Cary, 2026-11-01): pick it, and Cary is busy until it lands
+await page.goto(BASE + '?again=2#FL-30', { waitUntil: 'networkidle' }); await tap('#fight');
+const turn = async () => { for (let n = 0; n < 200; n++) { if (!(await page.evaluate(() => window.__finalLevel.busy())) && !(await page.$eval('#menu', m => m.hidden))) return page.evaluate(() => { const g = window.__finalLevel.state(); return g.party.find(p => p.hp > 0 && !g.pending[p.id]).id; }); await page.waitForTimeout(50); } throw new Error('no menu'); };
+for (let k = 0; k < 4; k++) {
+  const id = await turn();
+  if (id === 'cary') { await tap('[data-c="skill"]'); ok(/MILICARY/.test(await page.textContent('#menu')) && /16 MP · 2 turns/.test(await page.textContent('[data-x="milicary"]')), 'the MiliCARY button says it takes 2 turns'); await tap('[data-x="milicary"]'); }
+  else await tap('[data-c="defend"]');
+}
+await turn();
+ok(await page.evaluate(() => { const g = window.__finalLevel.state(); return !!g.party.find(p => p.id === 'cary').charging && g.pending.cary && g.pending.cary.release; }) && /CHARGING/.test(await page.textContent('[data-pm="cary"]')), 'round 2: Cary is CHARGING, with nothing to pick');
+const hp0 = await page.evaluate(() => window.__finalLevel.state().boss.hp), seen = [];
+for (let k = 0; k < 3; k++) { const id = await turn(); seen.push(id); await tap('[data-c="defend"]'); }
+await turn();
+ok(!seen.includes('cary') && (await page.evaluate(() => window.__finalLevel.state().boss.hp)) < hp0 && !/CHARGING/.test(await page.textContent('[data-pm="cary"]')), 'the menu skips Cary, the MiliCARY lands, and Cary is back for round 3');
 ok(errs.length === 0, 'no page errors: ' + errs.join('; '));
 await browser.close(); server.close();
 console.log(failures ? `${failures} FAILED` : 'ALL PASS'); process.exit(failures ? 1 : 0);

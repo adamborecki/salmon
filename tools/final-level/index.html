@@ -192,7 +192,7 @@ function render(st = g) {   // st: what to draw (the state before a round, while
       ${p.player ? AVATAR : `<img src="p/${p.id}.jpg" alt="">`}<b>${esc(p.name.toUpperCase())}</b>
       <div class="bar" aria-hidden="true"><i style="width:${100 * pct}%;background:${col}"></i></div>
       <div class="nums" aria-label="${esc(p.name)}: ${p.hp} of ${p.maxHp} HP, ${p.mp} MP">${p.hp}/${p.maxHp}<br>MP ${p.mp}</div>
-      <div class="tags">${p.id === lead ? '<span class="tag lead">★</span>' : ''}${p.silenced ? '<span class="tag mute">MUTED</span>' : ''}${p.buff ? '<span class="tag up">ATK↑</span>' : ''}${st.pending[p.id] ? '<span class="tag">✓</span>' : ''}</div></div>`; }).join('');
+      <div class="tags">${p.id === lead ? '<span class="tag lead">★</span>' : ''}${p.silenced ? '<span class="tag mute">MUTED</span>' : ''}${p.buff ? '<span class="tag up">ATK↑</span>' : ''}${p.charging ? '<span class="tag up">CHARGING</span>' : st.pending[p.id] ? '<span class="tag">✓</span>' : ''}</div></div>`; }).join('');
   renderMenu();
 }
 function renderMenu() {
@@ -210,7 +210,7 @@ function renderMenu() {
     m.querySelector('[data-c="item"]').onclick = () => { sub = { kind: 'item' }; renderMenu(); };
   } else if (sub.kind === 'skill' || sub.kind === 'item') {
     const list = sub.kind === 'skill' ? o.skills : o.items;
-    m.innerHTML = `<div class="who">${esc(p.name.toUpperCase())}: ${sub.kind.toUpperCase()}</div><div class="cmds">${list.map(x => `<button class="btn" data-x="${x.id}" ${x.ok ? '' : 'disabled'}>${esc(x.name.toUpperCase())}<small>${sub.kind === 'skill' ? `${x.mp} MP${x.why ? ` · ${x.why}` : ''}` : `× ${x.left}`}</small></button>`).join('')}<button class="btn" data-back>BACK</button></div>`;
+    m.innerHTML = `<div class="who">${esc(p.name.toUpperCase())}: ${sub.kind.toUpperCase()}</div><div class="cmds">${list.map(x => `<button class="btn" data-x="${x.id}" ${x.ok ? '' : 'disabled'}>${esc(x.name.toUpperCase())}<small>${sub.kind === 'skill' ? `${x.mp} MP${x.charge ? ` · ${x.charge + 1} turns` : ''}${x.why ? ` · ${x.why}` : ''}` : `× ${x.left}`}</small></button>`).join('')}<button class="btn" data-back>BACK</button></div>`;
     m.querySelectorAll('[data-x]').forEach(b => b.onclick = () => {
       const x = list.find(y => y.id === b.dataset.x), cmd = sub.kind === 'skill' ? { type: 'skill', skill: x.id } : { type: 'item', item: x.id };
       if (x.target === 'ally' || x.target === 'fallen') { sub = { kind: 'target', cmd, fallen: x.target === 'fallen' }; renderMenu(); } else pick(cmd);

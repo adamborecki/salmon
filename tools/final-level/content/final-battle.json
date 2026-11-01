@@ -178,9 +178,11 @@
    "mp": 16,
    "target": "boss",
    "kind": "magic",
-   "power": 3.6,
-   "text": "{user} calls in the MiliCARY! A whole squad of Carys storms the stage.",
-   "status": "Cary, 2026-11-01: the name is Cary's. What it does, its MP and its line are the agent's (placeholders until Cary says)."
+   "power": 5.2,
+   "text": "The MiliCARY arrives! A whole squad of Carys storms the stage.",
+   "status": "Cary, 2026-11-01: the name is Cary's, and it takes a turn to charge (Cary). The power (5.2, the biggest hit, since it costs two turns), 16 MP and the lines are the agent's placeholders.",
+   "charge": 1,
+   "charge_text": "{user} gets on the radio: \"Calling in the MiliCARY!\" They're on their way..."
   }
  },
  "items": {

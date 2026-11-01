@@ -33,9 +33,14 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
   | **Sonorous Aria** | Magnolia | heals the whole party | 10 |
   | **Call in the MiliCARY** | Cary | the biggest single magic hit | 16 |
 
+- Call in the MiliCARY now takes a turn to charge (Cary). `battle.js` has a general `charge: n` for skills:
+  - the MP is spent when the charge starts;
+  - the member is busy (CHARGING, no menu) until it goes off;
+  - getting knocked out or muted while charging loses it.
+  Its power went up to 5.2 because it costs two turns.
 - What each move does, its cost and its line are placeholders (`status` on each) until Cary says.
-- Tested: `battle.test.mjs` 13/13, with a new test for all three; `final.e2e.mjs` checks the
-  Shred button is in Morgan's menu.
+- Tested: `battle.test.mjs` 15/15 (the three moves, charging, and a longer charge with a knockout).
+  `final.e2e.mjs` checks the Shred button, and charges the MiliCARY through the menus on a phone. Mutation checks: 5 of 5 caught.
 
 ## Session 7, part 2 (2026-11-01, Cary): drag to plug, and "Test signal flow" in the monitors
 

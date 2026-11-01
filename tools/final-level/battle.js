@@ -7,6 +7,8 @@
 //   let g = b.start('FL-1', { order: ['morgan', 'player', 'cary', 'magnolia'], names: { player: 'Sam' } });   // opts optional
 //   ({ game: g, events, error } = b.choose(g, 'cary', { type: 'attack' }));
 //   ...once every standing member has a command, the round resolves and `events` tells the story.
+// A skill with `charge: n` takes n rounds to charge first (MP is spent when it starts): the member is busy until it
+// goes off, with no command to pick. Going down or getting muted while charging loses it.
 
 const clone = o => JSON.parse(JSON.stringify(o));
 function hashSeed(s) { let h = 2166136261 >>> 0; for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
@@ -20,7 +22,7 @@ export function battle(content) {
   function start(seed = 'FL-00001', opts = {}) {
     const ids = content.party.map(p => p.id), order = opts.order && opts.order.length === ids.length && ids.every(i => opts.order.includes(i)) ? opts.order : ids;
     const party = order.map(i => content.party.find(p => p.id === i)).map(p => ({ id: p.id, name: (opts.names && opts.names[p.id]) || p.name, player: !!p.player, hp: p.hp, maxHp: p.hp, mp: p.mp, maxMp: p.mp, atk: p.atk, def: p.def, mag: p.mag, spd: p.spd,
-      skills: p.skills.slice(), silenced: 0, buff: null, guard: false }));
+      skills: p.skills.slice(), silenced: 0, buff: null, guard: false, charging: null }));
     const boss = { id: B.id, name: B.name, hp: B.hp, maxHp: B.hp, atk: B.atk, def: B.def, mag: B.mag, spd: B.spd, debuff: null, exposed: null, phase: 1 };
     return { v: 1, content: content.id, seed, rng: hashSeed(seed), round: 1, party, boss, items: Object.fromEntries(Object.entries(IT).map(([k, v]) => [k, v.count])),
       pending: {}, log: [], outcome: null };
@@ -81,10 +83,16 @@ export function battle(content) {
     const c = g.pending[actor], b = g.boss;
     if (c.type === 'attack') { events.push({ type: 'act', actor, text: `${p.name} attacks!` }); hit(g, b, (atkOf(p) * 2 - bossDef(b)) * variance(g), events, actor); }
     else if (c.type === 'defend') events.push({ type: 'act', actor, text: `${p.name} braces.` });
+    else if (c.type === 'wait') events.push({ type: 'act', actor, charging: true, text: `${p.name} is still charging ${SK[p.charging.skill].name}...` });
     else if (c.type === 'skill') {
       const s = SK[c.skill];
-      if (p.silenced) { events.push({ type: 'act', actor, text: `${p.name} tries ${s.name}... but MUTE ALL is on.`, fizzle: true }); return; }
-      p.mp -= s.mp; const t = c.target && member(g, c.target);
+      if (p.silenced) { if (c.release) p.charging = null; events.push({ type: 'act', actor, text: `${p.name} tries ${s.name}... but MUTE ALL is on${c.release ? ': the charge is lost' : ''}.`, fizzle: true }); return; }
+      if (s.charge && !c.release) {                   // start charging: MP now, the effect when it's ready
+        p.mp -= s.mp; p.charging = { skill: c.skill, rounds: s.charge, target: c.target || null };
+        events.push({ type: 'act', actor, skill: c.skill, charging: true, text: say(s.charge_text || '{user} starts charging...', { user: p.name }) }); return;
+      }
+      if (c.release) p.charging = null; else p.mp -= s.mp;
+      const t = c.target && member(g, c.target);
       events.push({ type: 'act', actor, skill: c.skill, text: say(s.text, { user: p.name, target: t ? t.name : '' }) });
       if (s.kind === 'heal') for (const m of standing(g)) { const h = Math.round(s.power + p.mag * 0.3); m.hp = Math.min(m.maxHp, m.hp + h); events.push({ type: 'heal', target: m.id, amount: h }); }
       else if (s.kind === 'cleanse') { const tt = t && t.hp > 0 ? t : p; tt.silenced = 0; const h = Math.round(s.power); tt.hp = Math.min(tt.maxHp, tt.hp + h); events.push({ type: 'heal', target: tt.id, amount: h, cleansed: true }); }
@@ -132,6 +140,11 @@ export function battle(content) {
     if (g.boss.exposed && --g.boss.exposed.rounds <= 0) g.boss.exposed = null;
     g.log.push({ round: g.round, commands: g.pending, events: events.filter(e => e.type !== 'chosen').length });
     g.pending = {}; g.round++;
+    // a member still charging has their command already: the charged skill goes off next round
+    for (const m of g.party) if (m.charging) {
+      if (m.hp <= 0) { m.charging = null; continue; }
+      g.pending[m.id] = --m.charging.rounds <= 0 ? { type: 'skill', skill: m.charging.skill, target: m.charging.target, release: true } : { type: 'wait' };
+    }
     if (g.outcome) events.push({ type: g.outcome, text: (g.outcome === 'victory' ? content.victory : content.defeat).join(' ') });
   }
 

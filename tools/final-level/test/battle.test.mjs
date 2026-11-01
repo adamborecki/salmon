@@ -166,6 +166,45 @@ test("Cary's new moves (2026-11-01): Morgan's Guitar Axe: Shred, Magnolia's Sono
   for (const id of ids) { const r = calm.choose(g, id, cmd[id]); assert.equal(r.error, null); g = r.game; events.push(...r.events); }
   assert.equal(events.filter(e => e.type === 'damage' && e.from === 'morgan').length, 5, 'Shred: five hits');
   assert.ok(events.filter(e => e.type === 'heal').length >= 4, 'the Aria heals the whole party');
-  assert.ok(events.some(e => e.type === 'damage' && e.from === 'cary'), 'the MiliCARY lands');
+  assert.ok(events.some(e => e.actor === 'cary' && e.charging), 'the MiliCARY is called in (it lands next round)');
   for (const [id, k] of [['morgan', 'guitar-axe-shred'], ['magnolia', 'sonorous-aria'], ['cary', 'milicary']]) assert.equal(P(g, id).mp, CP(id).mp - C.skills[k].mp);
+});
+
+test('Call in the MiliCARY takes a turn to charge (Cary, 2026-11-01): MP now, the hit next round, no command needed', () => {
+  assert.equal(C.skills.milicary.charge, 1);
+  const calm = battle({ ...C, boss: { ...C.boss, moves: [C.boss.moves.find(m => m.id === 'pop-quiz')] } });
+  const others = { type: 'defend' };
+  let g = calm.start('FL-6'), ev = [];
+  for (const id of ids) { const r = calm.choose(g, id, id === 'cary' ? { type: 'skill', skill: 'milicary' } : others); g = r.game; ev.push(...r.events); }
+  assert.ok(ev.some(e => e.actor === 'cary' && e.charging), 'round 1: Cary starts charging');
+  assert.ok(!ev.some(e => e.type === 'damage' && e.from === 'cary'), 'no hit yet');
+  assert.equal(P(g, 'cary').mp, CP('cary').mp - C.skills.milicary.mp, 'MP is spent when it starts');
+  assert.ok(g.pending.cary && g.pending.cary.release, "round 2: Cary's command is already set");
+  assert.equal(calm.choose(g, 'cary', { type: 'attack' }).error.code, 'chosen', 'no other command while charging');
+  ev = []; for (const id of ids) { if (g.pending[id]) continue; const r = calm.choose(g, id, others); g = r.game; ev.push(...r.events); }
+  assert.ok(ev.some(e => e.type === 'damage' && e.from === 'cary'), 'round 2: the MiliCARY lands');
+  assert.equal(P(g, 'cary').mp, CP('cary').mp - C.skills.milicary.mp, 'no MP spent twice');
+  assert.equal(P(g, 'cary').charging, null); assert.ok(!g.pending.cary, 'round 3: back to normal');
+  // muted while charging: the charge is lost
+  let h = calm.start('FL-6');
+  for (const id of ids) h = calm.choose(h, id, id === 'cary' ? { type: 'skill', skill: 'milicary' } : others).game;
+  P(h, 'cary').silenced = 1; ev = [];
+  for (const id of ids) { if (h.pending[id]) continue; const r = calm.choose(h, id, others); h = r.game; ev.push(...r.events); }
+  assert.ok(ev.some(e => e.actor === 'cary' && e.fizzle && /charge is lost/.test(e.text)) && P(h, 'cary').charging === null);
+});
+
+test('a longer charge waits through the middle rounds; going down while charging loses it', () => {
+  const C2 = { ...C, skills: { ...C.skills, milicary: { ...C.skills.milicary, charge: 2 } }, boss: { ...C.boss, moves: [C.boss.moves.find(m => m.id === 'pop-quiz')] } };
+  const b2 = battle(C2), fill = (g, cmd) => { const ev = []; for (const id of ids) { if (g.pending[id] || P(g, id).hp <= 0) continue; const r = b2.choose(g, id, cmd(id)); g = r.game; ev.push(...r.events); } return { g, ev }; };
+  let { g } = fill(b2.start('FL-8'), id => id === 'cary' ? { type: 'skill', skill: 'milicary' } : { type: 'defend' });
+  assert.equal(g.pending.cary.type, 'wait', 'round 2: still charging, nothing to pick');
+  let r = fill(g, () => ({ type: 'defend' })); g = r.g;
+  assert.ok(r.ev.some(e => e.actor === 'cary' && /still charging/.test(e.text)) && !r.ev.some(e => e.type === 'damage' && e.from === 'cary'));
+  assert.ok(g.pending.cary.release, 'round 3: it goes off');
+  r = fill(g, () => ({ type: 'defend' })); assert.ok(r.ev.some(e => e.type === 'damage' && e.from === 'cary'));
+  // knocked out mid-charge: no charge, no queued command when they're revived
+  ({ g } = fill(b2.start('FL-8'), id => id === 'cary' ? { type: 'skill', skill: 'milicary' } : { type: 'defend' }));
+  P(g, 'cary').hp = 0; delete g.pending.cary;
+  g = fill(g, () => ({ type: 'defend' })).g;
+  assert.equal(P(g, 'cary').charging, null); assert.ok(!g.pending.cary);
 });
