@@ -49,6 +49,11 @@ await page.waitForFunction(() => [...document.querySelectorAll('.pm img')].every
 ok((await page.$$eval('.pm b', b => b.map(x => x.textContent))).join() === 'MORGAN,TESTER,CARY,MAGNOLIA', 'a party of 4: your mentor (Morgan) leads, then you, then the other mentors');
 ok((await page.$eval('[data-pm="morgan"] .tag.lead', () => true).catch(() => false)) && (await page.$('[data-pm="player"] svg.av')) !== null, 'the leader has a ★; you have an avatar');
 
+// Cary's new moves (2026-11-01) are in each mentor's SKILL menu
+await tap('[data-c="skill"]');
+ok(/MORGAN: SKILL/.test(await page.textContent('#menu')) && /GUITAR AXE: SHRED/.test(await page.textContent('#menu')), "Morgan's skills include Guitar Axe: Shred");
+if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/final-skills.png` });
+await tap('[data-back]');
 // the strategy, through the menus: revive with the spare mic, Cary heals when two are hurt, Magnolia gain-stages, else attack
 async function fight() {
   for (let n = 0; n < 400; n++) {

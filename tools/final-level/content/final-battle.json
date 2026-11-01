@@ -40,7 +40,8 @@
    "skills": [
     "awesome-joke",
     "wii-shop",
-    "reseat"
+    "reseat",
+    "milicary"
    ]
   },
   {
@@ -54,7 +55,8 @@
    "spd": 14,
    "skills": [
     "check-the-rest",
-    "phantom-power"
+    "phantom-power",
+    "guitar-axe-shred"
    ]
   },
   {
@@ -68,7 +70,8 @@
    "spd": 13,
    "skills": [
     "gain-staging",
-    "sends-on-fader"
+    "sends-on-fader",
+    "sonorous-aria"
    ]
   }
  ],
@@ -150,6 +153,34 @@
    "power": 2.4,
    "text": "{user} tells an Awesome and Funny Joke. Adam can't stop laughing!",
    "status": "Cary, 2026-10-08: the name is Cary's. What it does (damage, 8 MP) and the line are placeholders until Cary says."
+  },
+  "guitar-axe-shred": {
+   "name": "Guitar Axe: Shred",
+   "mp": 12,
+   "target": "boss",
+   "kind": "multi",
+   "power": 0.45,
+   "hits": 5,
+   "text": "{user} straps on the guitar axe and SHREDS. Five-note run, five hits!",
+   "status": "Cary, 2026-11-01: the name is Cary's. What it does, its MP and its line are the agent's (placeholders until Cary says)."
+  },
+  "sonorous-aria": {
+   "name": "Sonorous Aria",
+   "mp": 10,
+   "target": "party",
+   "kind": "heal",
+   "power": 30,
+   "text": "{user} sings a Sonorous Aria. It fills the hall, and the whole party heals.",
+   "status": "Cary, 2026-11-01: the name is Cary's. What it does, its MP and its line are the agent's (placeholders until Cary says)."
+  },
+  "milicary": {
+   "name": "Call in the MiliCARY",
+   "mp": 16,
+   "target": "boss",
+   "kind": "magic",
+   "power": 3.6,
+   "text": "{user} calls in the MiliCARY! A whole squad of Carys storms the stage.",
+   "status": "Cary, 2026-11-01: the name is Cary's. What it does, its MP and its line are the agent's (placeholders until Cary says)."
   }
  },
  "items": {

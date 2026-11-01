@@ -23,6 +23,20 @@ starting from `8865fd6`), still accurate unless session 2 says otherwise. Pair w
 6. **New (2026-10-19): the electroacoustic showcase signal flow** at `showcase/`: one real night's
    patch, piece by piece, with 12 open questions for you (session 6 below).
 
+## Session 7, part 3 (2026-11-01, Cary): new final-level moves
+
+- Cary named three moves, each added to that mentor's skills in `tools/final-level/content/final-battle.json`:
+
+  | Move | Who | What it does | MP |
+  |---|---|---|---|
+  | **Guitar Axe: Shred** | Morgan | 5 quick hits | 12 |
+  | **Sonorous Aria** | Magnolia | heals the whole party | 10 |
+  | **Call in the MiliCARY** | Cary | the biggest single magic hit | 16 |
+
+- What each move does, its cost and its line are placeholders (`status` on each) until Cary says.
+- Tested: `battle.test.mjs` 13/13, with a new test for all three; `final.e2e.mjs` checks the
+  Shred button is in Morgan's menu.
+
 ## Session 7, part 2 (2026-11-01, Cary): drag to plug, and "Test signal flow" in the monitors
 
 Cary: "make the cable connecting to the monitors a click and drag feature", plus a "test signal flow"

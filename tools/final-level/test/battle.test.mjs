@@ -155,3 +155,17 @@ test("Cary's Awesome and Funny Joke (Cary, 2026-10-08): it's Cary's, costs MP, a
   assert.equal(P(g, 'cary').mp, CP('cary').mp - C.skills['awesome-joke'].mp);
   assert.ok(g.boss.hp < C.boss.hp, 'it hit');
 });
+
+test("Cary's new moves (2026-11-01): Morgan's Guitar Axe: Shred, Magnolia's Sonorous Aria, Cary's Call in the MiliCARY", () => {
+  assert.ok(CP('morgan').skills.includes('guitar-axe-shred') && CP('magnolia').skills.includes('sonorous-aria') && CP('cary').skills.includes('milicary'));
+  assert.deepEqual(['guitar-axe-shred', 'sonorous-aria', 'milicary'].map(k => C.skills[k].name), ['Guitar Axe: Shred', 'Sonorous Aria', 'Call in the MiliCARY']);
+  const calm = battle({ ...C, boss: { ...C.boss, moves: [C.boss.moves.find(m => m.id === 'pop-quiz')] } });
+  let g = calm.start('FL-5'); g.party.forEach(p => { p.hp = 40; });
+  const cmd = { morgan: { type: 'skill', skill: 'guitar-axe-shred' }, magnolia: { type: 'skill', skill: 'sonorous-aria' }, cary: { type: 'skill', skill: 'milicary' }, player: { type: 'defend' } };
+  const events = [];
+  for (const id of ids) { const r = calm.choose(g, id, cmd[id]); assert.equal(r.error, null); g = r.game; events.push(...r.events); }
+  assert.equal(events.filter(e => e.type === 'damage' && e.from === 'morgan').length, 5, 'Shred: five hits');
+  assert.ok(events.filter(e => e.type === 'heal').length >= 4, 'the Aria heals the whole party');
+  assert.ok(events.some(e => e.type === 'damage' && e.from === 'cary'), 'the MiliCARY lands');
+  for (const [id, k] of [['morgan', 'guitar-axe-shred'], ['magnolia', 'sonorous-aria'], ['cary', 'milicary']]) assert.equal(P(g, id).mp, CP(id).mp - C.skills[k].mp);
+});
