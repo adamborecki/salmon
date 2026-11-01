@@ -32,6 +32,7 @@ a{color:var(--mp)}
 .gate{display:grid;gap:14px;justify-items:center;text-align:center;margin-top:8vh}
 .lock{font-size:46px}
 .gate input{width:min(280px,100%);font:16px var(--mono);padding:10px 12px;border-radius:6px;border:2px solid var(--edge);background:#000;color:#fff;text-align:center}
+.clues{font-size:9px;line-height:1.8;color:var(--dim);max-width:30em}
 .gate .no{color:var(--red);font:400 11px var(--pixel);min-height:1.6em}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
@@ -100,6 +101,7 @@ a{color:var(--mp)}
       <button class="btn" type="submit">ENTER</button>
       <div class="no" id="no" aria-live="polite"></div>
     </form>
+    <p class="px clues" id="clues">LOCKED OUT? EVERY LEVEL ENDS WITH A SECRET CLUE.</p>
     <a class="foot" href="../">← back to the Salmon Simulator</a>
   </section>
 
@@ -135,6 +137,8 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, wait = ms => new Promise(r => setTimeout(r, reduce ? Math.min(ms, 120) : ms));
 let g = null, busy = false, sub = null;   // sub: an open submenu (skill/item list, or a target pick)
 
+// clues found in the game (Cary, 2026-11-01): the game remembers them in this browser
+try { const n = JSON.parse(localStorage.getItem('salmon-clues') || '[]').length; if (n) $('#clues').textContent = `CLUES FOUND: ${Math.min(n, 4)} OF 4. ${n >= 4 ? 'YOU KNOW THE WORD.' : 'FINISH EVERY LEVEL FOR THE REST.'}`; } catch (e) {}
 // ---- the gate: only the password's SHA-256 is in this page (a fun lock, not security: the code is public) ----
 async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function unlocked() { try { return sessionStorage.getItem('fl-ok') === '1'; } catch (e) { return false; } }

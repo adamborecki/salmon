@@ -309,5 +309,11 @@
    "source": "Cary, 2026-10-08"
   },
   "status": "insets shown in the game's Monitor Rack rear panel; not nodes in the scene graph (the owner can add them as close-ups in the live editor)"
+ },
+ "secret_clue": {
+  "n": 2,
+  "of": 4,
+  "text": "It starts with R and ends with D.",
+  "status": "Cary, 2026-11-01: each level gives a clue toward the final level's password. The clues are riddles: the password itself is never written in the repo."
  }
 }

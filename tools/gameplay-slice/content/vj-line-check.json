@@ -368,5 +368,11 @@
   ],
   "does": "for the remaining singers in order, the same routine as by hand (say something at the X32, then 'can you hear yourself?'), costing the same game time; it stops at the first singer whose meter is wrong, rings, or who can't hear themselves",
   "status": "PRODUCT_DESIGN 4.10, as in the battery-in check"
+ },
+ "secret_clue": {
+  "n": 3,
+  "of": 4,
+  "text": "Every concert in Salmon could become one: after the gig, the Dante multitrack into the Mac mini is practice for making it.",
+  "status": "Cary, 2026-11-01: each level gives a clue toward the final level's password. The clues are riddles: the password itself is never written in the repo."
  }
 }
